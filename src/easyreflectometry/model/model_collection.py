@@ -15,7 +15,7 @@ from .model import Model
 # Needs to be a function, elements are added to the global_object.map
 def DEFAULT_ELEMENTS(interface):
     """Default elements."""
-    return (Model(interface),)
+    return (Model(interface=interface),)
 
 
 class ModelCollection(BaseCollection):

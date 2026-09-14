@@ -18,6 +18,14 @@
   there is no file at the path. Scripts that relied on these calls
   silently continuing must catch the exceptions.
 
+## Models
+
+- `ModelCollection(interface=...)` with no models now builds its default
+  model correctly. The default was passing the calculator interface
+  positionally into `Model`, where it landed as the `sample` argument,
+  so constructing a collection with a real calculator and no models
+  failed.
+
 ## Parameter constraints
 
 - New equality-constraint helpers `constrain`, `constrain_equal`,
