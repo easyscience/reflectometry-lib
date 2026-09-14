@@ -26148,7 +26148,19 @@ get a clone built from <code>from_dict(as_dict(skip=['unique_name']))</code>.</p
 <span class="normal">2115</span>
 <span class="normal">2116</span>
 <span class="normal">2117</span>
-<span class="normal">2118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">:</span>
+<span class="normal">2118</span>
+<span class="normal">2119</span>
+<span class="normal">2120</span>
+<span class="normal">2121</span>
+<span class="normal">2122</span>
+<span class="normal">2123</span>
+<span class="normal">2124</span>
+<span class="normal">2125</span>
+<span class="normal">2126</span>
+<span class="normal">2127</span>
+<span class="normal">2128</span>
+<span class="normal">2129</span>
+<span class="normal">2130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_info</span><span class="p">()</span>
@@ -27793,19 +27805,31 @@ get a clone built from <code>from_dict(as_dict(skip=['unique_name']))</code>.</p
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_assembly_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_layer_index</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">MaterialCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add material.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a material to the project material collection.</span>
+
+<span class="sd">        :param material: the material to add.</span>
+<span class="sd">        :raises ValueError: if the material is already in the collection. The collection is</span>
+<span class="sd">            left untouched in that case, so a caller cannot mistake a refused add for a</span>
+<span class="sd">            successful one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">material</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: Material </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s1"> is already in material collection&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Material </span><span class="si">{</span><span class="n">material</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is already in the material collection.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove material.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_materials_in_models</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ERROR: Material </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s1"> is used in models&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the material at *index* from the project material collection.</span>
+
+<span class="sd">        :param index: position of the material in the collection.</span>
+<span class="sd">        :raises IndexError: if there is no material at *index*.</span>
+<span class="sd">        :raises ValueError: if the material is used by one of the models. Removing it would</span>
+<span class="sd">            leave the model referring to a material the project no longer holds, so the</span>
+<span class="sd">            collection is left untouched.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">material</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">material</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_materials_in_models</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Material </span><span class="si">{</span><span class="n">material</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is used in models and cannot be removed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_default_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Default info.&quot;&quot;&quot;</span>
@@ -32876,7 +32900,11 @@ model/experiment indices stay aligned.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Add material.</p>
+        <p>Add a material to the project material collection.</p>
+<p>:param material: the material to add.
+:raises ValueError: if the material is already in the collection. The collection is
+    left untouched in that case, so a caller cannot mistake a refused add for a
+    successful one.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32889,12 +32917,22 @@ model/experiment indices stay aligned.</p>
 <span class="normal">1760</span>
 <span class="normal">1761</span>
 <span class="normal">1762</span>
-<span class="normal">1763</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">MaterialCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add material.&quot;&quot;&quot;</span>
+<span class="normal">1763</span>
+<span class="normal">1764</span>
+<span class="normal">1765</span>
+<span class="normal">1766</span>
+<span class="normal">1767</span>
+<span class="normal">1768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a material to the project material collection.</span>
+
+<span class="sd">    :param material: the material to add.</span>
+<span class="sd">    :raises ValueError: if the material is already in the collection. The collection is</span>
+<span class="sd">        left untouched in that case, so a caller cannot mistake a refused add for a</span>
+<span class="sd">        successful one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">material</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;WARNING: Material </span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s1"> is already in material collection&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Material </span><span class="si">{</span><span class="n">material</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is already in the material collection.&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">material</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -32912,7 +32950,12 @@ model/experiment indices stay aligned.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Remove material.</p>
+        <p>Remove the material at <em>index</em> from the project material collection.</p>
+<p>:param index: position of the material in the collection.
+:raises IndexError: if there is no material at <em>index</em>.
+:raises ValueError: if the material is used by one of the models. Removing it would
+    leave the model referring to a material the project no longer holds, so the
+    collection is left untouched.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32920,17 +32963,31 @@ model/experiment indices stay aligned.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1765</span>
-<span class="normal">1766</span>
-<span class="normal">1767</span>
-<span class="normal">1768</span>
-<span class="normal">1769</span>
-<span class="normal">1770</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove material.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_materials_in_models</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ERROR: Material </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s1"> is used in models&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1770</span>
+<span class="normal">1771</span>
+<span class="normal">1772</span>
+<span class="normal">1773</span>
+<span class="normal">1774</span>
+<span class="normal">1775</span>
+<span class="normal">1776</span>
+<span class="normal">1777</span>
+<span class="normal">1778</span>
+<span class="normal">1779</span>
+<span class="normal">1780</span>
+<span class="normal">1781</span>
+<span class="normal">1782</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove the material at *index* from the project material collection.</span>
+
+<span class="sd">    :param index: position of the material in the collection.</span>
+<span class="sd">    :raises IndexError: if there is no material at *index*.</span>
+<span class="sd">    :raises ValueError: if the material is used by one of the models. Removing it would</span>
+<span class="sd">        leave the model referring to a material the project no longer holds, so the</span>
+<span class="sd">        collection is left untouched.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">material</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">material</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_materials_in_models</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Material </span><span class="si">{</span><span class="n">material</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is used in models and cannot be removed.&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_materials</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -32959,19 +33016,19 @@ model/experiment indices stay aligned.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1780</span>
-<span class="normal">1781</span>
-<span class="normal">1782</span>
-<span class="normal">1783</span>
-<span class="normal">1784</span>
-<span class="normal">1785</span>
-<span class="normal">1786</span>
-<span class="normal">1787</span>
-<span class="normal">1788</span>
-<span class="normal">1789</span>
-<span class="normal">1790</span>
-<span class="normal">1791</span>
-<span class="normal">1792</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1792</span>
+<span class="normal">1793</span>
+<span class="normal">1794</span>
+<span class="normal">1795</span>
+<span class="normal">1796</span>
+<span class="normal">1797</span>
+<span class="normal">1798</span>
+<span class="normal">1799</span>
+<span class="normal">1800</span>
+<span class="normal">1801</span>
+<span class="normal">1802</span>
+<span class="normal">1803</span>
+<span class="normal">1804</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the project directory tree on disk.</span>
 
 <span class="sd">    :raises FileExistsError: if the project directory already exists. Nothing is written in</span>
@@ -33019,19 +33076,7 @@ can tell a successful save from a failed one.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1794</span>
-<span class="normal">1795</span>
-<span class="normal">1796</span>
-<span class="normal">1797</span>
-<span class="normal">1798</span>
-<span class="normal">1799</span>
-<span class="normal">1800</span>
-<span class="normal">1801</span>
-<span class="normal">1802</span>
-<span class="normal">1803</span>
-<span class="normal">1804</span>
-<span class="normal">1805</span>
-<span class="normal">1806</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1806</span>
 <span class="normal">1807</span>
 <span class="normal">1808</span>
 <span class="normal">1809</span>
@@ -33064,7 +33109,19 @@ can tell a successful save from a failed one.</p>
 <span class="normal">1836</span>
 <span class="normal">1837</span>
 <span class="normal">1838</span>
-<span class="normal">1839</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">1839</span>
+<span class="normal">1840</span>
+<span class="normal">1841</span>
+<span class="normal">1842</span>
+<span class="normal">1843</span>
+<span class="normal">1844</span>
+<span class="normal">1845</span>
+<span class="normal">1846</span>
+<span class="normal">1847</span>
+<span class="normal">1848</span>
+<span class="normal">1849</span>
+<span class="normal">1850</span>
+<span class="normal">1851</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the project as json.</span>
 
 <span class="sd">    The write is atomic: the serialized project is written to a temporary file in the</span>
@@ -33139,25 +33196,25 @@ can tell a successful save from a failed one.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1862</span>
-<span class="normal">1863</span>
-<span class="normal">1864</span>
-<span class="normal">1865</span>
-<span class="normal">1866</span>
-<span class="normal">1867</span>
-<span class="normal">1868</span>
-<span class="normal">1869</span>
-<span class="normal">1870</span>
-<span class="normal">1871</span>
-<span class="normal">1872</span>
-<span class="normal">1873</span>
-<span class="normal">1874</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1874</span>
 <span class="normal">1875</span>
 <span class="normal">1876</span>
 <span class="normal">1877</span>
 <span class="normal">1878</span>
 <span class="normal">1879</span>
-<span class="normal">1880</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">1880</span>
+<span class="normal">1881</span>
+<span class="normal">1882</span>
+<span class="normal">1883</span>
+<span class="normal">1884</span>
+<span class="normal">1885</span>
+<span class="normal">1886</span>
+<span class="normal">1887</span>
+<span class="normal">1888</span>
+<span class="normal">1889</span>
+<span class="normal">1890</span>
+<span class="normal">1891</span>
+<span class="normal">1892</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a project file, replacing the current project state.</span>
 
 <span class="sd">    :param path: the project file; defaults to this project&#39;s own `path_json`.</span>
@@ -33201,19 +33258,7 @@ can tell a successful save from a failed one.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1890</span>
-<span class="normal">1891</span>
-<span class="normal">1892</span>
-<span class="normal">1893</span>
-<span class="normal">1894</span>
-<span class="normal">1895</span>
-<span class="normal">1896</span>
-<span class="normal">1897</span>
-<span class="normal">1898</span>
-<span class="normal">1899</span>
-<span class="normal">1900</span>
-<span class="normal">1901</span>
-<span class="normal">1902</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1902</span>
 <span class="normal">1903</span>
 <span class="normal">1904</span>
 <span class="normal">1905</span>
@@ -33230,7 +33275,19 @@ can tell a successful save from a failed one.</p>
 <span class="normal">1916</span>
 <span class="normal">1917</span>
 <span class="normal">1918</span>
-<span class="normal">1919</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_materials_not_in_model</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">1919</span>
+<span class="normal">1920</span>
+<span class="normal">1921</span>
+<span class="normal">1922</span>
+<span class="normal">1923</span>
+<span class="normal">1924</span>
+<span class="normal">1925</span>
+<span class="normal">1926</span>
+<span class="normal">1927</span>
+<span class="normal">1928</span>
+<span class="normal">1929</span>
+<span class="normal">1930</span>
+<span class="normal">1931</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_materials_not_in_model</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;As dict.&quot;&quot;&quot;</span>
     <span class="n">project_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">project_dict</span><span class="p">[</span><span class="s1">&#39;file_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FILE_FORMAT</span>
@@ -33285,19 +33342,7 @@ can tell a successful save from a failed one.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1975</span>
-<span class="normal">1976</span>
-<span class="normal">1977</span>
-<span class="normal">1978</span>
-<span class="normal">1979</span>
-<span class="normal">1980</span>
-<span class="normal">1981</span>
-<span class="normal">1982</span>
-<span class="normal">1983</span>
-<span class="normal">1984</span>
-<span class="normal">1985</span>
-<span class="normal">1986</span>
-<span class="normal">1987</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1987</span>
 <span class="normal">1988</span>
 <span class="normal">1989</span>
 <span class="normal">1990</span>
@@ -33335,7 +33380,19 @@ can tell a successful save from a failed one.</p>
 <span class="normal">2022</span>
 <span class="normal">2023</span>
 <span class="normal">2024</span>
-<span class="normal">2025</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="normal">2025</span>
+<span class="normal">2026</span>
+<span class="normal">2027</span>
+<span class="normal">2028</span>
+<span class="normal">2029</span>
+<span class="normal">2030</span>
+<span class="normal">2031</span>
+<span class="normal">2032</span>
+<span class="normal">2033</span>
+<span class="normal">2034</span>
+<span class="normal">2035</span>
+<span class="normal">2036</span>
+<span class="normal">2037</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;From dict.&quot;&quot;&quot;</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">project_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="c1"># Validate file format. v1 files were written by the legacy</span>
@@ -35393,19 +35450,7 @@ the mask are returned unchanged (callers drop them).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2121</span>
-<span class="normal">2122</span>
-<span class="normal">2123</span>
-<span class="normal">2124</span>
-<span class="normal">2125</span>
-<span class="normal">2126</span>
-<span class="normal">2127</span>
-<span class="normal">2128</span>
-<span class="normal">2129</span>
-<span class="normal">2130</span>
-<span class="normal">2131</span>
-<span class="normal">2132</span>
-<span class="normal">2133</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2133</span>
 <span class="normal">2134</span>
 <span class="normal">2135</span>
 <span class="normal">2136</span>
@@ -35429,7 +35474,19 @@ the mask are returned unchanged (callers drop them).</p>
 <span class="normal">2154</span>
 <span class="normal">2155</span>
 <span class="normal">2156</span>
-<span class="normal">2157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_unwrapped_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="normal">2157</span>
+<span class="normal">2158</span>
+<span class="normal">2159</span>
+<span class="normal">2160</span>
+<span class="normal">2161</span>
+<span class="normal">2162</span>
+<span class="normal">2163</span>
+<span class="normal">2164</span>
+<span class="normal">2165</span>
+<span class="normal">2166</span>
+<span class="normal">2167</span>
+<span class="normal">2168</span>
+<span class="normal">2169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_unwrapped_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make an angle profile continuous along z within each magnetic region.</span>
 
 <span class="sd">    The moment angle is periodic, so a profile that turns smoothly from 359° to</span>
@@ -35491,9 +35548,9 @@ the mask are returned unchanged (callers drop them).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2160</span>
-<span class="normal">2161</span>
-<span class="normal">2162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_has_both_nsf_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PolarizationChannel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2172</span>
+<span class="normal">2173</span>
+<span class="normal">2174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_has_both_nsf_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PolarizationChannel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether both non-spin-flip channels (pp, mm) — the pair spin asymmetry needs — are present.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PolarizationChannel</span><span class="o">.</span><span class="n">PP</span> <span class="ow">in</span> <span class="n">channels</span> <span class="ow">and</span> <span class="n">PolarizationChannel</span><span class="o">.</span><span class="n">MM</span> <span class="ow">in</span> <span class="n">channels</span>
 </code></pre></div></td></tr></table></div>
@@ -35552,19 +35609,7 @@ values are not finite, or it visits the same q twice.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2165</span>
-<span class="normal">2166</span>
-<span class="normal">2167</span>
-<span class="normal">2168</span>
-<span class="normal">2169</span>
-<span class="normal">2170</span>
-<span class="normal">2171</span>
-<span class="normal">2172</span>
-<span class="normal">2173</span>
-<span class="normal">2174</span>
-<span class="normal">2175</span>
-<span class="normal">2176</span>
-<span class="normal">2177</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2177</span>
 <span class="normal">2178</span>
 <span class="normal">2179</span>
 <span class="normal">2180</span>
@@ -35601,7 +35646,19 @@ values are not finite, or it visits the same q twice.</p>
 <span class="normal">2211</span>
 <span class="normal">2212</span>
 <span class="normal">2213</span>
-<span class="normal">2214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_ordered_channel_arrays</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet1D</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="normal">2214</span>
+<span class="normal">2215</span>
+<span class="normal">2216</span>
+<span class="normal">2217</span>
+<span class="normal">2218</span>
+<span class="normal">2219</span>
+<span class="normal">2220</span>
+<span class="normal">2221</span>
+<span class="normal">2222</span>
+<span class="normal">2223</span>
+<span class="normal">2224</span>
+<span class="normal">2225</span>
+<span class="normal">2226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_ordered_channel_arrays</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet1D</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A channel&#39;s (q, reflectivity, variance) arrays, ordered and checked.</span>
 
 <span class="sd">    Spin asymmetry pairs two channels point by point and interpolates one onto</span>
@@ -35681,24 +35738,24 @@ the midpoint of two equal variances.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2217</span>
-<span class="normal">2218</span>
-<span class="normal">2219</span>
-<span class="normal">2220</span>
-<span class="normal">2221</span>
-<span class="normal">2222</span>
-<span class="normal">2223</span>
-<span class="normal">2224</span>
-<span class="normal">2225</span>
-<span class="normal">2226</span>
-<span class="normal">2227</span>
-<span class="normal">2228</span>
-<span class="normal">2229</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2229</span>
 <span class="normal">2230</span>
 <span class="normal">2231</span>
 <span class="normal">2232</span>
 <span class="normal">2233</span>
-<span class="normal">2234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_with_variance</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">q_source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">variances</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="normal">2234</span>
+<span class="normal">2235</span>
+<span class="normal">2236</span>
+<span class="normal">2237</span>
+<span class="normal">2238</span>
+<span class="normal">2239</span>
+<span class="normal">2240</span>
+<span class="normal">2241</span>
+<span class="normal">2242</span>
+<span class="normal">2243</span>
+<span class="normal">2244</span>
+<span class="normal">2245</span>
+<span class="normal">2246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_with_variance</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">q_source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">variances</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear interpolation of values and their variances onto `q`.</span>
 
 <span class="sd">    Values use the linear weights (1−t, t); variances use their **squares**,</span>
@@ -35859,19 +35916,7 @@ points to keep, and a dict counting the dropped ones by reason.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2237</span>
-<span class="normal">2238</span>
-<span class="normal">2239</span>
-<span class="normal">2240</span>
-<span class="normal">2241</span>
-<span class="normal">2242</span>
-<span class="normal">2243</span>
-<span class="normal">2244</span>
-<span class="normal">2245</span>
-<span class="normal">2246</span>
-<span class="normal">2247</span>
-<span class="normal">2248</span>
-<span class="normal">2249</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2249</span>
 <span class="normal">2250</span>
 <span class="normal">2251</span>
 <span class="normal">2252</span>
@@ -35927,7 +35972,19 @@ points to keep, and a dict counting the dropped ones by reason.</p>
 <span class="normal">2302</span>
 <span class="normal">2303</span>
 <span class="normal">2304</span>
-<span class="normal">2305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_spin_asymmetry</span><span class="p">(</span>
+<span class="normal">2305</span>
+<span class="normal">2306</span>
+<span class="normal">2307</span>
+<span class="normal">2308</span>
+<span class="normal">2309</span>
+<span class="normal">2310</span>
+<span class="normal">2311</span>
+<span class="normal">2312</span>
+<span class="normal">2313</span>
+<span class="normal">2314</span>
+<span class="normal">2315</span>
+<span class="normal">2316</span>
+<span class="normal">2317</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_spin_asymmetry</span><span class="p">(</span>
     <span class="n">r_pp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">r_mm</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">var_pp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
