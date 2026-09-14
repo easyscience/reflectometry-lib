@@ -348,11 +348,31 @@ class TestProject:
         models = ModelCollection(model)
         project.models = models
 
-        # Then
-        project.remove_material(0)
+        # Then Expect
+        with pytest.raises(ValueError, match='is used in models'):
+            project.remove_material(0)
 
-        # Expect
         assert len(project._materials) == 2
+
+    def test_add_material_already_present(self):
+        # When
+        project = Project()
+        material = Material()
+        project.add_material(material)
+
+        # Then Expect
+        with pytest.raises(ValueError, match='already in the material collection'):
+            project.add_material(material)
+
+        assert len(project._materials) == 1
+
+    def test_remove_material_out_of_range(self):
+        # When
+        project = Project()
+
+        # Then Expect
+        with pytest.raises(IndexError):
+            project.remove_material(0)
 
     def test_default_info(self):
         # When

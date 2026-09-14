@@ -1755,19 +1755,31 @@ class Project:
         self._current_assembly_index = 0
         self._current_layer_index = 0
 
-    def add_material(self, material: MaterialCollection) -> None:
-        """Add material."""
+    def add_material(self, material: Material) -> None:
+        """Add a material to the project material collection.
+
+        :param material: the material to add.
+        :raises ValueError: if the material is already in the collection. The collection is
+            left untouched in that case, so a caller cannot mistake a refused add for a
+            successful one.
+        """
         if material in self._materials:
-            print(f'WARNING: Material {material} is already in material collection')
-        else:
-            self._materials.append(material)
+            raise ValueError(f'Material {material.name} is already in the material collection.')
+        self._materials.append(material)
 
     def remove_material(self, index: int) -> None:
-        """Remove material."""
-        if self._materials[index] in self._get_materials_in_models():
-            print(f'ERROR: Material {self._materials[index]} is used in models')
-        else:
-            self._materials.pop(index)
+        """Remove the material at *index* from the project material collection.
+
+        :param index: position of the material in the collection.
+        :raises IndexError: if there is no material at *index*.
+        :raises ValueError: if the material is used by one of the models. Removing it would
+            leave the model referring to a material the project no longer holds, so the
+            collection is left untouched.
+        """
+        material = self._materials[index]
+        if material in self._get_materials_in_models():
+            raise ValueError(f'Material {material.name} is used in models and cannot be removed.')
+        self._materials.pop(index)
 
     def _default_info(self):
         """Default info."""
