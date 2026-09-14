@@ -31,6 +31,7 @@
   not only when the experiment carries x-uncertainties. Previously an
   experiment with `xe` set to `None` saved without them and the project
   then failed to load.
+
 ## Models
 
 - `ModelCollection(interface=...)` with no models now builds its default
