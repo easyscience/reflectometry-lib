@@ -2,182 +2,182 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/bayesian/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/calculators/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/constraints/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/data/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/fitting/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/inequality_constraints/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/limits/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/model/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/orso/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/plot/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/project/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/sample/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/summary/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/assemblies/gradient_layer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/assemblies/multilayer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/assemblies/repeating_multilayer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/assemblies/surfactant_layer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/layer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/layer_area_per_molecule/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/layer_magnetism/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/material/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/material_density/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/material_mixture/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/api-reference/elements/material_solvated/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/installation-and-setup/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/introduction/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/advancedfitting/bayesian_bumps/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/advancedfitting/constraints/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/advancedfitting/multi_contrast/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/advancedfitting/polarized_fitting/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/basic/assemblies_library/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/basic/layer_library/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/basic/material_library/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/basic/model/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/fitting/material_solvated/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/fitting/monolayer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/fitting/repeating/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/fitting/simple_fitting/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/simulation/bilayer/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/simulation/magnetism/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/tutorials/simulation/resolution_functions/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
     <url>
          <loc>https://easyscience.github.io/reflectometry-lib/dev/user-guide/</loc>
-         <lastmod>2026-09-11</lastmod>
+         <lastmod>2026-09-14</lastmod>
     </url>
 </urlset>
