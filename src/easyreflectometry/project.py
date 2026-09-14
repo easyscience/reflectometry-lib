@@ -1944,8 +1944,8 @@ class Project:
             ]
             if experiment.xe is not None:
                 project_dict['experiments'][key].append(list(experiment.xe))
-                project_dict['experiments_models'][key] = experiment.model.name
-                project_dict['experiments_names'][key] = experiment.name
+            project_dict['experiments_models'][key] = experiment.model.name
+            project_dict['experiments_names'][key] = experiment.name
 
     @staticmethod
     def _as_dict_add_polarized_experiment(project_dict: dict, key: int, experiment: PolarizedDataSet) -> None:
@@ -2068,7 +2068,7 @@ class Project:
                 x=raw[0],
                 y=raw[1],
                 ye=raw[2],
-                xe=raw[3],
+                xe=raw[3] if len(raw) > 3 else None,
                 model=self._models[project_dict['experiments_models'][key]],
                 auto_background=False,
             )

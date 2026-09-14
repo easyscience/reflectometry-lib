@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
-Comprehensive tests for measurement and data store functionality.
+Comprehensive tests for measurement and DataSet1D functionality.
 Tests for all functions in measurement.py and data_store.py modules.
 """
 
@@ -18,8 +18,6 @@ from numpy.testing import assert_array_equal
 
 import easyreflectometry
 from easyreflectometry.data.data_store import DataSet1D
-from easyreflectometry.data.data_store import DataStore
-from easyreflectometry.data.data_store import ProjectData
 from easyreflectometry.data.measurement import _load_txt
 from easyreflectometry.data.measurement import dataset_from_datagroup
 from easyreflectometry.data.measurement import load
@@ -223,135 +221,27 @@ class TestDataSet1DComprehensive:
         assert str(dataset) == expected
 
 
-class TestDataStoreComprehensive:
-    """Comprehensive tests for DataStore class."""
-
-    def test_datastore_as_sequence(self):
-        """Test DataStore behaves like a sequence."""
-        item1 = DataSet1D(name='item1', x=[1], y=[2])
-        item2 = DataSet1D(name='item2', x=[3], y=[4])
-
-        store = DataStore(item1, item2, name='TestStore')
-
-        # Test sequence operations
-        assert len(store) == 2
-        assert store[0].name == 'item1'
-        assert store[1].name == 'item2'
-
-        # Test item replacement
-        item3 = DataSet1D(name='item3', x=[5], y=[6])
-        store[0] = item3
-        assert store[0].name == 'item3'
-
-        # Test deletion
-        del store[0]
-        assert len(store) == 1
-        assert store[0].name == 'item2'
-
-    def test_datastore_experiments_and_simulations_filtering(self):
-        """Test experiments and simulations properties
-        filter correctly."""
-        exp1 = DataSet1D(name='exp1', x=[1], y=[2], model=Mock())
-        exp2 = DataSet1D(name='exp2', x=[3], y=[4], model=Mock())
-        sim1 = DataSet1D(name='sim1', x=[5], y=[6])
-        sim2 = DataSet1D(name='sim2', x=[7], y=[8])
-
-        store = DataStore(exp1, sim1, exp2, sim2)
-
-        experiments = store.experiments
-        simulations = store.simulations
-
-        assert len(experiments) == 2
-        assert len(simulations) == 2
-        assert all(item.is_experiment for item in experiments)
-        assert all(item.is_simulation for item in simulations)
-
-    def test_datastore_append_method(self):
-        """Test append method adds items correctly."""
-        store = DataStore()
-        item = DataSet1D(name='new_item', x=[1], y=[2])
-
-        store.append(item)
-
-        assert len(store) == 1
-        assert store[0] == item
-
-
-class TestProjectDataComprehensive:
-    """Comprehensive tests for ProjectData class."""
-
-    def test_project_data_initialization(self):
-        """Test ProjectData initializes with correct
-        default values."""
-        project = ProjectData()
-
-        assert project.name == 'DataStore'
-        assert isinstance(project.exp_data, DataStore)
-        assert isinstance(project.sim_data, DataStore)
-        assert project.exp_data.name == 'Exp Datastore'
-        assert project.sim_data.name == 'Sim Datastore'
-
-    def test_project_data_with_custom_stores(self):
-        """Test ProjectData with custom experiment and
-        simulation stores."""
-        custom_exp = DataStore(name='CustomExp')
-        custom_sim = DataStore(name='CustomSim')
-
-        project = ProjectData(name='MyProject', exp_data=custom_exp, sim_data=custom_sim)
-
-        assert project.name == 'MyProject'
-        assert project.exp_data == custom_exp
-        assert project.sim_data == custom_sim
-
-    def test_project_data_stores_independence(self):
-        """Test that exp_data and sim_data are independent stores."""
-        project = ProjectData()
-
-        exp_item = DataSet1D(name='exp', x=[1], y=[2], model=Mock())
-        sim_item = DataSet1D(name='sim', x=[3], y=[4])
-
-        project.exp_data.append(exp_item)
-        project.sim_data.append(sim_item)
-
-        assert len(project.exp_data) == 1
-        assert len(project.sim_data) == 1
-        assert project.exp_data[0] != project.sim_data[0]
-
-
 class TestIntegrationScenarios:
     """Integration tests for common usage scenarios."""
 
     def test_complete_workflow_orso_file(self):
-        """Test complete workflow: load ORSO file
-        -> create dataset -> store in project."""
-        # Load file
+        """Test complete workflow: load ORSO file -> create dataset."""
         fpath = os.path.join(PATH_STATIC, 'test_example1.ort')
         dataset = load_as_dataset(fpath)
 
-        # Create project and add to experimental data
-        project = ProjectData(name='MyAnalysis')
-        project.exp_data.append(dataset)
-
-        # Verify workflow
-        assert len(project.exp_data) == 1
-        assert project.exp_data[0] == dataset
-        assert isinstance(project.exp_data[0], DataSet1D)
+        assert isinstance(dataset, DataSet1D)
+        assert len(dataset.x) > 0
+        assert len(dataset.x) == len(dataset.y) == len(dataset.ye)
 
     def test_complete_workflow_txt_file(self):
-        """Test complete workflow: load txt file ->
-        create dataset -> store in project."""
-        # Load file
+        """Test complete workflow: load txt file -> create dataset (no model)."""
         fpath = os.path.join(PATH_STATIC, 'ref_concat_1.txt')
         dataset = load_as_dataset(fpath)
 
-        # Create project and add to simulation data (no model)
-        project = ProjectData(name='MySimulation')
-        project.sim_data.append(dataset)
-
-        # Verify workflow
-        assert len(project.sim_data) == 1
-        assert project.sim_data[0] == dataset
+        assert isinstance(dataset, DataSet1D)
+        assert dataset.model is None
         assert dataset.is_simulation is True
+        assert dataset.is_experiment is False
 
     def test_merge_multiple_files_workflow(self):
         """Test workflow for merging multiple data files."""
@@ -376,12 +266,6 @@ class TestIntegrationScenarios:
         with pytest.raises(ValueError, match='x and y must be the same length'):
             DataSet1D(x=[1, 2, 3], y=[4, 5])
 
-        # Test empty DataStore operations
-        empty_store = DataStore()
-        assert len(empty_store) == 0
-        assert len(empty_store.experiments) == 0
-        assert len(empty_store.simulations) == 0
-
         # Test file not found
         with pytest.raises(FileNotFoundError):
             _load_txt('nonexistent_file.txt')
@@ -393,17 +277,11 @@ class TestIntegrationScenarios:
         original_y = [10, 20, 30, 40]
         dataset = DataSet1D(x=original_x, y=original_y)
 
-        # Store in datastore
-        store = DataStore(dataset)
-
-        # Add to project
-        project = ProjectData()
-        project.sim_data = store
-
-        # Verify data consistency
-        retrieved_dataset = project.sim_data[0]
-        assert_array_equal(retrieved_dataset.x, np.array(original_x))
-        assert_array_equal(retrieved_dataset.y, np.array(original_y))
+        # Verify the input lists are copied into arrays and remain consistent
+        assert_array_equal(dataset.x, np.array(original_x))
+        assert_array_equal(dataset.y, np.array(original_y))
+        assert_array_equal(dataset.ye, np.zeros(len(original_x)))
+        assert_array_equal(dataset.xe, np.zeros(len(original_x)))
 
 
 if __name__ == '__main__':

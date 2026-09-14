@@ -547,6 +547,33 @@ class TestProject:
             assert project_dict[key] == new_project_dict[key]
         assert project_materials_dict == new_project_materials_dict
 
+    def test_dict_round_trip_experiment_without_xe(self):
+        # When - an experiment whose x-uncertainty was explicitly cleared
+        global_object.map._clear()
+        project = Project()
+        project.models = ModelCollection(Model(name='First'), Model(name='Second'))
+        fpath = os.path.join(PATH_STATIC, 'example.ort')
+        project.load_experiment_for_model_at_index(fpath, 1)
+        project.experiments[1].xe = None
+        project_dict = project.as_dict()
+
+        # Expect - name and model are recorded regardless of xe
+        assert project_dict['experiments_names'][1] == 'Example data file from refnx docs'
+        assert project_dict['experiments_models'][1] == project.models[1].name
+        assert len(project_dict['experiments'][1]) == 3
+
+        # Then - the project loads back with the experiment attached to the same model
+        global_object.map._clear()
+        new_project = Project()
+        new_project.from_dict(project_dict)
+
+        assert list(new_project.experiments.keys()) == [1]
+        assert new_project.experiments[1].name == 'Example data file from refnx docs'
+        assert new_project.experiments[1].model == new_project.models[1]
+        assert_allclose(new_project.experiments[1].x, project.experiments[1].x)
+        assert_allclose(new_project.experiments[1].y, project.experiments[1].y)
+        assert_allclose(new_project.experiments[1].ye, project.experiments[1].ye)
+
     def test_save_as_json(self, tmp_path):
         # When
         global_object.map._clear()

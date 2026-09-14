@@ -18,6 +18,20 @@
   there is no file at the path. Scripts that relied on these calls
   silently continuing must catch the exceptions.
 
+## Data containers
+
+- Removed the unused `DataStore` and `ProjectData` classes from
+  `easyreflectometry.data`. Their `as_dict`/`from_dict` methods had
+  never worked (the former raised a `TypeError`, the latter recursed
+  into a `KeyError`) and nothing in the library, the GUI or the docs
+  used them; `Project` keeps experiments in its own dictionary. Code
+  that imported `ProjectData` from `easyreflectometry.data` must switch
+  to `Project`.
+- `Project.as_dict` now always records an experiment's name and model,
+  not only when the experiment carries x-uncertainties. Previously an
+  experiment with `xe` set to `None` saved without them and the project
+  then failed to load.
+
 ## Models
 
 - `ModelCollection(interface=...)` with no models now builds its default

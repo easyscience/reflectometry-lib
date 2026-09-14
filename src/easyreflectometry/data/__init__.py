@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from .data_store import DataSet1D
-from .data_store import ProjectData
 from .measurement import dataset_from_datagroup
 from .measurement import load
 from .measurement import load_as_dataset
@@ -17,7 +16,6 @@ __all__ = [
     'load_as_dataset',
     'dataset_from_datagroup',
     'merge_datagroups',
-    'ProjectData',
     'DataSet1D',
     'PolarizedDataSet',
     'channel_from_orso_polarization',
