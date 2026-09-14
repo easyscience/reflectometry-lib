@@ -31,6 +31,13 @@
   not only when the experiment carries x-uncertainties. Previously an
   experiment with `xe` set to `None` saved without them and the project
   then failed to load.
+## Models
+
+- `ModelCollection(interface=...)` with no models now builds its default
+  model correctly. The default was passing the calculator interface
+  positionally into `Model`, where it landed as the `sample` argument,
+  so constructing a collection with a real calculator and no models
+  failed.
 
 ## Parameter constraints
 

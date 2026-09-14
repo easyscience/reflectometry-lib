@@ -3,9 +3,11 @@
 
 from easyscience import global_object
 
+from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.model.model import COLORS
 from easyreflectometry.model.model import Model
 from easyreflectometry.model.model_collection import ModelCollection
+from easyreflectometry.sample import Sample
 
 
 class TestModelCollection:
@@ -18,6 +20,17 @@ class TestModelCollection:
         assert collection.interface is None
         assert len(collection) == 1
         assert collection[0].name == 'Model'
+
+    def test_default_with_real_interface(self):
+        # When - the default model is built with an actual calculator interface
+        interface = CalculatorFactory()
+        collection = ModelCollection(interface=interface)
+
+        # Expect - the interface lands on the model as interface, not as sample
+        assert len(collection) == 1
+        assert isinstance(collection[0].sample, Sample)
+        assert collection[0].interface is interface
+        assert collection.interface is interface
 
     def test_dont_populate(self):
         p = ModelCollection(populate_if_none=False)
