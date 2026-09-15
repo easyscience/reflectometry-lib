@@ -100,6 +100,53 @@ DEFAULT_MINIMIZER = AvailableMinimizers.LMFit_leastsq
 _PATH_SKIPPED_PROPERTIES = frozenset({'interface', 'parent', 'front_layer', 'back_layer', 'head_layer', 'tail_layer'})
 
 
+def magnetic_vector_for_layer(magnetism) -> Dict[str, float]:
+    """The in-plane moment of a :class:`LayerMagnetism`.
+
+    refl1d measures ``theta_m`` from the beam direction, with
+    :data:`GUIDE_FIELD_ANGLE` pointing along the guide field H; publications
+    quote the angle *from H*, and that is what an arrow draws. refl1d also
+    allows a negative ``rho_m``, which is the same physical moment reversed, so
+    the parameter angle and the direction the moment actually points are two
+    different things and both are reported:
+
+    - ``phi_param``: angle from H of the parameter as written, sign ignored;
+    - ``phi``: direction the moment physically points (``phi_param`` turned by
+      180 degrees when ``rho_m`` is negative) - what every arrow draws;
+    - ``m``: ``abs(rho_m)``, the physical magnitude;
+    - ``m_par`` / ``m_perp``: the components the non-spin-flip and spin-flip
+      channels see.
+
+    ``rho_m`` and ``theta_m`` are passed through so a tooltip can show the
+    signed parameters the user edits next to the direction drawn.
+
+    All angles are in degrees.
+    """
+    rho_m = float(magnetism.rho_m.value)
+    theta_m = float(magnetism.theta_m.value)
+    phi_param = (theta_m - GUIDE_FIELD_ANGLE) % 360.0
+    phi = phi_param if rho_m >= 0 else (phi_param + 180.0) % 360.0
+    return {
+        'rho_m': rho_m,
+        'theta_m': theta_m,
+        'phi_param': phi_param,
+        'phi': phi,
+        'm': abs(rho_m),
+        'm_par': rho_m * np.cos(np.radians(phi_param)),
+        'm_perp': rho_m * np.sin(np.radians(phi_param)),
+    }
+
+
+def _expanded_layers(sample) -> List:
+    """Every layer refl1d renders for a sample, in stack order, repeats expanded."""
+    layers = []
+    for assembly in sample:
+        repetitions = getattr(assembly, 'repetitions', None)
+        for _ in range(1 if repetitions is None else int(repetitions.value)):
+            layers.extend(assembly.layers)
+    return layers
+
+
 def _weak_constraints_provider(project: 'Project'):
     project_ref = weakref.ref(project)
 
@@ -1374,6 +1421,74 @@ class Project:
             'spin_up': DataSet1D(name=f'Spin-up potential for Model {index}', x=z, y=sld + projection),
             'spin_down': DataSet1D(name=f'Spin-down potential for Model {index}', x=z, y=sld - projection),
         }
+
+    def magnetic_layer_markers_for_model_at_index(self, index: int = 0) -> List[Dict[str, Union[str, float, bool]]]:
+        """Where each magnetic layer sits in the depth profile, and which way its moment points.
+
+        One entry per magnetic layer of the model, in stack order (superphase
+        first, repeats expanded), carrying the layer ``label``, its depth extent
+        ``z_min``/``z_max``/``z_center``, ``has_moment`` (see below) and every
+        key of :func:`magnetic_vector_for_layer`. Non-magnetic layers are left
+        out: they carry no direction to draw.
+
+        The depths are in the z frame of
+        :meth:`magnetic_sld_data_for_model_at_index`, which is **not** thickness
+        accumulated from zero. That profile is refl1d's, reversed, and refl1d
+        pads it by a roughness-dependent (and asymmetric) amount before the
+        first interface and after the last, so a marker placed by naive
+        cumulative thickness would sit a padding-width away from the curve it
+        annotates. The stack is anchored to the profile's own z range instead:
+        the reversal maps a refl1d depth ``p`` to ``z[0] + z[-1] - p``, the
+        topmost interface is at ``p = total film thickness``, and the
+        semi-infinite superphase/substrate (whose slab widths refl1d zeroes) are
+        clamped to the ends of the range.
+
+        ``has_moment`` is False for a magnetic layer whose ``abs(rho_m)`` is
+        below :data:`MAGNETIC_MOMENT_FLOOR_FRACTION` of the largest one in the
+        model - the direction of a zero-length vector is meaningless, so a view
+        marks it as "magnetic, no moment" rather than pointing somewhere. It is
+        the same floor that restricts the reported theta_m profile, so a layer
+        never shows a direction while its angle curve is hidden.
+
+        Raises
+        ------
+        ValueError
+            The model has no magnetic layer.
+        """
+        # Raises for a non-magnetic model, and gives the z frame to anchor to.
+        profile_z = self.magnetic_sld_data_for_model_at_index(index)['rho_m'].x
+        layers = _expanded_layers(self.models[index].sample)
+        if not layers or profile_z.size == 0:
+            return []
+
+        widths = [float(layer.thickness.value) for layer in layers]
+        # refl1d zeroes the semi-infinite caps (`Microslabs._set_z_range`), so
+        # the film is everything between them.
+        widths[0] = widths[-1] = 0.0
+        z_first, z_last = float(profile_z[0]), float(profile_z[-1])
+        edges = z_first + z_last - sum(widths) + np.cumsum([0.0] + widths)
+
+        markers = []
+        for position, layer in enumerate(layers):
+            magnetism = getattr(layer, 'magnetism', None)
+            if magnetism is None:
+                continue
+            z_min = z_first if position == 0 else edges[position]
+            z_max = z_last if position == len(layers) - 1 else edges[position + 1]
+            z_min = float(np.clip(z_min, z_first, z_last))
+            z_max = float(np.clip(z_max, z_first, z_last))
+            markers.append({
+                'label': layer.name,
+                'z_min': z_min,
+                'z_max': z_max,
+                'z_center': 0.5 * (z_min + z_max),
+                **magnetic_vector_for_layer(magnetism),
+            })
+
+        floor = MAGNETIC_MOMENT_FLOOR_FRACTION * max((marker['m'] for marker in markers), default=0.0)
+        for marker in markers:
+            marker['has_moment'] = marker['m'] > floor
+        return markers
 
     def sample_data_for_model_at_index(self, index: int = 0, q_range: Optional[np.array] = None) -> DataSet1D:
         """Sample data for model at index."""
