@@ -3,10 +3,12 @@
 
 
 import os
+import tempfile
 import unittest
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 from numpy.testing import assert_almost_equal
 from orsopy.fileio import Header
 from orsopy.fileio import load_orso
@@ -41,8 +43,10 @@ class TestData(unittest.TestCase):
         coords_name = 'Qz_test_example1'
         assert_almost_equal(er_data['data'][data_name].values, n_data[:, 1])
         assert_almost_equal(er_data['coords'][coords_name].values, n_data[:, 0])
-        assert_almost_equal(er_data['data'][data_name].variances, np.square(n_data[:, 2]))
-        assert_almost_equal(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]))
+        # Relative tolerance: the resolution variances are ~1e-9, well inside the default
+        # absolute tolerance of assert_almost_equal, which would accept zeros here.
+        assert_allclose(er_data['data'][data_name].variances, np.square(n_data[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]), rtol=1e-12, atol=0)
 
     def test_load_with_txt_extra_columns(self):
         """Columns beyond the leading Qz, R, sR, sQz are ignored, not an error."""
@@ -53,8 +57,39 @@ class TestData(unittest.TestCase):
         coords_name = 'Qz_ref_five_col'
         assert_almost_equal(er_data['data'][data_name].values, n_data[:, 1])
         assert_almost_equal(er_data['coords'][coords_name].values, n_data[:, 0])
-        assert_almost_equal(er_data['data'][data_name].variances, np.square(n_data[:, 2]))
-        assert_almost_equal(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]))
+        # Relative tolerance: the resolution variances are ~1e-9, well inside the default
+        # absolute tolerance of assert_almost_equal, which would accept zeros here.
+        assert_allclose(er_data['data'][data_name].variances, np.square(n_data[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]), rtol=1e-12, atol=0)
+
+    def test_load_with_txt_extra_columns_single_row(self):
+        """A single-row file stays two-dimensional, so the leading columns are still indexable."""
+        row = np.array([[1.03563296e-02, 3.88100068e00, 4.33909068e00, 5.17816478e-05, 5.0]])
+        with tempfile.TemporaryDirectory() as directory:
+            fpath = os.path.join(directory, 'single_row.txt')
+            np.savetxt(fpath, row)
+            er_data = load(fpath)
+
+        assert_allclose(er_data['data']['R_single_row'].values, row[:, 1], rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords']['Qz_single_row'].values, row[:, 0], rtol=1e-12, atol=0)
+        assert_allclose(er_data['data']['R_single_row'].variances, np.square(row[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords']['Qz_single_row'].variances, np.square(row[:, 3]), rtol=1e-12, atol=0)
+
+    def test_load_with_txt_extra_columns_comma_delimited(self):
+        """Extra columns are ignored for a comma-delimited file too, not only whitespace."""
+        rows = np.array([
+            [1.03563296e-02, 3.88100068e00, 4.33909068e00, 5.17816478e-05, 5.0],
+            [1.06717294e-02, 1.16430511e01, 8.89252719e00, 5.33586471e-05, 5.5],
+        ])
+        with tempfile.TemporaryDirectory() as directory:
+            fpath = os.path.join(directory, 'comma_five.txt')
+            np.savetxt(fpath, rows, delimiter=',')
+            er_data = load(fpath)
+
+        assert_allclose(er_data['data']['R_comma_five'].values, rows[:, 1], rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords']['Qz_comma_five'].values, rows[:, 0], rtol=1e-12, atol=0)
+        assert_allclose(er_data['data']['R_comma_five'].variances, np.square(rows[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords']['Qz_comma_five'].variances, np.square(rows[:, 3]), rtol=1e-12, atol=0)
 
     def test_load_with_txt_commas(self):
         fpath = os.path.join(PATH_STATIC, 'ref_concat_1.txt')
@@ -118,8 +153,10 @@ class TestData(unittest.TestCase):
         coords_name = 'Qz_test_example1'
         assert_almost_equal(er_data['data'][data_name].values, n_data[:, 1])
         assert_almost_equal(er_data['coords'][coords_name].values, n_data[:, 0])
-        assert_almost_equal(er_data['data'][data_name].variances, np.square(n_data[:, 2]))
-        assert_almost_equal(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]))
+        # Relative tolerance: the resolution variances are ~1e-9, well inside the default
+        # absolute tolerance of assert_almost_equal, which would accept zeros here.
+        assert_allclose(er_data['data'][data_name].variances, np.square(n_data[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]), rtol=1e-12, atol=0)
 
     def test_load_as_dataset_orso(self):
         fpath = os.path.join(PATH_STATIC, 'test_example1.ort')
@@ -212,17 +249,44 @@ class TestData(unittest.TestCase):
         assert set(merged['coords'].keys()) == all_coords_keys
 
     def test_merge_datagroups_shared_key_concatenates(self):
-        """Groups sharing a key are concatenated rather than overwritten."""
-        fpath = os.path.join(PATH_STATIC, 'test_example1.txt')
-        data_group = load(fpath)
+        """Groups sharing a key are concatenated, in argument order, keeping uncertainties.
 
-        merged = merge_datagroups(data_group, load(fpath))
+        The two groups hold different data and differ in length, so a reversed
+        concatenation, a dropped group, or lost variances all fail here; merging a
+        file with itself would detect none of them.
+        """
+        first = np.array([
+            [1.0e-02, 9.0e-01, 1.0e-02, 5.0e-05],
+            [2.0e-02, 8.0e-01, 2.0e-02, 6.0e-05],
+            [3.0e-02, 7.0e-01, 3.0e-02, 7.0e-05],
+        ])
+        second = np.array([[4.0e-02, 6.0e-01, 4.0e-02, 8.0e-05]])
+        # Same basename in two directories, so the two groups share their data and
+        # coordinate keys -- which is what sends the merge down the concatenating branch.
+        with tempfile.TemporaryDirectory() as directory:
+            first_path = os.path.join(directory, 'a', 'shared.txt')
+            second_path = os.path.join(directory, 'b', 'shared.txt')
+            for path, rows in ((first_path, first), (second_path, second)):
+                os.makedirs(os.path.dirname(path))
+                np.savetxt(path, rows)
+            group_one = load(first_path)
+            group_two = load(second_path)
 
-        data_name = 'R_test_example1'
-        coords_name = 'Qz_test_example1'
-        n_data = np.loadtxt(fpath)
-        assert_almost_equal(merged['data'][data_name].values, np.tile(n_data[:, 1], 2))
-        assert_almost_equal(merged['coords'][coords_name].values, np.tile(n_data[:, 0], 2))
+        merged = merge_datagroups(group_one, group_two)
+
+        data_name = 'R_shared'
+        coords_name = 'Qz_shared'
+        expected = np.concatenate([first, second])
+        merged_data = merged['data'][data_name]
+        merged_coords = merged['coords'][coords_name]
+
+        assert merged_data.dims == group_one['data'][data_name].dims
+        assert merged_coords.unit == group_one['coords'][coords_name].unit
+        assert len(merged_data.values) == len(first) + len(second)
+        assert_allclose(merged_data.values, expected[:, 1], rtol=1e-12, atol=0)
+        assert_allclose(merged_coords.values, expected[:, 0], rtol=1e-12, atol=0)
+        assert_allclose(merged_data.variances, np.square(expected[:, 2]), rtol=1e-12, atol=0)
+        assert_allclose(merged_coords.variances, np.square(expected[:, 3]), rtol=1e-12, atol=0)
 
     def test_merge_datagroups_with_attrs(self):
         fpath = os.path.join(PATH_STATIC, 'test_example1.ort')

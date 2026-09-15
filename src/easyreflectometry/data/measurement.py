@@ -23,6 +23,11 @@ def load(fname: Union[TextIO, str]) -> sc.DataGroup:
     to parse raises instead of being silently re-read as plain text (which
     would drop the entire header, including polarization).
 
+    For a plain text file the columns are read by position in the ORSO order
+    Qz, R, sR, sQz -- further numeric columns are ignored -- and the error
+    columns must hold **standard deviations**, not variances. See
+    :func:`_load_txt`.
+
     Parameters
     ----------
     fname : Union[TextIO, str]
@@ -119,10 +124,16 @@ def _load_txt(fname: Union[TextIO, str]) -> sc.DataGroup:
     """Load data from a simple txt file.
 
     Columns are read by position, following the ORSO order: Qz, R, sR, sQz.
-    Any further columns (e.g. wavelength) are ignored. The error columns are
-    taken to be **standard deviations** (sigma), matching the ORSO
-    specification, and are squared to obtain the stored variances; a file
-    carrying variances instead would be mis-scaled.
+    Any further **numeric** columns (e.g. wavelength) are ignored -- the whole
+    file is still parsed as numbers before the leading columns are taken, so a
+    trailing text column, or rows of differing width, remain an error.
+
+    The error columns are taken to be **standard deviations** (sigma), matching
+    the ORSO default, and are squared to obtain the stored variances; a file
+    carrying variances instead would be mis-scaled. Plain text carries no
+    convention marker, so this is a requirement on the caller and not something
+    the loader can check -- unlike an ORSO file, which declares ``value_is`` and
+    whose FWHM errors are converted to sigma on load.
 
     Parameters
     ----------
