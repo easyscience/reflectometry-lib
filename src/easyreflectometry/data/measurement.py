@@ -23,6 +23,11 @@ def load(fname: Union[TextIO, str]) -> sc.DataGroup:
     to parse raises instead of being silently re-read as plain text (which
     would drop the entire header, including polarization).
 
+    For a plain text file the columns are read by position in the ORSO order
+    Qz, R, sR, sQz -- further numeric columns are ignored -- and the error
+    columns must hold **standard deviations**, not variances. See
+    :func:`_load_txt`.
+
     Parameters
     ----------
     fname : Union[TextIO, str]
@@ -118,6 +123,18 @@ def extract_orso_title(data_group: sc.DataGroup, data_name: str) -> str | None:
 def _load_txt(fname: Union[TextIO, str]) -> sc.DataGroup:
     """Load data from a simple txt file.
 
+    Columns are read by position, following the ORSO order: Qz, R, sR, sQz.
+    Any further **numeric** columns (e.g. wavelength) are ignored -- the whole
+    file is still parsed as numbers before the leading columns are taken, so a
+    trailing text column, or rows of differing width, remain an error.
+
+    The error columns are taken to be **standard deviations** (sigma), matching
+    the ORSO default, and are squared to obtain the stored variances; a file
+    carrying variances instead would be mis-scaled. Plain text carries no
+    convention marker, so this is a requirement on the caller and not something
+    the loader can check -- unlike an ORSO file, which declares ``value_is`` and
+    whose FWHM errors are converted to sigma on load.
+
     Parameters
     ----------
     fname : Union[TextIO, str]
@@ -138,23 +155,19 @@ def _load_txt(fname: Union[TextIO, str]) -> sc.DataGroup:
     basename = os.path.splitext(os.path.basename(fname))[0]
 
     try:
-        # First load only the data to check column count
-        data = np.loadtxt(fname, delimiter=delimiter, comments='#')
-        if data.ndim == 1:
-            # Handle single row case
-            num_columns = len(data)
-        else:
-            num_columns = data.shape[1]
+        # ndmin=2 keeps a single-row file two-dimensional, so columns are indexable
+        data = np.loadtxt(fname, delimiter=delimiter, comments='#', ndmin=2)
+        num_columns = data.shape[1]
 
         # Verify minimum column requirement
         if num_columns < 3:
             raise ValueError(f'File must contain at least 3 columns (found {num_columns})')
 
-        # Now unpack the data based on column count
+        # Take the leading columns by position; any extra columns are ignored
         if num_columns >= 4:
-            x, y, e, xe = np.loadtxt(fname, delimiter=delimiter, comments='#', unpack=True)
+            x, y, e, xe = data[:, :4].T
         else:  # 3 columns
-            x, y, e = np.loadtxt(fname, delimiter=delimiter, comments='#', unpack=True)
+            x, y, e = data[:, :3].T
             xe = np.zeros_like(x)
 
     except (ValueError, IOError) as error:
@@ -186,13 +199,13 @@ def merge_datagroups(*data_groups: sc.DataGroup) -> sc.DataGroup:
             if key not in merged_data:
                 merged_data[key] = value
             else:
-                merged_data[key] = sc.concatenate([merged_data[key], value])
+                merged_data[key] = sc.concat([merged_data[key], value], dim=merged_data[key].dims[0])
 
         for key, value in group['coords'].items():
             if key not in merged_coords:
                 merged_coords[key] = value
             else:
-                merged_coords[key] = sc.concatenate([merged_coords[key], value])
+                merged_coords[key] = sc.concat([merged_coords[key], value], dim=merged_coords[key].dims[0])
 
         if 'attrs' not in group:
             continue
