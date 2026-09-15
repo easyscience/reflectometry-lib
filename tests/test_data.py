@@ -44,6 +44,18 @@ class TestData(unittest.TestCase):
         assert_almost_equal(er_data['data'][data_name].variances, np.square(n_data[:, 2]))
         assert_almost_equal(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]))
 
+    def test_load_with_txt_extra_columns(self):
+        """Columns beyond the leading Qz, R, sR, sQz are ignored, not an error."""
+        fpath = os.path.join(PATH_STATIC, 'ref_five_col.txt')
+        er_data = load(fpath)
+        n_data = np.loadtxt(fpath)
+        data_name = 'R_ref_five_col'
+        coords_name = 'Qz_ref_five_col'
+        assert_almost_equal(er_data['data'][data_name].values, n_data[:, 1])
+        assert_almost_equal(er_data['coords'][coords_name].values, n_data[:, 0])
+        assert_almost_equal(er_data['data'][data_name].variances, np.square(n_data[:, 2]))
+        assert_almost_equal(er_data['coords'][coords_name].variances, np.square(n_data[:, 3]))
+
     def test_load_with_txt_commas(self):
         fpath = os.path.join(PATH_STATIC, 'ref_concat_1.txt')
         er_data = load(fpath)
@@ -198,6 +210,19 @@ class TestData(unittest.TestCase):
 
         assert set(merged['data'].keys()) == all_data_keys
         assert set(merged['coords'].keys()) == all_coords_keys
+
+    def test_merge_datagroups_shared_key_concatenates(self):
+        """Groups sharing a key are concatenated rather than overwritten."""
+        fpath = os.path.join(PATH_STATIC, 'test_example1.txt')
+        data_group = load(fpath)
+
+        merged = merge_datagroups(data_group, load(fpath))
+
+        data_name = 'R_test_example1'
+        coords_name = 'Qz_test_example1'
+        n_data = np.loadtxt(fpath)
+        assert_almost_equal(merged['data'][data_name].values, np.tile(n_data[:, 1], 2))
+        assert_almost_equal(merged['coords'][coords_name].values, np.tile(n_data[:, 0], 2))
 
     def test_merge_datagroups_with_attrs(self):
         fpath = os.path.join(PATH_STATIC, 'test_example1.ort')
