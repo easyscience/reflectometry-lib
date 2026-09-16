@@ -132,8 +132,8 @@ def magnetic_vector_for_layer(magnetism) -> Dict[str, float]:
         'phi_param': phi_param,
         'phi': phi,
         'm': abs(rho_m),
-        'm_par': rho_m * np.cos(np.radians(phi_param)),
-        'm_perp': rho_m * np.sin(np.radians(phi_param)),
+        'm_par': float(rho_m * np.cos(np.radians(phi_param))),
+        'm_perp': float(rho_m * np.sin(np.radians(phi_param))),
     }
 
 
