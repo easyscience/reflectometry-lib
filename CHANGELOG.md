@@ -1,4 +1,4 @@
-# Unreleased
+# Version 1.8.0 (18 Sept 2026)
 
 ## Project persistence
 
