@@ -23,7 +23,7 @@ classifiers = [
 ]
 requires-python = '>=3.11'
 dependencies = [
-  'easyscience<=1.8',
+  'easyscience>=2.5.1,<3',
   'scipp',
   'refnx',
   'refl1d>=1.0.0',
