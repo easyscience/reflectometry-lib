@@ -1124,7 +1124,11 @@ def _save_parameter_state(model) -> dict:
     """
     state = {}
     for param in model.get_parameters():
-        state[param.unique_name] = (param.value, param.error)
+        # Dependent parameters (constraints, `Model.total_thickness`) are derived
+        # from the others: they cannot be written back, and restoring the
+        # parameters they follow already restores them.
+        if param.independent:
+            state[param.unique_name] = (param.value, param.error)
     return state
 
 

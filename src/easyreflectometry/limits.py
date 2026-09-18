@@ -17,14 +17,15 @@ def apply_default_limits(parameter: Parameter, kind: str) -> None:
     parameter : Parameter
         The parameter to adjust.
     kind : str
-        One of 'thickness', 'roughness', 'sld', 'isld', 'scale'.
+        One of 'thickness', 'roughness', 'sld', 'isld', 'rho_m', 'scale'.
     """
     if not parameter.independent:
         return
 
     if kind in ('thickness', 'roughness'):
         _apply_percentage_limits(parameter)
-    elif kind in ('sld', 'isld'):
+    elif kind in ('sld', 'isld', 'rho_m'):
+        # A magnetic SLD is an SLD: same physical scale, same default window.
         _apply_fixed_limits(parameter, *SLD_LIMITS)
     elif kind == 'scale':
         _apply_fixed_limits(parameter, *SCALE_LIMITS)

@@ -105,14 +105,30 @@ class TestApplyResolutionFunction:
 
 class TestLoadOrsoFile:
     def test_load_orso_file_creates_model_and_experiment(self, project: Project):
-        with pytest.warns(UserWarning):
+        # example.ort has no sample.model -> default model; deprecated wrapper
+        # now goes through the DataSet1D + title + resolution path.
+        with pytest.warns((UserWarning, DeprecationWarning)):
             project.load_orso_file(os.path.join(PATH_STATIC, 'example.ort'))
 
         assert len(project.models) == 1
         assert len(project.experiments) == 1
-        assert project.experiments[0].name == 'Experiment from ORSO'
+        assert isinstance(project.experiments[0], DataSet1D)
+        assert project.experiments[0].name == 'Example data file from refnx docs'
         assert project.experiments[0].model is project.models[0]
         assert project._with_experiments is True
+
+    def test_load_orso_file_with_model_builds_sample_from_file(self, project: Project):
+        # Ni_example.ort carries a sample.model -> the model comes from the file.
+        with pytest.warns(DeprecationWarning):
+            project.load_orso_file(os.path.join(PATH_STATIC, 'Ni_example.ort'))
+
+        assert len(project.models) == 1
+        assert project.models[0].sample.name == 'Ni on Si'
+        assert len(project.experiments) == 1
+        assert isinstance(project.experiments[0], DataSet1D)
+        assert project.experiments[0].model is project.models[0]
+        # The measured sQz feeds a Pointwise resolution function.
+        assert isinstance(project.models[0].resolution_function, Pointwise)
 
 
 class TestModelData:

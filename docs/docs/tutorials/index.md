@@ -49,8 +49,14 @@ These are basic fitting examples using the EasyReflectometry library.
 These are advanced fitting examples using the EasyReflectometry library.
 
 - [Multi-Contrast Fitting](advancedfitting/multi_contrast.ipynb)
-
-## Extra
-
-Additional examples and supplementary material using the
-EasyReflectometry library.
+- [Polarized Fitting](advancedfitting/polarized_fitting.ipynb) –
+  Magnetic samples, all four spin channels, the spin-resolved depth
+  profile and simultaneous fitting of several channels against one
+  model.
+- [Constraints & Inequalities](advancedfitting/constraints.ipynb) –
+  Equality constraints, derived read-only parameters (`total_thickness`,
+  `constrain_to_sum`) and inequality constraints enforced during BUMPS
+  fits.
+- [Bayesian Fitting](advancedfitting/bayesian_bumps.ipynb) – DREAM MCMC
+  sampling through `MultiFitter.mcmc_sample()`, convergence diagnostics,
+  posterior summaries and posterior-predictive bands.

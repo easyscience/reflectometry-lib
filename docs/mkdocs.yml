@@ -194,12 +194,20 @@ nav:
           - Solvated Material Fitting: tutorials/fitting/material_solvated.ipynb
       - Advanced Fitting:
           - Multi-Contrast Fitting: tutorials/advancedfitting/multi_contrast.ipynb
+          - Polarized Fitting: tutorials/advancedfitting/polarized_fitting.ipynb
+          - Constraints & Inequalities: tutorials/advancedfitting/constraints.ipynb
+          - Bayesian Fitting: tutorials/advancedfitting/bayesian_bumps.ipynb
   - API Reference:
       - API Reference: api-reference/index.md
       - Model: api-reference/model.md
       - Sample: api-reference/sample.md
       - Project: api-reference/project.md
       - Fitting: api-reference/fitting.md
+      - Constraints: api-reference/constraints.md
+      - Inequality Constraints: api-reference/inequality_constraints.md
+      - Bayesian Analysis: api-reference/bayesian.md
+      - Calculators: api-reference/calculators.md
+      - Parameter Limits: api-reference/limits.md
       - Assemblies:
           - Multilayer: api-reference/assemblies/multilayer.md
           - Repeating Multilayer: api-reference/assemblies/repeating_multilayer.md
@@ -210,9 +218,13 @@ nav:
               - Layer: api-reference/elements/layer.md
               - Layer Area Per Molecule:
                   api-reference/elements/layer_area_per_molecule.md
+              - Layer Magnetism: api-reference/elements/layer_magnetism.md
           - Materials:
               - Material: api-reference/elements/material.md
               - Material Density: api-reference/elements/material_density.md
               - Material Mixture: api-reference/elements/material_mixture.md
               - Material Solvated: api-reference/elements/material_solvated.md
       - Data: api-reference/data.md
+      - ORSO: api-reference/orso.md
+      - Summary: api-reference/summary.md
+      - Plotting: api-reference/plot.md

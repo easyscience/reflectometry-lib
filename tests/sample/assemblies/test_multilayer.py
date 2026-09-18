@@ -168,3 +168,40 @@ class TestMultilayer(unittest.TestCase):
 
         q = Multilayer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())
+
+    def _two_layers(self):
+        m = Material(6.908, -0.278, 'Boron')
+        k = Material(0.487, 0.000, 'Potassium')
+        return [Layer(m, 5.0, 2.0, 'thinBoron'), Layer(k, 50.0, 1.0, 'thickPotassium')]
+
+    def test_conformal_kwargs_apply_the_ties(self):
+        o = Multilayer(self._two_layers(), conformal_roughness=True, conformal_thickness=True)
+        assert o.conformal_roughness is True
+        assert o.conformal_thickness is True
+        assert o.layers[1].roughness.independent is False
+        assert o.layers[1].thickness.independent is False
+
+    def test_conformal_flags_survive_dict_round_trip(self):
+        # The ties are raw parameter dependencies, which nothing serializes;
+        # the assembly persists the flags and rebuilds the ties on load.
+        o = Multilayer(self._two_layers(), conformal_roughness=True)
+        o_dict = o.as_dict()
+        assert o_dict['conformal_roughness'] is True
+        assert o_dict['conformal_thickness'] is False
+        global_object.map._clear()
+
+        q = Multilayer.from_dict(o_dict)
+        assert q.conformal_roughness is True
+        assert q.layers[1].roughness.independent is False
+        q.layers[0].roughness.value = 7.0
+        assert q.layers[1].roughness.value == 7.0
+        assert q.conformal_thickness is False
+        assert q.layers[1].thickness.independent is True
+
+    def test_conformal_toggled_after_construction_is_serialized(self):
+        # Serialization reads the property (graph truth), not the constructor argument.
+        o = Multilayer(self._two_layers())
+        o.conformal_thickness = True
+        assert o.as_dict()['conformal_thickness'] is True
+        o.conformal_thickness = False
+        assert o.as_dict()['conformal_thickness'] is False

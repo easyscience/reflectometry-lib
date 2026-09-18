@@ -8,6 +8,15 @@ from ..collections.layer_collection import LayerCollection
 from ..elements.layers.layer import Layer
 
 
+def follows_equal(follower, leader) -> bool:
+    """Whether `follower` is constrained to be exactly equal to `leader`."""
+    if getattr(follower, 'independent', True):
+        return False
+    dependency_map = getattr(follower, '_dependency_map', None) or {}
+    expression = (getattr(follower, '_clean_dependency_string', None) or '').strip()
+    return len(dependency_map) == 1 and expression in dependency_map and dependency_map[expression] is leader
+
+
 class BaseAssembly(BaseCore):
     """Assembly of layers.
 
@@ -96,6 +105,51 @@ class BaseAssembly(BaseCore):
             self.layers.append(layer)
         else:
             self.layers[-1] = layer
+
+    # ----- public constraint toggles -----
+
+    def _layers_follow_front(self, attribute: str) -> bool:
+        """True when every layer's `attribute` is tied *equal* to the front layer's.
+
+        Only the conformal idiom counts (expression ``'a'`` over ``{'a': leader}``,
+        as set up by ``_setup_*_constraints``); a parameter that merely *uses*
+        the front layer's value in some other expression is not conformal.
+        """
+        if len(self.layers) < 2:
+            return False
+        leader = getattr(self.front_layer, attribute)
+        for layer in list(self.layers)[1:]:
+            follower = getattr(layer, attribute)
+            if not follows_equal(follower, leader):
+                return False
+        return True
+
+    @property
+    def conformal_thickness(self) -> bool:
+        """Whether every layer shares the front layer's thickness."""
+        return self._layers_follow_front('thickness')
+
+    @conformal_thickness.setter
+    def conformal_thickness(self, status: bool) -> None:
+        """Tie (or release) every layer's thickness to the front layer's."""
+        if status:
+            self._setup_thickness_constraints()
+        elif self._layers_follow_front('thickness'):
+            for layer in list(self.layers)[1:]:
+                layer.thickness.make_independent()
+
+    @property
+    def conformal_roughness(self) -> bool:
+        """Whether every layer shares the front layer's roughness."""
+        return self._layers_follow_front('roughness')
+
+    @conformal_roughness.setter
+    def conformal_roughness(self, status: bool) -> None:
+        """Tie (or release) every layer's roughness to the front layer's."""
+        if status:
+            self._setup_roughness_constraints()
+        elif self._layers_follow_front('roughness'):
+            self._disable_roughness_constraints()
 
     def _setup_thickness_constraints(self) -> None:
         """Setup thickness constraint, front layer is the deciding layer."""

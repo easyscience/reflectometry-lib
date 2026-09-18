@@ -28,7 +28,18 @@ class TestRefnx(unittest.TestCase):
     def test_set_magnetism(self):
         p = RefnxWrapper()
         with pytest.raises(NotImplementedError):
-            p.include_magnetism = True
+            p.magnetism = True
+        assert p._magnetism is False
+
+    def test_calculate_polarized_not_supported(self):
+        p = RefnxWrapper()
+        with pytest.raises(NotImplementedError):
+            p.calculate_polarized(np.linspace(0.01, 0.3, 10), 'MyModel')
+
+    def test_polarization_channel_requires_magnetism(self):
+        p = RefnxWrapper()
+        with pytest.raises(ValueError):
+            p.polarization_channel = 'mm'
 
     def test_reset_storage(self):
         p = RefnxWrapper()

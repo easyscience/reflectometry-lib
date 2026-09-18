@@ -68,6 +68,6 @@ class MaterialCollection(BaseCollection):
             Assembly to add.
         """
         to_be_duplicated = self[index]
-        duplicate = Material.from_dict(to_be_duplicated.as_dict(skip=['unique_name']))
+        duplicate = type(to_be_duplicated).from_dict(to_be_duplicated.as_dict(skip=['unique_name']))
         duplicate.name = duplicate.name + ' duplicate'
-        self.append(duplicate)
+        self.add_material(duplicate)

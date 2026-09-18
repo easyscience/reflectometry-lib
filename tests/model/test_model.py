@@ -157,25 +157,6 @@ class TestModel(unittest.TestCase):
         assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
         assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
 
-    # def test_add_assemblies_with_interface_bornagain(self):
-    #     interface = CalculatorFactory()
-    #     interface.switch('BornAgain')
-    #     m1 = Material.from_pars(6.908, 0.278, 'Boron')
-    #     m2 = Material.from_pars(0.487, 0.000, 'Potassium')
-    #     l1 = Layer.from_pars(m1, 5.0, 2.0, 'thinBoron')
-    #     l2 = Layer.from_pars(m2, 50.0, 1.0, 'thickPotassium')
-    #     ls1 = Layers.from_pars(l1, l2, name='twoLayer1')
-    #     ls2 = Layers.from_pars(l2, l1, name='twoLayer2')
-    #     o1 = RepeatingMultilayer.from_pars(ls1, 2.0, 'twoLayerItem1')
-    #     o2 = RepeatingMultilayer.from_pars(ls2, 1.0, 'oneLayerItem2')
-    #     d = Sample.from_pars(o1, name='myModel')
-    #     mod = Model(d, 2, 1e-5, 2.0, 'newModel', interface=interface)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-    #     assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
-    #     mod.add_assemblies(o2)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-    #     assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
-
     def test_duplicate_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
         m2 = Material(0.487, 0.000, 'Potassium')
@@ -234,25 +215,6 @@ class TestModel(unittest.TestCase):
         assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
         mod.duplicate_assembly(1)
         assert_equal(len(mod.interface()._wrapper.storage['item']), 3)
-
-    # def test_duplicate_item_with_interface_bornagain(self):
-    #     interface = CalculatorFactory()
-    #     interface.switch('BornAgain')
-    #     m1 = Material.from_pars(6.908, 0.278, 'Boron')
-    #     m2 = Material.from_pars(0.487, 0.000, 'Potassium')
-    #     l1 = Layer.from_pars(m1, 5.0, 2.0, 'thinBoron')
-    #     l2 = Layer.from_pars(m2, 50.0, 1.0, 'thickPotassium')
-    #     ls1 = Layers.from_pars(l1, l2, name='twoLayer1')
-    #     ls2 = Layers.from_pars(l2, l1, name='twoLayer2')
-    #     o1 = RepeatingMultilayer.from_pars(ls1, 2.0, 'twoLayerItem1')
-    #     o2 = RepeatingMultilayer.from_pars(ls2, 1.0, 'oneLayerItem2')
-    #     d = Sample.from_pars(o1, name='myModel')
-    #     mod = Model(d, 2, 1e-5, 2.0, 'newModel', interface=interface)
-    #     assert_equal(len(mod.interface()._wrapper.storage['assembly']), 1)
-    #     mod.add_assemblies(o2)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-    #     mod.duplicate_assembly(1)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 3)
 
     def test_remove_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
@@ -316,28 +278,6 @@ class TestModel(unittest.TestCase):
         mod.remove_assembly(0)
         assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
         assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
-
-    # def test_remove_assembly_with_interface_bornagain(self):
-    #     interface = CalculatorFactory()
-    #     interface.switch('BornAgain')
-    #     m1 = Material.from_pars(6.908, 0.278, 'Boron')
-    #     m2 = Material.from_pars(0.487, 0.000, 'Potassium')
-    #     l1 = Layer.from_pars(m1, 5.0, 2.0, 'thinBoron')
-    #     l2 = Layer.from_pars(m2, 50.0, 1.0, 'thickPotassium')
-    #     ls1 = Layers.from_pars(l1, l2, name='twoLayer1')
-    #     ls2 = Layers.from_pars(l2, l1, name='twoLayer2')
-    #     o1 = RepeatingMultilayer.from_pars(ls1, 2.0, 'twoLayerItem1')
-    #     o2 = RepeatingMultilayer.from_pars(ls2, 1.0, 'oneLayerItem2')
-    #     d = Sample.from_pars(o1, name='myModel')
-    #     mod = Model(d, 2, 1e-5, 2.0, 'newModel', interface=interface)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-    #     assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
-    #     mod.add_assemblies(o2)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-    #     assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
-    #     mod.remove_assembly(0)
-    #     assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-    #     assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
 
     def test_remove_all_assemblies(self):
         # when

@@ -1,0 +1,39 @@
+# # ORSO reflectivity data file | 1.2 standard | YAML encoding | https://www.reflectometry.org/
+# data_source:
+#   owner:
+#     name: Generated fixture
+#     affiliation: EasyScience
+#   experiment:
+#     title: FWHM sQz fixture
+#     instrument: fixture
+#     start_date: null
+#     probe: neutron
+#   sample:
+#     name: FWHM sQz fixture
+#   measurement:
+#     instrument_settings:
+#       incident_angle: {magnitude: 0.5, unit: deg}
+#       wavelength: {magnitude: 4.0, unit: angstrom}
+#       polarization: null
+#     data_files: []
+# reduction:
+#   software: {name: make_fixtures}
+# data_set: 0
+# columns:
+# - {name: Qz, unit: 1/angstrom, physical_quantity: wavevector transfer}
+# - {name: R, physical_quantity: reflectivity}
+# - {error_of: R, error_type: uncertainty, value_is: sigma}
+# - {error_of: Qz, error_type: resolution, value_is: FWHM}
+# # Qz (1/angstrom)    R                      sR                     sQz                   
+1.0000000000000000e-02 6.7032104603563936e-01 3.3516052301781972e-02 4.7096400900618988e-04
+3.6363636363636362e-02 2.3350747909091338e-01 1.1675373954545669e-02 1.7125963963861449e-03
+6.2727272727272729e-02 8.1343153050479095e-02 4.0671576525239551e-03 2.9542287837661003e-03
+8.9090909090909082e-02 2.8336598603717900e-02 1.4168299301858950e-03 4.1958611711460552e-03
+1.1545454545454545e-01 9.8717265313318422e-03 4.9358632656659209e-04 5.4374935585260100e-03
+1.4181818181818182e-01 3.4394748181587544e-03 1.7197374090793772e-04 6.6791259459059657e-03
+1.6818181818181818e-01 1.1987952218190572e-03 5.9939761090952858e-05 7.9207583332859214e-03
+1.9454545454545455e-01 4.1825284298601604e-04 2.0912642149300804e-05 9.1623907206658754e-03
+2.2090909090909092e-01 1.4635033351987538e-04 7.3175166759937690e-06 1.0404023108045831e-02
+2.4727272727272728e-01 5.1632895160517905e-05 2.5816447580258954e-06 1.1645655495425785e-02
+2.7363636363636362e-01 1.8638006121158546e-05 9.3190030605792728e-07 1.2887287882805741e-02
+2.9999999999999999e-01 7.1442123533282095e-06 3.5721061766641050e-07 1.4128920270185696e-02

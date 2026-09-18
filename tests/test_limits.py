@@ -151,3 +151,54 @@ class TestIntegrationWithConstructors:
         mat = Material(sld=custom_sld)
         assert mat.sld.min == -0.5
         assert mat.sld.max == 7.0
+
+
+class TestMagneticParameterLimits:
+    def setup_method(self):
+        global_object.map._clear()
+
+    def test_rho_m_uses_the_sld_window(self):
+        param = Parameter('rho_m', 5.0, min=-np.inf, max=np.inf)
+        apply_default_limits(param, 'rho_m')
+        assert param.min == SLD_LIMITS[0]
+        assert param.max == SLD_LIMITS[1]
+
+    def test_magnetism_constructor_keeps_default_bounds_until_project_sync(self):
+        from easyreflectometry.sample import LayerMagnetism
+
+        magnetism = LayerMagnetism(rho_m=5.0)
+        assert np.isinf(magnetism.rho_m.min)
+        assert np.isinf(magnetism.rho_m.max)
+
+    def test_project_sync_narrows_rho_m_and_leaves_theta_m(self):
+        from easyreflectometry.project import Project
+        from easyreflectometry.sample import LayerMagnetism
+
+        project = Project()
+        project.calculator = 'refl1d'
+        project.default_model()
+        layer = project.models[0].sample[1].layers[0]
+        layer.magnetism = LayerMagnetism(rho_m=5.0, theta_m=40.0)
+
+        project._sync_parameter_states()
+
+        assert layer.magnetism.rho_m.min == SLD_LIMITS[0]
+        assert layer.magnetism.rho_m.max == SLD_LIMITS[1]
+        # theta_m ships with explicit physical bounds; the sync must not touch them.
+        assert layer.magnetism.theta_m.min == 0.0
+        assert layer.magnetism.theta_m.max == 360.0
+
+    def test_project_sync_keeps_explicit_rho_m_bounds(self):
+        from easyreflectometry.project import Project
+        from easyreflectometry.sample import LayerMagnetism
+
+        project = Project()
+        project.calculator = 'refl1d'
+        project.default_model()
+        layer = project.models[0].sample[1].layers[0]
+        layer.magnetism = LayerMagnetism(rho_m=Parameter('rho_m', 5.0, min=1.0, max=8.0))
+
+        project._sync_parameter_states()
+
+        assert layer.magnetism.rho_m.min == 1.0
+        assert layer.magnetism.rho_m.max == 8.0

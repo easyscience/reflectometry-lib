@@ -155,6 +155,43 @@ class TestRefl1d(unittest.TestCase):
         ]
         assert_almost_equal(actual, expected, decimal=4)
 
+    def test_polarized_reflectivity_profiles(self):
+        p = Refl1d()
+        p.include_magnetism = True
+        p._wrapper.create_material('Material1')
+        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
+        p._wrapper.create_material('Material2')
+        p._wrapper.update_material('Material2', rho=4.000, irho=0.000)
+        p._wrapper.create_material('Material3')
+        p._wrapper.update_material('Material3', rho=2.047, irho=0.000)
+        p._wrapper.create_model('MyModel')
+        p._wrapper.create_layer('Layer1')
+        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
+        p._wrapper.create_layer('Layer2')
+        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
+        p._wrapper.update_layer('Layer2', thickness=100, interface=0)
+        p._wrapper.update_layer('Layer2', magnetism_rhoM=2, magnetism_thetaM=45)
+        p._wrapper.create_layer('Layer3')
+        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
+        p._wrapper.create_item('Item')
+        p._wrapper.add_layer_to_item('Layer1', 'Item')
+        p._wrapper.add_layer_to_item('Layer2', 'Item')
+        p._wrapper.add_layer_to_item('Layer3', 'Item')
+        p._wrapper.add_item('Item', 'MyModel')
+        q = np.linspace(0.005, 0.3, 50)
+
+        channels = p.polarized_reflectivity_profiles(q, 'MyModel')
+
+        assert_equal(list(channels.keys()), ['pp', 'pm', 'mp', 'mm'])
+        for reflectivity in channels.values():
+            assert_equal(len(reflectivity), len(q))
+
+        # reflectity_profile follows the selected channel
+        for key in ['pp', 'pm', 'mp', 'mm']:
+            p.polarization_channel = key
+            assert_equal(p.polarization_channel.value, key)
+            assert_almost_equal(p.reflectity_profile(q, 'MyModel'), channels[key])
+
     def test_sld_profile(self):
         p = Refl1d()
         p._wrapper.create_material('Material1')

@@ -15,7 +15,7 @@ from .model import Model
 # Needs to be a function, elements are added to the global_object.map
 def DEFAULT_ELEMENTS(interface):
     """Default elements."""
-    return (Model(interface),)
+    return (Model(interface=interface),)
 
 
 class ModelCollection(BaseCollection):
@@ -63,13 +63,26 @@ class ModelCollection(BaseCollection):
         """Index of the next colour to assign — kept around so it round-trips."""
         return self._next_color_index
 
+    def next_color(self) -> str:
+        """Colour the next appended model should get.
+
+        Appending advances the cycle, so callers that build a ``Model``
+        themselves can keep the per-model colours distinct::
+
+            model = Model(sample=sample, color=collection.next_color())
+            collection.add_model(model)
+        """
+        return self._current_color()
+
     def add_model(self, model: Optional[Model] = None):
         """Add a model to the collection.
 
         Parameters
         ----------
         model : Optional[Model], optional
-            Model to add. By default, None.
+            Model to add. By default, None (a new model is created with
+            the collection's next colour; a supplied model keeps its own
+            colour — use :meth:`next_color` when building one).
         """
         if model is None:
             model = Model(name='Model', interface=self.interface, color=self._current_color())
@@ -86,6 +99,9 @@ class ModelCollection(BaseCollection):
         to_be_duplicated = self[index]
         duplicate = Model.from_dict(to_be_duplicated.as_dict(skip=['unique_name']))
         duplicate.name = duplicate.name + ' duplicate'
+        # A duplicate sharing its source's colour would be indistinguishable
+        # in the plots; give it the collection's next colour instead.
+        duplicate.color = self._current_color()
         self.append(duplicate)
 
     @classmethod

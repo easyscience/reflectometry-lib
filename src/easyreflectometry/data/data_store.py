@@ -3,83 +3,13 @@
 
 __author__ = 'github.com/wardsimon'
 
-from collections.abc import Sequence
 from typing import Optional
-from typing import TypeVar
 from typing import Union
 
 import numpy as np
 from easyscience.io import SerializerComponent
-from easyscience.io import SerializerDict
 
 from easyreflectometry.model import Model
-
-T = TypeVar('T')
-
-
-class ProjectData(SerializerComponent):
-    def __init__(self, name='DataStore', exp_data=None, sim_data=None):
-        """Init function."""
-        self.name = name
-        if exp_data is None:
-            exp_data = DataStore(name='Exp Datastore')
-        if sim_data is None:
-            sim_data = DataStore(name='Sim Datastore')
-        self.exp_data = exp_data
-        self.sim_data = sim_data
-
-
-class DataStore(Sequence, SerializerComponent):
-    def __init__(self, *args, name='DataStore'):
-        """Init function."""
-        self.name = name
-        self.items = list(args)
-        self.show_legend = False
-
-    def __getitem__(self, i: int) -> T:
-        """Getitem function."""
-        return self.items.__getitem__(i)
-
-    def __len__(self) -> int:
-        """Len function."""
-        return len(self.items)
-
-    def __setitem__(self, key, value):
-        """Setitem function."""
-        self.items[key] = value
-
-    def __delitem__(self, key):
-        """Delitem function."""
-        del self.items[key]
-
-    def append(self, *args):
-        """Append function."""
-        self.items.append(*args)
-
-    def as_dict(self, skip: list = []) -> dict:
-        """As dict."""
-        this_dict = super(DataStore, self).as_dict(self, skip=skip)
-        this_dict['items'] = [item.as_dict() for item in self.items if hasattr(item, 'as_dict')]
-
-    @classmethod
-    def from_dict(cls, d):
-        """From dict."""
-        items = d['items']
-        del d['items']
-        obj = cls.from_dict(d)
-        decoder = SerializerDict()
-        obj.items = [decoder.decode(item) for item in items]
-        return obj
-
-    @property
-    def experiments(self):
-        """Experiments function."""
-        return [self[idx] for idx in range(len(self)) if self[idx].is_experiment]
-
-    @property
-    def simulations(self):
-        """Simulations function."""
-        return [self[idx] for idx in range(len(self)) if self[idx].is_simulation]
 
 
 class DataSet1D(SerializerComponent):

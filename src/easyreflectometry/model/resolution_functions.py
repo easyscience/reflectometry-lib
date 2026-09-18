@@ -119,6 +119,12 @@ class Pointwise(ResolutionFunction):
     widths from the ``[Qz, R, sQz]`` triple loaded from a data file; the returned
     widths are consumed by the calculators (refnx ``x_err`` / refl1d ``dq``),
     which perform the actual convolution against the model.
+
+    Serialization contract: ``as_dict``/``from_dict`` store ``sQz_data_points``
+    as **variances** (sigma squared). This is deliberately unchanged by the
+    ORSO ``value_is: FWHM`` support — FWHM columns are converted to sigma at
+    load time, so stored values are always sigma squared and saved projects
+    round-trip without migration.
     """
 
     def __init__(self, q_data_points: List[np.ndarray]):

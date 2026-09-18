@@ -10,9 +10,12 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import numpy as np
+import pytest
+from numpy.testing import assert_allclose
 from numpy.testing import assert_almost_equal
 from numpy.testing import assert_equal
 
+from easyreflectometry.calculators.polarization import PolarizationChannel
 from easyreflectometry.calculators.refl1d.wrapper import Refl1dWrapper
 from easyreflectometry.calculators.refl1d.wrapper import _build_sample
 from easyreflectometry.calculators.refl1d.wrapper import _get_oversampling_q
@@ -377,9 +380,11 @@ def test_get_polarized_probe():
     assert all(probe.dQ == dq)
     assert len(probe.calc_Q) == len(q)
     assert len(probe.xs) == 4
-    assert probe.xs[1:4] == [None, None, None]
-    assert probe.xs[0].intensity.value == 10
-    assert probe.xs[0].background.value == 20
+    for cross_section in probe.xs:
+        assert cross_section is not None
+        assert cross_section.intensity.value == 10
+        assert cross_section.background.value == 20
+        assert len(cross_section.calc_Q) == len(q)
 
 
 def test_get_polarized_probe_oversampling():
@@ -396,33 +401,253 @@ def test_get_polarized_probe_oversampling():
     probe = _get_polarized_probe(q_array=q, dq_array=dq, model_name=model_name, storage=storage, oversampling_factor=2)
 
     # Then
-    assert len(probe.xs[0].calc_Qo) == 2 * len(q)
+    for cross_section in probe.xs:
+        assert len(cross_section.calc_Qo) == 2 * len(q)
 
 
-def test_get_polarized_probe_polarization():
-    # When
-    q = np.linspace(1, 10, 10)
-    dq = np.linspace(0.01, 0.1, 10)
-    model_name = 'model_name'
+Q_POLARIZED = np.linspace(0.005, 0.3, 100)
 
-    storage = {'model': {model_name: {}}}
-    storage['model'][model_name]['scale'] = 10.0
-    storage['model'][model_name]['bkg'] = 20.0
 
-    # Then
-    probe = _get_polarized_probe(
-        q_array=q,
-        dq_array=dq,
-        model_name=model_name,
-        storage=storage,
-        all_polarizations=True,
-    )
+def _sample_wrapper(rho: float, magnetic: bool, rhoM: float = 0.0, thetaM: float = 270.0) -> Refl1dWrapper:
+    """Vacuum | 100 A layer of `rho` (optionally magnetic) | Si substrate.
 
-    # Expect
-    assert len(probe.xs[0].calc_Q) == len(q)
-    assert len(probe.xs[1].calc_Q) == len(q)
-    assert len(probe.xs[2].calc_Q) == len(q)
-    assert len(probe.xs[3].calc_Q) == len(q)
+    Magnetic values may be set via `update_layer` at any time (also one key at a
+    time); they are stored per layer and attached to the slabs whenever magnetism
+    is enabled.
+    """
+    p = Refl1dWrapper()
+    if magnetic:
+        p.magnetism = True
+    p.create_material('Vacuum')
+    p.update_material('Vacuum', rho=0.0, irho=0.0)
+    p.create_material('MaterialMag')
+    p.update_material('MaterialMag', rho=rho, irho=0.0)
+    p.create_material('Si')
+    p.update_material('Si', rho=2.047, irho=0.0)
+    p.create_model('MyModel')
+    p.create_layer('Superphase')
+    p.assign_material_to_layer('Vacuum', 'Superphase')
+    p.create_layer('LayerMag')
+    p.assign_material_to_layer('MaterialMag', 'LayerMag')
+    p.update_layer('LayerMag', thickness=100, interface=0)
+    if magnetic:
+        p.update_layer('LayerMag', magnetism_rhoM=rhoM, magnetism_thetaM=thetaM)
+    p.create_layer('Subphase')
+    p.assign_material_to_layer('Si', 'Subphase')
+    p.create_item('Item')
+    p.add_layer_to_item('Superphase', 'Item')
+    p.add_layer_to_item('LayerMag', 'Item')
+    p.add_layer_to_item('Subphase', 'Item')
+    p.add_item('Item', 'MyModel')
+    return p
+
+
+def test_calculate_polarized_shape():
+    p = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+
+    channels = p.calculate_polarized(Q_POLARIZED, 'MyModel')
+
+    assert list(channels.keys()) == ['pp', 'pm', 'mp', 'mm']
+    for reflectivity in channels.values():
+        assert isinstance(reflectivity, np.ndarray)
+        assert len(reflectivity) == len(Q_POLARIZED)
+        assert np.all(np.isfinite(reflectivity))
+
+
+def test_calculate_follows_selected_channel():
+    p = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    channels = p.calculate_polarized(Q_POLARIZED, 'MyModel')
+
+    for channel in PolarizationChannel:
+        p.polarization_channel = channel
+        assert_allclose(p.calculate(Q_POLARIZED, 'MyModel'), channels[channel.value], rtol=1e-10)
+
+
+def test_calculate_polarized_zero_magnetic_sld():
+    # Polarized calculation with zero magnetic SLD (magnetism enabled, rhoM=0):
+    # the non-spin-flip channels degenerate to the unpolarized result and the
+    # spin-flip channels vanish.
+    p = _sample_wrapper(rho=4.0, magnetic=True, rhoM=0.0, thetaM=270)
+    unpolarized = _sample_wrapper(rho=4.0, magnetic=False)
+
+    channels = p.calculate_polarized(Q_POLARIZED, 'MyModel')
+    reference = unpolarized.calculate(Q_POLARIZED, 'MyModel')
+
+    assert_allclose(channels['pp'], reference, rtol=1e-5)
+    assert_allclose(channels['mm'], reference, rtol=1e-5)
+    # Tolerance pinned from the observed numerics of refl1d 1.0.0 (machine noise).
+    assert np.max(channels['pm']) < 1e-16
+    assert np.max(channels['mp']) < 1e-16
+
+
+def test_calculate_polarized_channel_ordering():
+    # Pins the pp/mm halves of POLARIZATION_CHANNEL_TO_INDEX with physics, guarding
+    # against a pp/mm swap: with the moment collinear with the neutron polarization
+    # axis there is no spin flip and the non-spin-flip channels see rho +/- rhoM.
+    # refl1d returns cross-sections in probe._xs_names order ['mm','mp','pm','pp']
+    # (refl1d/probe/probe.py; magnetic_amplitude returns (--,-+,+-,++)). With the
+    # default guide field (Aguide=270), thetaM=270 is the moment-parallel-to-field
+    # orientation: spin-up ('pp') sees rho + rhoM, spin-down ('mm') sees rho - rhoM.
+    # thetaM=90 (anti-parallel) swaps the two; both are spin-flip-free.
+    rho, rhoM = 4.0, 2.0
+    plus = _sample_wrapper(rho=rho + rhoM, magnetic=False)
+    minus = _sample_wrapper(rho=rho - rhoM, magnetic=False)
+    reflectivity_plus = plus.calculate(Q_POLARIZED, 'MyModel')
+    reflectivity_minus = minus.calculate(Q_POLARIZED, 'MyModel')
+
+    aligned = _sample_wrapper(rho=rho, magnetic=True, rhoM=rhoM, thetaM=270)
+    channels = aligned.calculate_polarized(Q_POLARIZED, 'MyModel')
+    assert_allclose(channels['pp'], reflectivity_plus, rtol=1e-4, atol=1e-9)
+    assert_allclose(channels['mm'], reflectivity_minus, rtol=1e-4, atol=1e-9)
+    assert np.max(channels['pm']) < 1e-16
+    assert np.max(channels['mp']) < 1e-16
+
+    anti_aligned = _sample_wrapper(rho=rho, magnetic=True, rhoM=rhoM, thetaM=90)
+    channels = anti_aligned.calculate_polarized(Q_POLARIZED, 'MyModel')
+    assert_allclose(channels['pp'], reflectivity_minus, rtol=1e-4, atol=1e-9)
+    assert_allclose(channels['mm'], reflectivity_plus, rtol=1e-4, atol=1e-9)
+
+
+def test_channel_index_map_matches_refl1d_xs_names():
+    # The index map must agree with refl1d's own cross-section labels: the wrapper
+    # extracts Experiment.reflectivity() results in probe.xs order, which is
+    # PolarizedNeutronProbe._xs_names. This pins the convention at the source so a
+    # refl1d-side reordering (or a wrapper-side swap) fails loudly.
+    from refl1d import names as refl1d_names
+
+    from easyreflectometry.calculators.polarization import POLARIZATION_CHANNEL_TO_INDEX
+
+    xs_names = refl1d_names.PolarizedNeutronQProbe._xs_names
+    assert len(xs_names) == 4
+    for channel, index in POLARIZATION_CHANNEL_TO_INDEX.items():
+        assert xs_names[index] == channel.value
+
+
+def test_calculate_polarized_spin_flip():
+    # Moment perpendicular to the neutron polarization (thetaM=0) produces spin flip;
+    # a collinear moment (thetaM=90, see test_calculate_polarized_channel_ordering)
+    # produces essentially none.
+    aligned = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=90)
+    perpendicular = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=0)
+
+    channels_aligned = aligned.calculate_polarized(Q_POLARIZED, 'MyModel')
+    channels_perpendicular = perpendicular.calculate_polarized(Q_POLARIZED, 'MyModel')
+
+    assert np.max(channels_perpendicular['pm']) > 1e3 * np.max(channels_aligned['pm'])
+    assert np.max(channels_perpendicular['pm']) > 1e-6  # absolute sanity floor
+    # pm and mp are identical by symmetry for a non-chiral, non-absorptive sample,
+    # so this cannot distinguish them: the pm=1 / mp=2 indices rest on the refl1d
+    # docstring alone ("a sequence pp, pm, mp and mm").
+    assert_allclose(channels_perpendicular['pm'], channels_perpendicular['mp'], rtol=1e-10)
+
+
+def test_calculate_polarized_scale_and_background():
+    # Intensity and background must reach every cross-section:
+    # R_out = scale * R + bkg, channel by channel.
+    scale, bkg = 2.0, 1e-6
+    plain = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    scaled = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    scaled.update_model('MyModel', scale=scale, bkg=bkg)
+
+    channels_plain = plain.calculate_polarized(Q_POLARIZED, 'MyModel')
+    channels_scaled = scaled.calculate_polarized(Q_POLARIZED, 'MyModel')
+
+    for key in ['pp', 'pm', 'mp', 'mm']:
+        assert_allclose(channels_scaled[key], scale * channels_plain[key] + bkg, rtol=1e-8)
+
+
+def test_calculate_polarized_requires_magnetism():
+    p = _sample_wrapper(rho=4.0, magnetic=False)
+    with pytest.raises(ValueError):
+        p.calculate_polarized(Q_POLARIZED, 'MyModel')
+
+
+def test_polarization_channel_normalization():
+    p = Refl1dWrapper()
+    p.magnetism = True
+
+    p.polarization_channel = PolarizationChannel.MM
+    assert p.polarization_channel is PolarizationChannel.MM
+    p.polarization_channel = 'pm'
+    assert p.polarization_channel is PolarizationChannel.PM
+
+    for bad in ['MM', 'xx', None]:
+        with pytest.raises(ValueError):
+            p.polarization_channel = bad
+
+
+def test_polarization_channel_requires_magnetism():
+    p = Refl1dWrapper()
+    with pytest.raises(ValueError):
+        p.polarization_channel = 'mm'
+    # pp is always allowed
+    p.polarization_channel = 'pp'
+    assert p.polarization_channel is PolarizationChannel.PP
+
+
+def test_disabling_magnetism_resets_channel():
+    p = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    unpolarized = _sample_wrapper(rho=4.0, magnetic=False)
+    p.polarization_channel = 'mm'
+
+    p.magnetism = False
+
+    # The transition is complete: channel back to pp, slab Magnetism objects
+    # stripped, and the plain (unpolarized) calculation path works.
+    assert p.polarization_channel is PolarizationChannel.PP
+    assert all(layer.magnetism is None for layer in p.storage['layer'].values())
+    assert_allclose(p.calculate(Q_POLARIZED, 'MyModel'), unpolarized.calculate(Q_POLARIZED, 'MyModel'), rtol=1e-10)
+
+    # Re-enabling restores the stored magnetic values (rhoM/thetaM survive the
+    # toggle so the wrapper stays in sync with model parameters that still hold them).
+    p.magnetism = True
+    assert p.polarization_channel is PolarizationChannel.PP
+    restored = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    channels = p.calculate_polarized(Q_POLARIZED, 'MyModel')
+    reference = restored.calculate_polarized(Q_POLARIZED, 'MyModel')
+    for channel in ('pp', 'pm', 'mp', 'mm'):
+        assert_allclose(channels[channel], reference[channel], rtol=1e-10)
+
+
+def test_polarized_reflectivities_guards_malformed_output():
+    p = _sample_wrapper(rho=4.0, magnetic=True, rhoM=2.0, thetaM=45)
+    q = Q_POLARIZED
+
+    # Fewer than four cross-sections
+    with patch('easyreflectometry.calculators.refl1d.wrapper.names.Experiment') as mock_experiment:
+        mock_experiment.return_value.reflectivity.return_value = [(q, np.ones(len(q)))] * 3
+        with pytest.raises(RuntimeError, match='expected 4'):
+            p.calculate_polarized(q, 'MyModel')
+
+    # Wrong-length cross-section: index 1 is 'mp' in refl1d's (mm, mp, pm, pp) order.
+    with patch('easyreflectometry.calculators.refl1d.wrapper.names.Experiment') as mock_experiment:
+        mock_experiment.return_value.reflectivity.return_value = [
+            (q, np.ones(len(q))),
+            (q, np.ones(len(q) - 1)),
+            (q, np.ones(len(q))),
+            (q, np.ones(len(q))),
+        ]
+        with pytest.raises(RuntimeError, match='malformed mp'):
+            p.calculate_polarized(q, 'MyModel')
+
+    # Non-finite values: index 3 is 'pp' in refl1d's (mm, mp, pm, pp) order.
+    with patch('easyreflectometry.calculators.refl1d.wrapper.names.Experiment') as mock_experiment:
+        bad = np.ones(len(q))
+        bad[0] = np.nan
+        mock_experiment.return_value.reflectivity.return_value = [(q, np.ones(len(q)))] * 3 + [(q, bad)]
+        with pytest.raises(RuntimeError, match='malformed pp'):
+            p.calculate_polarized(q, 'MyModel')
+
+
+def test_polarization_channel_survives_reset_storage():
+    # reset_storage leaves _magnetism and the resolution function alone;
+    # the selected channel behaves consistently.
+    p = Refl1dWrapper()
+    p.magnetism = True
+    p.polarization_channel = 'mm'
+    p.reset_storage()
+    assert p.polarization_channel is PolarizationChannel.MM
+    assert p._magnetism is True
 
 
 @patch('easyreflectometry.calculators.refl1d.wrapper.names.Stack')

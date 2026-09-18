@@ -32,6 +32,35 @@ Fitting helpers and objective functions.
 
 - [Fitting](fitting.md)
 
+## Constraints
+
+Equality constraints and derived parameters tie parameters together and
+remove the dependent one from the fit. Inequality constraints keep every
+parameter free and are enforced as penalties on the BUMPS fit problem.
+
+- [Constraints](constraints.md)
+- [Inequality Constraints](inequality_constraints.md)
+
+## Bayesian Analysis
+
+Posterior analysis of a DREAM sampling run: convergence diagnostics,
+credible intervals and correlation plots.
+
+- [Bayesian Analysis](bayesian.md)
+
+## Calculators
+
+The backend engines (refl1d, refnx) that turn a model into a
+reflectivity curve, including the polarized interface.
+
+- [Calculators](calculators.md)
+
+## Parameter Limits
+
+Default `min` / `max` windows applied to parameters that have none.
+
+- [Parameter Limits](limits.md)
+
 ## Assemblies
 
 Assemblies are collections of layers that are used to represent a
@@ -54,6 +83,7 @@ material with a thickness and a roughness.
 
 - [Layer](elements/layer.md)
 - [Layer Area Per Molecule](elements/layer_area_per_molecule.md)
+- [Layer Magnetism](elements/layer_magnetism.md)
 
 ### Materials
 
@@ -70,3 +100,11 @@ material with given physical properties.
 Collection of helper functions.
 
 - [Data](data.md)
+- [ORSO](orso.md)
+
+## Reporting
+
+Summaries of a project and its fit results, and the plotting helpers.
+
+- [Summary](summary.md)
+- [Plotting](plot.md)

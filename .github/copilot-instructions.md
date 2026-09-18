@@ -91,28 +91,37 @@ tox
 ### Docstring Style
 
 - Include docstrings for all public modules, classes, and functions
-- Use **Sphinx/reStructuredText style** docstrings (`:param`, `:type`,
-  `:return`, `:rtype`)
+- Use **NumPy style** docstrings (`Parameters` / `Returns` / `Raises`
+  sections), the style `mkdocstrings` is configured to parse
 - Use clear, concise descriptions
 - Document parameters, return values, and exceptions
 - Example format:
 
   ```python
-  """
-  Brief description of the function.
+  """Brief description of the function.
 
-  :param param_name: description of parameter
-  :type param_name: type
-  :return: description of return value
-  :rtype: return_type
+  Parameters
+  ----------
+  param_name : type
+      Description of the parameter.
+
+  Returns
+  -------
+  type
+      Description of the return value.
   """
   ```
 
 ### Documentation Build
 
-- Documentation is built using Sphinx (version 8.1.3)
-- Source files are in the `docs/` directory
-- Use `myst_parser` (MyST parser) for Markdown support
+- Documentation is built with MkDocs (Material theme), configured in
+  `docs/mkdocs.yml`
+- Source files are Markdown and Jupyter notebooks under `docs/docs/`;
+  every page must be listed in the `nav` section of `docs/mkdocs.yml`
+- API reference pages are one-liners rendered by `mkdocstrings`
+  (`::: easyreflectometry.<module>`)
+- Build locally with `pixi run docs-build` or preview with
+  `pixi run docs-serve`
 - Include code examples in documentation where appropriate
 
 ## Dependencies

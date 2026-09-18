@@ -8,7 +8,9 @@ analysis by making chemical and physical constraints available with
 limited code. In this page, we will document the assemblies that are
 available with simple examples of the constructors that exist. Full API
 documentation is also available for the
-`easyreflectometry.sample.assemblies` module.
+`easyreflectometry.sample.assemblies` module. For custom constraints
+between arbitrary parameters, see _Constraining Parameters_ in the
+[Model tutorial](model.md).
 
 ## Multilayer
 
@@ -37,6 +39,39 @@ subphase = Multilayer(layers=[si_layer, sio2_layer], name='Si/SiO2 subphase')
 
 This will create a `Multilayer` object named `subphase` which we can use
 in some `Structure` for our analysis.
+
+### Conformal thickness and roughness
+
+Layers grown in a single process step often share a thickness or a
+roughness. A `Multilayer` can tie every one of its layers to the front
+layer, which removes the followers from the fit and leaves a single free
+parameter per tied quantity.
+
+```python
+subphase = Multilayer(
+    layers=[si_layer, sio2_layer],
+    name='Si/SiO2 subphase',
+    conformal_roughness=True,
+    conformal_thickness=True,
+)
+```
+
+Both toggles are also plain properties, so they can be switched on and
+off after construction.
+
+```python
+subphase.conformal_roughness = True
+subphase.conformal_roughness = False  # releases the followers again
+```
+
+The ties are ordinary parameter dependencies, and the assembly stores
+the state of both toggles when it is serialized, so they are rebuilt
+when a project is loaded. Releasing a tie leaves the follower at its
+last value; as with any constraint, its bounds are whatever the
+constraint left behind, so review them before fitting. Constraints
+between arbitrary parameters — including a fixed total thickness — are
+covered in _Constraining Parameters_ in the [Model tutorial](model.md)
+and in the [Constraints tutorial](../advancedfitting/constraints.ipynb).
 
 ## RepeatingMultilayer
 
@@ -69,3 +104,16 @@ ni_ti = RepeatingMultilayer(layers=[ti_layer, ni_layer], repetitions=10, name='N
 The number of repeats is a parameter that can be varied in the
 optimisation process, however given this is a value that depends on the
 synthesis of the sample this is unlikely to be necessary.
+
+A `RepeatingMultilayer` is a `Multilayer`, so it accepts the
+`conformal_thickness` and `conformal_roughness` arguments described
+above, and persists them in the same way.
+
+```python
+ni_ti = RepeatingMultilayer(
+    layers=[ti_layer, ni_layer],
+    repetitions=10,
+    name='Ni/Ti Multilayer',
+    conformal_roughness=True,
+)
+```

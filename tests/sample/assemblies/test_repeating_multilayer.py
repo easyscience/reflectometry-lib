@@ -195,3 +195,17 @@ class TestRepeatingMultilayer(unittest.TestCase):
 
         q = RepeatingMultilayer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())
+
+    def test_conformal_flags_survive_dict_round_trip(self):
+        m = Material(6.908, -0.278, 'Boron')
+        k = Material(0.487, 0.000, 'Potassium')
+        layers = [Layer(m, 5.0, 2.0, 'thinBoron'), Layer(k, 50.0, 1.0, 'thickPotassium')]
+        p = RepeatingMultilayer(layers, 8, conformal_roughness=True)
+        p_dict = p.as_dict()
+        assert p_dict['conformal_roughness'] is True
+        global_object.map._clear()
+
+        q = RepeatingMultilayer.from_dict(p_dict)
+        assert q.conformal_roughness is True
+        assert q.layers[1].roughness.independent is False
+        assert q.repetitions.value == 8.0

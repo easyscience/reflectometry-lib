@@ -19,6 +19,8 @@ class Refl1d(CalculatorBase):
     _layer_link = {
         'thickness': 'thickness',
         'roughness': 'interface',
+        'rho_m': 'magnetism_rhoM',
+        'theta_m': 'magnetism_thetaM',
     }
 
     _item_link = {

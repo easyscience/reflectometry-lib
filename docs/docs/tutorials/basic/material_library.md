@@ -49,6 +49,34 @@ si = MaterialDensity(chemical_structure=chemical_structure, density=2.65, name='
 The density should be in units of grams per cubic centimeter and the
 scattering length is calculated from `'SiO2'`.
 
+By default the `sld` and `isld` of a `MaterialDensity` are _dependent_
+parameters, recomputed from the density, the formula's scattering length
+and its molecular weight whenever any of those change - so `density` is
+the parameter to vary in a fit, and assigning to `sld` directly is not
+possible. This coupling can be switched off per material with the
+`sld_coupled` property:
+
+```python
+si.sld_coupled = False  # sld/isld become independent, keep their values
+si.sld.fixed = False  # ...and can now be fitted directly
+```
+
+While decoupled, changes to `density` (or the formula) no longer
+propagate to the SLD, and the density, molecular weight and scattering
+length no longer affect the reflectivity. Setting `sld_coupled = True`
+restores the dependency and **recalculates** `sld`/`isld` from the
+current formula and density, discarding any manually set or fitted
+values. The coupling state - and, when decoupled, the manual SLD
+values - survive serialization (`as_dict`/`from_dict`); dictionaries
+from before this feature restore as coupled.
+
+Assigning a new `chemical_structure` updates both the scattering length
+and the molecular weight; a formula that does not parse to at least one
+known atom raises `ValueError` and leaves the material unchanged.
+
+Note that `molecular_weight` is a read-only descriptor, not a fit
+parameter: it is fully determined by the formula.
+
 ## MaterialSolvated
 
 Sometimes it is desirable to have a layer that consists of a material

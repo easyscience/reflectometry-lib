@@ -191,10 +191,11 @@ class TestSaveRestoreParameterState:
 
         # Use simple objects that support attribute assignment
         class MockParam:
-            def __init__(self, unique_name, raw_value, error):
+            def __init__(self, unique_name, raw_value, error, independent=True):
                 self.unique_name = unique_name
                 self.value = raw_value
                 self.error = error
+                self.independent = independent
 
         param1 = MockParam('param_a', 1.5, 0.1)
         param2 = MockParam('param_b', 3.0, 0.2)
@@ -220,6 +221,37 @@ class TestSaveRestoreParameterState:
         assert param1.error == 0.1
         assert param2.value == 3.0
         assert param2.error == 0.2
+
+    def test_dependent_parameters_are_left_alone(self):
+        """Derived parameters cannot be written back, and do not need to be."""
+        from easyreflectometry.analysis.bayesian import _restore_parameter_state
+        from easyreflectometry.analysis.bayesian import _save_parameter_state
+
+        class MockParam:
+            def __init__(self, unique_name, independent):
+                self.unique_name = unique_name
+                self.value = 1.0
+                self.error = 0.1
+                self.independent = independent
+
+            def __setattr__(self, name, value):
+                if name in ('value', 'error') and not self.__dict__.get('independent', True):
+                    raise AttributeError(f'This is a dependent parameter, its {name} cannot be set directly.')
+                super().__setattr__(name, value)
+
+        free = MockParam('free', True)
+        derived = MockParam('derived', False)
+
+        class MockModel:
+            def get_parameters(self):
+                return [free, derived]
+
+        model = MockModel()
+        state = _save_parameter_state(model)
+
+        assert 'derived' not in state
+        _restore_parameter_state(model, state)  # would raise if it wrote to `derived`
+        assert free.value == 1.0
 
 
 class TestApplyDraw:

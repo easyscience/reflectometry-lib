@@ -242,6 +242,28 @@ You can run individual checks, for example, to run only unit tests:
 pixi run unit-tests
 ```
 
+### Slow tests
+
+A handful of tests run a real minimiser, a sampler or a long fit. They
+are marked `slow` and are **deselected by default**, so
+`pixi run unit-tests` (and a bare `pytest`) gives you the fast feedback
+loop. CI runs the full set on pull requests, on `master`/`develop`, and
+on manual dispatch, so nothing is skipped before a change is merged or
+released.
+
+To include them locally:
+
+```bash
+pixi run unit-tests-all   # fast + slow, same tree as unit-tests
+pixi run slow-tests       # only the slow ones, whole tree
+pixi run test-all         # unit + functional + integration, everything
+```
+
+Mark a new test with `@pytest.mark.slow` (it works on a test function or
+a whole class) when it costs roughly a second or more of actual work.
+Note that `-m` on the command line overrides the default, so running a
+slow test by node id needs `-m 'slow or not slow'`.
+
 or to run only Python linting checks:
 
 ```bash

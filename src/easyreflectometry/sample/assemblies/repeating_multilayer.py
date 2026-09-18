@@ -45,6 +45,8 @@ class RepeatingMultilayer(Multilayer):
         unique_name: Optional[str] = None,
         interface=None,
         populate_if_none: bool = True,
+        conformal_thickness: bool = False,
+        conformal_roughness: bool = False,
     ):
         """Constructor.
 
@@ -62,6 +64,10 @@ class RepeatingMultilayer(Multilayer):
             Name for the repeating multi layer. By default, 'EasyRepeatingMultilayer'.
         interface :
             Calculator interface. By default, None.
+        conformal_thickness : bool, optional
+            Tie every layer's thickness to the front layer's (persisted). By default, False.
+        conformal_roughness : bool, optional
+            Tie every layer's roughness to the front layer's (persisted). By default, False.
         """
         if unique_name is None:
             unique_name = global_object.generate_unique_name(self.__class__.__name__)
@@ -90,6 +96,8 @@ class RepeatingMultilayer(Multilayer):
             interface=None,
             type='Repeating Multi-layer',
             populate_if_none=False,
+            conformal_thickness=conformal_thickness,
+            conformal_roughness=conformal_roughness,
         )
         self._repetitions = repetitions
 

@@ -23,19 +23,23 @@ classifiers = [
 ]
 requires-python = '>=3.11'
 dependencies = [
-  'easyscience',
+  'easyscience>=2.5.1,<3',
   'scipp',
   'refnx',
   'refl1d>=1.0.0',
-  'orsopy',
+  # >=1.2: model language resolve_to_blocks and nexus (.orb) I/O verified in 1.2.2
+  'orsopy>=1.2',
   'svglib<1.6 ; platform_system=="Linux" or sys_platform == "darwin"',
   'xhtml2pdf',
   'bumps',
+  'asteval',
   'pooch',
   'plotly',
 ]
 
 [project.optional-dependencies]
+# Binary ORSO (.orb / NeXus) read and write support (orsopy uses h5py for it)
+orb = ['h5py']
 dev = [
   'GitPython',                       # Interact with Git repositories
   'build',                           # Building the package
@@ -165,8 +169,16 @@ fail_under = 0       # Minimum coverage percentage to pass
 # https://docs.pytest.org/en/stable/
 
 [tool.pytest.ini_options]
-addopts = '--import-mode=importlib'
-markers = ['fast: mark test as fast (should be run on every push)']
+# `-m 'not slow'` makes the expensive tests opt-in: a plain `pytest` (and the
+# `unit-tests` pixi task) runs the fast suite, while `-m` on the command line
+# overrides this -- `pixi run slow-tests` for only the expensive ones,
+# `pixi run unit-tests-all` for everything. CI runs the full set on pull
+# requests, on master/develop, and on manual dispatch.
+addopts = '--import-mode=importlib -m "not slow"'
+markers = [
+  'fast: mark test as fast (should be run on every push)',
+  'slow: expensive test (real minimizer run, sampler, long fit); deselected by default',
+]
 testpaths = ['tests']
 
 ########################

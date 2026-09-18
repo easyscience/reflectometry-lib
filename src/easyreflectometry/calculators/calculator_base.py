@@ -201,6 +201,48 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         """
         return self._wrapper.calculate(x_array, model_id)
 
+    def reflectivity_profile_channel(self, x_array: np.ndarray, model_id: str, channel) -> np.ndarray:
+        """Determine the reflectivity profile of one explicit spin channel.
+
+        Unlike `polarization_channel` (global calculator state), the channel is an
+        argument, so several channels can be evaluated against the same model —
+        one per dataset in a simultaneous multi-channel fit.
+
+        Parameters
+        ----------
+        x_array : np.ndarray
+            Points to be calculated at.
+        model_id : str
+            The model id.
+        channel : PolarizationChannel | str
+            One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).
+
+        Returns
+        -------
+        np.ndarray
+            Reflectivity of the requested channel at q.
+        """
+        return self._wrapper.calculate_channel(x_array, model_id, channel)
+
+    def polarized_reflectivity_profiles(self, x_array: np.ndarray, model_id: str) -> dict[str, np.ndarray]:
+        """Determines the reflectivity profiles of all four spin channels for the given range and model.
+
+        Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).
+
+        Parameters
+        ----------
+        x_array : np.ndarray
+            Points to be calculated at.
+        model_id : str
+            The model id.
+
+        Returns
+        -------
+        dict[str, np.ndarray]
+            Reflectivity per spin channel, keyed 'pp', 'pm', 'mp', 'mm' (in that order).
+        """
+        return self._wrapper.calculate_polarized(x_array, model_id)
+
     def sld_profile(self, model_id: str) -> tuple[np.ndarray, np.ndarray]:
         """Return the scattering length density profile.
 
@@ -216,9 +258,42 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         """
         return self._wrapper.sld_profile(model_id)
 
+    def magnetic_sld_profile(self, model_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Return the nuclear and magnetic scattering length density profiles.
+
+        Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).
+
+        Parameters
+        ----------
+        model_id : str
+            The model id.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+            z, sld(z), magnetic sld rhoM(z) and magnetic angle thetaM(z).
+        """
+        return self._wrapper.magnetic_sld_profile(model_id)
+
     def set_resolution_function(self, resolution_function: Callable[[np.array], np.array]) -> None:
         """Set resolution function."""
         return self._wrapper.set_resolution_function(resolution_function)
+
+    @property
+    def supports_magnetism(self) -> bool:
+        """Whether this calculator backend can model magnetic samples."""
+        return self._wrapper.supports_magnetism
+
+    def remove_layer_magnetism(self, layer_id: str) -> None:
+        """Remove the magnetic state of one layer; disables `include_magnetism`
+        when no magnetic layer is left.
+
+        Parameters
+        ----------
+        layer_id : str
+            The layer id.
+        """
+        self._wrapper.remove_layer_magnetism(layer_id)
 
     @property
     def include_magnetism(self):
@@ -235,3 +310,23 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             True if the calculator should include magnetism.
         """
         self._wrapper.magnetism = magnetism
+
+    @property
+    def polarization_channel(self):
+        """The spin channel ('pp', 'pm', 'mp' or 'mm') used by `reflectity_profile` when magnetism is enabled.
+
+        Note: this state belongs to the currently-active calculator instance; switching
+        calculators via the factory constructs a fresh instance and resets it.
+        """
+        return self._wrapper.polarization_channel
+
+    @polarization_channel.setter
+    def polarization_channel(self, channel) -> None:
+        """Set the spin channel for reflectivity calculations.
+
+        Parameters
+        ----------
+        channel : PolarizationChannel | str
+            One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).
+        """
+        self._wrapper.polarization_channel = channel

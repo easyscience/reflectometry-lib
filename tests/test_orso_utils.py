@@ -174,3 +174,78 @@ def test_load_orso_model_returns_none_and_warns_when_no_sample_model():
     assert result is None
     assert len(w) == 1
     assert 'does not contain a sample model definition' in str(w[0].message)
+
+
+def test_load_orso_model_resolves_named_materials(tmp_path):
+    """Named materials from the file's `materials` section must be resolved.
+
+    Regression: `load_orso_model` used to rebuild the ORSO ``SampleModel``
+    from `stack` and `layers` alone, dropping the `materials` definitions —
+    every named material then read as SLD 0. Also covers SLDs stored as
+    orsopy ``Value`` objects and layers whose material has neither a name
+    nor a formula (must not produce ``None`` names).
+    """
+    import datetime
+
+    import numpy as np
+    from orsopy import fileio
+    from orsopy.fileio import model_language
+
+    sample_model = model_language.SampleModel(
+        stack='ambient | film | substrate',
+        layers={
+            'ambient': model_language.Layer(
+                thickness=fileio.Value(0.0, 'angstrom'), roughness=fileio.Value(0.0, 'angstrom'), material='vac'
+            ),
+            'film': model_language.Layer(
+                thickness=fileio.Value(35.0, 'angstrom'), roughness=fileio.Value(3.0, 'angstrom'), material='MatA'
+            ),
+            'substrate': model_language.Layer(
+                thickness=fileio.Value(0.0, 'angstrom'), roughness=fileio.Value(2.0, 'angstrom'), material='Si'
+            ),
+        },
+        materials={
+            'vac': model_language.Material(sld=fileio.Value(0.0, '1/angstrom^2')),
+            'MatA': model_language.Material(sld=fileio.Value(3.0e-6, '1/angstrom^2')),
+            'Si': model_language.Material(sld=fileio.Value(2.07e-6, '1/angstrom^2')),
+        },
+        globals=model_language.ModelParameters(length_unit='angstrom'),
+    )
+    header = fileio.Orso(
+        data_source=fileio.DataSource(
+            owner=fileio.Person(name='test', affiliation='test'),
+            experiment=fileio.Experiment(
+                title='t', instrument='sim', start_date=datetime.datetime(2026, 1, 1), probe='neutron'
+            ),
+            sample=fileio.Sample(name='named materials', model=sample_model),
+            measurement=fileio.Measurement(
+                instrument_settings=fileio.InstrumentSettings(
+                    incident_angle=fileio.Value(1.0, 'deg'), wavelength=fileio.Value(6.0, 'angstrom')
+                ),
+                data_files=[],
+            ),
+        ),
+        reduction=fileio.Reduction(software=fileio.Software(name='test')),
+        columns=[fileio.Column('Qz', '1/angstrom'), fileio.Column('R')],
+        data_set=0,
+    )
+    q = np.linspace(0.01, 0.1, 5)
+    path = tmp_path / 'named_materials.ort'
+    fileio.save_orso([fileio.OrsoDataset(header, np.array([q, np.ones_like(q)]).T)], str(path))
+
+    from orsopy.fileio import orso as orso_io
+
+    sample = load_orso_model(orso_io.load_orso(str(path)))
+
+    assert sample is not None
+    film = sample[1].layers[0]
+    assert film.name == 'film'
+    assert film.thickness.value == pytest.approx(35.0)
+    assert film.roughness.value == pytest.approx(3.0)
+    assert film.material.sld.value == pytest.approx(3.0)  # 1e-6/A^2, resolved from `materials`
+    assert sample[2].layers[0].material.sld.value == pytest.approx(2.07)
+    # No layer or material name may come back as None
+    for assembly in sample:
+        for layer in assembly.layers:
+            assert layer.name is not None
+            assert layer.material.name is not None

@@ -54,17 +54,37 @@ jobs:
 
     outputs:
       pytest-marks: ${{ steps.set-mark.outputs.pytest_marks }}
+      unit-task: ${{ steps.set-mark.outputs.unit_task }}
+      integration-task: ${{ steps.set-mark.outputs.integration_task }}
 
     steps:
-      # Determine if integration tests should be run fully or only the fast ones
-      # (to save time on branches other than master and develop)
-      - name: Set mark for integration tests
+      # Tests marked `slow` (real minimizer runs, samplers, long fits) are
+      # deselected by pytest's addopts, so the `*-tests` tasks run the fast
+      # subset and the `*-tests-all` tasks add the slow ones back. Run the
+      # full set where it matters -- pull requests (the release PR included),
+      # master/develop, and manual dispatch -- and the fast subset on ordinary
+      # feature-branch pushes. Integration tests keep their own `fast` gate on
+      # top; the two are mutually exclusive by construction, so only one of
+      # `pytest-marks` / the `-all` task is ever in play.
+      - name: Set marks and task names
         id: set-mark
         run: |
-          if [[ "${{ env.CI_BRANCH }}" == "master" || "${{ env.CI_BRANCH }}" == "develop" ]]; then
+          full_run=false
+          case "${{ github.event_name }}" in
+            pull_request|workflow_dispatch) full_run=true ;;
+          esac
+          case "${{ env.CI_BRANCH }}" in
+            master|develop) full_run=true ;;
+          esac
+
+          if [[ "$full_run" == "true" ]]; then
             echo "pytest_marks=" >> $GITHUB_OUTPUT
+            echo "unit_task=unit-tests-all" >> $GITHUB_OUTPUT
+            echo "integration_task=integration-tests-all" >> $GITHUB_OUTPUT
           else
             echo "pytest_marks=-m fast" >> $GITHUB_OUTPUT
+            echo "unit_task=unit-tests" >> $GITHUB_OUTPUT
+            echo "integration_task=integration-tests" >> $GITHUB_OUTPUT
           fi
 
   # Job 2: Test code
@@ -87,7 +107,7 @@ jobs:
         with:
           environments: ${{ env.PIXI_ENVS }}
 
-      - name: Run unit tests
+      - name: Run unit tests (${{ needs.env-prepare.outputs.unit-task }})
         shell: bash
         run: |
           set -euo pipefail
@@ -99,7 +119,7 @@ jobs:
             env="py-$(echo $py_ver | tr -d .)-env" # Converts 3.XX -> py-3XX-env
 
             echo "Running tests in environment: $env"
-            pixi run --environment $env unit-tests
+            pixi run --environment $env ${{ needs.env-prepare.outputs.unit-task }}
           done
 
       - name: Run functional tests
@@ -117,7 +137,7 @@ jobs:
             pixi run --environment $env functional-tests
           done
 
-      - name: Run integration tests ${{ needs.env-prepare.outputs.pytest-marks }}
+      - name: Run integration tests (${{ needs.env-prepare.outputs.integration-task }})
         shell: bash
         run: |
           set -euo pipefail
@@ -129,7 +149,7 @@ jobs:
             env="py-$(echo $py_ver | tr -d .)-env" # Converts 3.XX -> py-3XX-env
 
             echo "Running tests in environment: $env"
-            pixi run --environment $env integration-tests ${{ needs.env-prepare.outputs.pytest-marks }}
+            pixi run --environment $env ${{ needs.env-prepare.outputs.integration-task }} ${{ needs.env-prepare.outputs.pytest-marks }}
           done
 
       # Delete all local tags when not on a tagged commit to force versioningit
@@ -174,6 +194,8 @@ jobs:
   # Job 3: Test the package
   package-test:
     needs: source-test # depend on previous job
+    # Only run the package tests on the master branch
+    if: github.ref == 'refs/heads/master'
 
     strategy:
       fail-fast: false
@@ -217,9 +239,6 @@ jobs:
             echo "Adding Python $py_ver"
             pixi add "python=$py_ver"
 
-            echo "Setting macOS 14.0 as minimum required"
-            pixi project system-requirements add macos 14.0
-
             echo "Looking for wheel in ../dist/py$py_ver/"
             ls -l "../dist/py$py_ver/"
 
@@ -255,7 +274,8 @@ jobs:
             cd easyreflectometry_py$py_ver
 
             echo "Running tests"
-            pixi run python -m pytest ../tests/unit/ --color=yes -v
+            # This job only runs on master, so always include the `slow` tests.
+            pixi run python -m pytest ../tests/unit/ -m 'slow or not slow' --color=yes -v
 
             echo "Exiting pixi project directory"
             cd ..
@@ -280,7 +300,7 @@ jobs:
             cd ..
           done
 
-      - name: Run integration tests ${{ needs.env-prepare.outputs.pytest-marks }}
+      - name: Run integration tests
         shell: bash
         run: |
           set -euo pipefail
@@ -295,7 +315,7 @@ jobs:
             echo "Running tests"
             # No -n auto: concurrent xdist workers race on arviz's daily-warning
             # stamp file when they import easyreflectometry. See pixi.toml.
-            pixi run python -m pytest ../tests/integration/ --color=yes -v ${{ needs.env-prepare.outputs.pytest-marks }}
+            pixi run python -m pytest ../tests/integration/ -m 'slow or not slow' --color=yes -v
 
             echo "Exiting pixi project directory"
             cd ..

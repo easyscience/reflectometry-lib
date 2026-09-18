@@ -14,22 +14,6 @@ from ..wrapper_base import WrapperBase
 
 
 class RefnxWrapper(WrapperBase):
-    @property
-    def include_magnetism(self) -> bool:
-        """Include magnetism."""
-        return self._magnetism
-
-    @include_magnetism.setter
-    def include_magnetism(self, magnetism: bool) -> None:
-        """Set the magnetism flag.
-
-        Parameters
-        ----------
-        magnetism : bool
-            The magnetism flag.
-        """
-        raise NotImplementedError('Magnetism is not supported by refnx')
-
     def create_material(self, name: str):
         """Create a material using SLD.
 

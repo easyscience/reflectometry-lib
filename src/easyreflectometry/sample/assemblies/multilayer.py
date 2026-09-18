@@ -31,6 +31,8 @@ class Multilayer(BaseAssembly):
         interface=None,
         type: str = 'Multi-layer',
         populate_if_none: Optional[bool] = True,
+        conformal_thickness: bool = False,
+        conformal_roughness: bool = False,
     ):
         """Constructor.
 
@@ -48,6 +50,13 @@ class Multilayer(BaseAssembly):
             Calculator interface. By default, None.
         type : str, optional
             Type of the constructed instance. By default, 'Multi-layer'.
+        conformal_thickness : bool, optional
+            Tie every layer's thickness to the front layer's. Serialization
+            reads the current graph state through the matching property, so
+            the ties are rebuilt on ``from_dict``. By default, False.
+        conformal_roughness : bool, optional
+            Tie every layer's roughness to the front layer's, likewise
+            persistent. By default, False.
         """
         if layers is None:
             if populate_if_none:
@@ -69,6 +78,10 @@ class Multilayer(BaseAssembly):
             layers=layers,
             unique_name=unique_name,
         )
+        if conformal_thickness:
+            self.conformal_thickness = True
+        if conformal_roughness:
+            self.conformal_roughness = True
 
     def add_layer(self, *layers: tuple[Layer]) -> None:
         """Add a layer to the multi layer.

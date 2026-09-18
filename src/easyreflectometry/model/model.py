@@ -115,6 +115,20 @@ class Model(BaseCore):
         self._scale = scale
         self._background = background
 
+        # Derived, read-only "calculation" parameter (see `total_thickness`).
+        # Rebuilt by every constructor call — including `from_dict` — and
+        # deliberately *not* serialized: it is a function of the layers.
+        self._total_thickness = Parameter(
+            name='total_thickness',
+            value=0.0,
+            unit='angstrom',
+            fixed=True,
+            description='Total thickness of the film: the sum of all layer thicknesses '
+            'between the superphase and the subphase (derived, read-only).',
+        )
+        self._total_thickness_sources: list[Parameter] = []
+        self.refresh_derived()
+
         # Set interface last — propagates to children via BaseCore.generate_bindings
         # and then sets the resolution function on the calculator (see setter).
         if interface is not None:
@@ -145,6 +159,56 @@ class Model(BaseCore):
     @background.setter
     def background(self, value: float) -> None:
         self._background.value = value
+
+    # ----- derived parameters -----
+
+    def _film_layers(self) -> list:
+        """Layers between the superphase and the subphase (first and last layer of the sample)."""
+        layers = [layer for assembly in self.sample for layer in assembly.layers]
+        return layers[1:-1] if len(layers) >= 3 else []
+
+    def refresh_derived(self) -> None:
+        """Re-derive the model's computed parameters from the current layer structure.
+
+        Cheap (a few string operations) and idempotent: the dependency is
+        only rebuilt when the set of contributing layers changed. Called on
+        every access to :attr:`total_thickness`, so layers added or removed
+        through *any* path (`Model.add_assemblies`, `assembly.layers.append`,
+        ...) are picked up without explicit notification.
+        """
+        sources = [layer.thickness for layer in self._film_layers()]
+        current = self._total_thickness_sources
+        if len(sources) == len(current) and all(a is b for a, b in zip(sources, current)):
+            return
+        self._total_thickness_sources = sources
+        total = self._total_thickness
+        if not sources:
+            if not total.independent:
+                total.make_independent()
+            # `make_dependent_on` clears `fixed`, and `make_independent` does not
+            # put it back; without this the parameter would resurface as a free
+            # fit parameter once the film is emptied.
+            total.fixed = True
+            total.value = 0.0
+            return
+        dependency_map = {f't{index}': source for index, source in enumerate(sources)}
+        total.make_dependent_on(
+            dependency_expression=' + '.join(dependency_map.keys()),
+            dependency_map=dependency_map,
+        )
+
+    @property
+    def total_thickness(self) -> Parameter:
+        """Read-only parameter: the summed thickness of the film layers.
+
+        The superphase (first layer of the sample) and the subphase (last
+        layer) are semi-infinite and excluded. The parameter is *dependent*:
+        it tracks the layer thicknesses, never enters a fit and cannot be
+        set; it can be referenced from constraint expressions and
+        inequality constraints like any other parameter.
+        """
+        self.refresh_derived()
+        return self._total_thickness
 
     # ----- assembly management -----
 
@@ -195,6 +259,11 @@ class Model(BaseCore):
         self.sample.remove_assembly(index)
         if self.interface is not None:
             self.interface().remove_item_from_model(assembly_unique_name, self.unique_name)
+
+    @property
+    def has_magnetism(self) -> bool:
+        """Whether any layer in the sample carries magnetic properties."""
+        return any(getattr(layer, 'magnetism', None) is not None for assembly in self.sample for layer in assembly.layers)
 
     @property
     def is_default(self) -> bool:
@@ -275,8 +344,23 @@ class Model(BaseCore):
         return self.to_dict(skip=skip)
 
     def as_orso(self) -> dict:
-        """Convert the model to a dictionary suitable for ORSO."""
-        return self.as_dict()
+        """The sample as an ORSO simple-model (``sample.model``) dictionary.
+
+        Slab representation: lengths in angstrom, SLDs in 1/angstrom^2,
+        repeating multilayers via the inline ``N ( ... )`` stack syntax.
+
+        Returns
+        -------
+        dict
+            The ORSO model-language dictionary (the content of an .ort file's
+            ``data_source.sample.model`` section).
+        """
+        # Circular import if hoisted to module-top.
+        from orsopy.fileio import Header
+
+        from easyreflectometry.orso_utils import sample_to_orso_model
+
+        return Header.asdict(sample_to_orso_model(self.sample))
 
     @classmethod
     def from_dict(cls, passed_dict: dict) -> Model:

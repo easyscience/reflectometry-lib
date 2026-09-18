@@ -80,15 +80,29 @@ def collect_unique_names_from_dict(structure_dict: dict, unique_names: Optional[
 
 
 def count_free_parameters(project) -> int:
-    """Count free parameters."""
-    return sum(1 for parameter in project.parameters if parameter.free)
+    """Count free parameters.
+
+    Dependent parameters (constrained or derived) are neither free nor fixed:
+    they never enter a fit, whatever their ``free`` flag says.
+    """
+    return sum(1 for parameter in project.parameters if parameter.independent and parameter.free)
 
 
 def count_fixed_parameters(project) -> int:
-    """Count fixed parameters."""
-    return sum(1 for parameter in project.parameters if not parameter.free)
+    """Count fixed parameters (independent parameters that are not free)."""
+    return sum(1 for parameter in project.parameters if parameter.independent and not parameter.free)
 
 
 def count_parameter_user_constraints(project) -> int:
-    """Count parameter user constraints."""
-    return sum(1 for parameter in project.parameters if not parameter.independent)
+    """Count the constraints created via :mod:`easyreflectometry.constraints`.
+
+    Counts only parameters that are both marked as user-constrained and still
+    dependent — the same test ``Project`` uses to decide what to persist.
+    Internal dependencies (``Model.total_thickness``, conformal assembly ties,
+    material mixtures) are not user constraints and are not counted.
+    """
+    from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
+
+    return sum(
+        1 for parameter in project.parameters if getattr(parameter, USER_CONSTRAINT_FLAG, False) and not parameter.independent
+    )

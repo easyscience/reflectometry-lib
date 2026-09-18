@@ -12,6 +12,7 @@ from .collections.material_collection import MaterialCollection
 from .collections.sample import Sample
 from .elements.layers.layer import Layer
 from .elements.layers.layer_area_per_molecule import LayerAreaPerMolecule
+from .elements.layers.layer_magnetism import LayerMagnetism
 from .elements.materials.material import Material
 from .elements.materials.material_density import MaterialDensity
 from .elements.materials.material_mixture import MaterialMixture
@@ -24,6 +25,7 @@ __all__ = (
     'Layer',
     'LayerAreaPerMolecule',
     'LayerCollection',
+    'LayerMagnetism',
     'Material',
     'MaterialCollection',
     'MaterialDensity',

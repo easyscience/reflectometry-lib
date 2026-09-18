@@ -5,10 +5,12 @@
 Tests for LayerCollection class.
 """
 
+import pytest
 from easyscience import global_object
 
 from easyreflectometry.sample.collections.material_collection import MaterialCollection
 from easyreflectometry.sample.elements.materials.material import Material
+from easyreflectometry.sample.elements.materials.material_density import MaterialDensity
 
 
 class TestMaterialCollection:
@@ -100,3 +102,21 @@ class TestMaterialCollection:
 
         # Expect
         assert p[4].name == 'Boron duplicate'
+
+    def test_duplicate_material_of_a_subclass(self):
+        # When
+        p = MaterialCollection()
+        m = MaterialDensity('Si', 2.33, 'Silicon')
+        p.add_material(m)
+
+        # Then
+        p.duplicate_material(3)
+
+        # Expect
+        # The copy has to come back as its own class: rebuilding it as `Material` raised,
+        # so duplicating a density material was not a lossy copy but an outright failure.
+        assert isinstance(p[4], MaterialDensity)
+        assert p[4].name == 'Silicon duplicate'
+        assert p[4].chemical_structure == 'Si'
+        assert p[4].density.value == 2.33
+        assert p[4].sld.value == pytest.approx(p[3].sld.value)

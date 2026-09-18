@@ -5,7 +5,7 @@
 [workspace]
 
 # Supported platforms for the lock file (pixi.lock)
-platforms = ['win-64', 'linux-64', 'osx-arm64']
+platforms = ['win-64', 'linux-64', { platform = 'osx-arm64', macos = '14.0' }]
 
 # Channels for fetching packages
 channels = ['nodefaults', 'conda-forge']
@@ -18,13 +18,6 @@ channels = ['nodefaults', 'conda-forge']
 
 [activation.env]
 PYTHONIOENCODING = 'utf-8'
-
-[system-requirements]
-# Set minimum supported version for macOS to be 14.0 to ensure packages
-# like `scipp` that only have wheels for macOS 14.0+ (macosx_14_0_arm64)
-# are used instead of building from source. This is a workaround for
-# Pixi, see https://github.com/prefix-dev/pixi/issues/5667
-macos = '14.0'
 
 # Non-default features:
 
@@ -96,6 +89,11 @@ user = { features = ['py-max', 'user'] }
 # (pending migration into tests/unit/), so run the whole tree minus the
 # functional and integration subtrees -- otherwise CI coverage only sees
 # the handful of files under tests/unit/.
+# Expensive tests (real minimizer runs, samplers, long fits) carry the `slow`
+# marker and are deselected by default -- see the `addopts` in pyproject.toml.
+# Use `unit-tests-all` / `test-all` to include them, or `slow-tests` to run
+# only them. CI runs the full set on pull requests, on master/develop and on
+# manual dispatch; plain feature-branch pushes get the fast subset.
 unit-tests = 'python -m pytest tests/ --ignore=tests/functional --ignore=tests/integration --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 # No -n auto: importing easyreflectometry pulls in arviz, and arviz 0.23.4
@@ -109,7 +107,19 @@ functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -v'
 notebook-tests = 'python -m pytest --nbmake docs/docs/tutorials/**/ --nbmake-timeout=1200 --color=yes -n auto -v'
 
+# Same trees as above, but with the `slow` tests selected back in. `-m` on the
+# command line overrides the `-m "not slow"` in the pyproject addopts.
+unit-tests-all = 'pixi run unit-tests -m "slow or not slow"'
+integration-tests-all = 'pixi run integration-tests -m "slow or not slow"'
+# Only the expensive tests, across the whole tree.
+slow-tests = 'python -m pytest tests/ -m slow --color=yes -v'
+
 test = { depends-on = ['unit-tests'] }
+test-all = { depends-on = [
+  'unit-tests-all',
+  'functional-tests',
+  'integration-tests-all',
+] }
 
 ###########
 # ✔️ Checks
@@ -163,9 +173,11 @@ raw-metrics-json = 'radon raw -s -j src/'
 # 📊 Coverage
 #############
 
-unit-tests-coverage = 'pixi run unit-tests --cov=src/easyreflectometry --cov-report=term-missing'
+# Coverage always includes the slow tests: they cover the fitting paths that
+# nothing else reaches, so leaving them out would understate the numbers.
+unit-tests-coverage = 'pixi run unit-tests-all --cov=src/easyreflectometry --cov-report=term-missing'
 functional-tests-coverage = 'pixi run functional-tests --cov=src/easyreflectometry --cov-report=term-missing'
-integration-tests-coverage = 'pixi run integration-tests --cov=src/easyreflectometry --cov-report=term-missing'
+integration-tests-coverage = 'pixi run integration-tests-all --cov=src/easyreflectometry --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/easyreflectometry'
 
 cov = { depends-on = [

@@ -13,6 +13,7 @@ from easyreflectometry.utils import get_as_parameter
 
 from ...base_core import BaseCore
 from ..materials.material import Material
+from .layer_magnetism import LayerMagnetism
 
 DEFAULTS = {
     'thickness': {
@@ -45,6 +46,7 @@ class Layer(BaseCore):
         name: str = 'EasyLayer',
         unique_name: Optional[str] = None,
         interface=None,
+        magnetism: Union[LayerMagnetism, None] = None,
     ):
         """Constructor.
 
@@ -58,6 +60,9 @@ class Layer(BaseCore):
             Layer thickness in Angstrom. By default, None.
         roughness : Union[Parameter, float, None], optional
             Upper roughness on the layer in Angstrom. By default, None.
+        magnetism : Union[LayerMagnetism, None], optional
+            Magnetic properties of the layer; None for a non-magnetic layer.
+            By default, None.
         name : str, optional
             Name of the layer. By default, 'EasyLayer'.
         interface :
@@ -91,9 +96,29 @@ class Layer(BaseCore):
         self._material = material
         self._thickness = thickness
         self._roughness = roughness
+        self._magnetism = magnetism
 
         if interface is not None:
             self.interface = interface
+
+    # ----- interface (override BaseCore's to switch on calculator magnetism) -----
+
+    @BaseCore.interface.setter
+    def interface(self, new_interface) -> None:
+        """Set the interface; runs `generate_bindings` and, for a magnetic layer,
+        enables magnetism on the calculator (raising if it does not support it).
+        """
+        BaseCore.interface.fset(self, new_interface)
+        if new_interface is not None and self._magnetism is not None:
+            self._enable_calculator_magnetism()
+
+    def _enable_calculator_magnetism(self) -> None:
+        """Turn on magnetism on the attached calculator.
+
+        Raises `NotImplementedError` when the active calculator cannot model
+        magnetic samples (e.g. refnx or bornagain).
+        """
+        self.interface().include_magnetism = True
 
     @property
     def material(self) -> Material:
@@ -119,6 +144,34 @@ class Layer(BaseCore):
     def roughness(self, value: float) -> None:
         self._roughness.value = value
 
+    @property
+    def magnetism(self) -> Optional[LayerMagnetism]:
+        return self._magnetism
+
+    @magnetism.setter
+    def magnetism(self, value: Optional[LayerMagnetism]) -> None:
+        """Attach or remove the magnetic properties of this layer.
+
+        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become
+        live on the backend; removing drops the layer's magnetic state from the
+        backend (and switches calculator magnetism off entirely when this was the
+        last magnetic layer).
+        """
+        if value is None and self._magnetism is not None:
+            if self.interface is not None:
+                self.interface().remove_layer_magnetism(self.unique_name)
+            # Detach the calculator callbacks of the removed parameters so later
+            # value changes on the detached object no longer reach the backend.
+            # `property()` (fget/fset/fdel all None) is easyscience's own "no
+            # callback" sentinel -- `Parameter.__copy__` sets it the same way --
+            # so a later `fset` guard in `Parameter` cleanly no-ops.
+            self._magnetism.rho_m._callback = property()
+            self._magnetism.theta_m._callback = property()
+        self._magnetism = value
+        if value is not None and self.interface is not None:
+            self._enable_calculator_magnetism()
+            self.generate_bindings()
+
     def assign_material(self, material: Material) -> None:
         """Assign a material to the layer interface.
 
@@ -135,10 +188,13 @@ class Layer(BaseCore):
     @property
     def _dict_repr(self) -> dict[str, str]:
         """A simplified dict representation."""
-        return {
+        this_dict = {
             self.name: {
                 'material': self.material._dict_repr,
                 'thickness': f'{self.thickness.value:.3f} {self.thickness.unit}',
                 'roughness': f'{self.roughness.value:.3f} {self.roughness.unit}',
             }
         }
+        if self._magnetism is not None:
+            this_dict[self.name]['magnetism'] = self._magnetism._dict_repr
+        return this_dict

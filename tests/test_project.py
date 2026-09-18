@@ -3,8 +3,10 @@
 
 import datetime
 import os
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -346,11 +348,31 @@ class TestProject:
         models = ModelCollection(model)
         project.models = models
 
-        # Then
-        project.remove_material(0)
+        # Then Expect
+        with pytest.raises(ValueError, match='is used in models'):
+            project.remove_material(0)
 
-        # Expect
         assert len(project._materials) == 2
+
+    def test_add_material_already_present(self):
+        # When
+        project = Project()
+        material = Material()
+        project.add_material(material)
+
+        # Then Expect
+        with pytest.raises(ValueError, match='already in the material collection'):
+            project.add_material(material)
+
+        assert len(project._materials) == 1
+
+    def test_remove_material_out_of_range(self):
+        # When
+        project = Project()
+
+        # Then Expect
+        with pytest.raises(IndexError):
+            project.remove_material(0)
 
     def test_default_info(self):
         # When
@@ -545,6 +567,33 @@ class TestProject:
             assert project_dict[key] == new_project_dict[key]
         assert project_materials_dict == new_project_materials_dict
 
+    def test_dict_round_trip_experiment_without_xe(self):
+        # When - an experiment whose x-uncertainty was explicitly cleared
+        global_object.map._clear()
+        project = Project()
+        project.models = ModelCollection(Model(name='First'), Model(name='Second'))
+        fpath = os.path.join(PATH_STATIC, 'example.ort')
+        project.load_experiment_for_model_at_index(fpath, 1)
+        project.experiments[1].xe = None
+        project_dict = project.as_dict()
+
+        # Expect - name and model are recorded regardless of xe
+        assert project_dict['experiments_names'][1] == 'Example data file from refnx docs'
+        assert project_dict['experiments_models'][1] == project.models[1].name
+        assert len(project_dict['experiments'][1]) == 3
+
+        # Then - the project loads back with the experiment attached to the same model
+        global_object.map._clear()
+        new_project = Project()
+        new_project.from_dict(project_dict)
+
+        assert list(new_project.experiments.keys()) == [1]
+        assert new_project.experiments[1].name == 'Example data file from refnx docs'
+        assert new_project.experiments[1].model == new_project.models[1]
+        assert_allclose(new_project.experiments[1].x, project.experiments[1].x)
+        assert_allclose(new_project.experiments[1].y, project.experiments[1].y)
+        assert_allclose(new_project.experiments[1].ye, project.experiments[1].ye)
+
     def test_save_as_json(self, tmp_path):
         # When
         global_object.map._clear()
@@ -589,10 +638,110 @@ class TestProject:
         # Then
         project._info['short_description'] = 'short_description'
         project.default_model()
-        project.save_as_json()
+        with pytest.raises(FileExistsError):
+            project.save_as_json()
 
         # Expect
         assert str(file_info) == str(project.path_json.stat())
+
+    def test_save_as_json_serialization_failure_keeps_previous_file(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project.save_as_json()
+        previous_content = project.path_json.read_text()
+
+        # Then
+        project.as_dict = MagicMock(side_effect=ValueError('unreachable constraint parameter'))
+        with pytest.raises(ValueError):
+            project.save_as_json(overwrite=True)
+
+        # Expect: the previous save survives and no temporary file is left behind
+        assert project.path_json.exists()
+        assert project.path_json.read_text() == previous_content
+        assert list(project.path_json.parent.glob('*.tmp')) == []
+
+    def test_save_as_json_write_failure_keeps_previous_file(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project.save_as_json()
+        previous_content = project.path_json.read_text()
+
+        # Then: the destination cannot be replaced, e.g. a locked file on Windows
+        with patch('easyreflectometry.project.os.replace', side_effect=PermissionError('locked')):
+            with pytest.raises(PermissionError):
+                project.save_as_json(overwrite=True)
+
+        # Expect
+        assert project.path_json.read_text() == previous_content
+        assert list(project.path_json.parent.glob('*.tmp')) == []
+
+    def test_save_as_json_reports_unserializable_content_as_value_error(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project.save_as_json()
+        previous_content = project.path_json.read_text()
+
+        # Then: json.dumps raises TypeError for a value it cannot encode
+        project.as_dict = MagicMock(return_value={'info': object()})
+        with pytest.raises(ValueError, match='cannot be serialized'):
+            project.save_as_json(overwrite=True)
+
+        # Expect
+        assert project.path_json.read_text() == previous_content
+        assert list(project.path_json.parent.glob('*.tmp')) == []
+
+    @pytest.mark.skipif(sys.platform == 'win32', reason='POSIX file modes')
+    def test_save_as_json_keeps_the_file_mode_of_an_existing_project_file(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project.save_as_json()
+        # Group-writable on purpose: distinguishable from the umask default a new file would get.
+        os.chmod(project.path_json, 0o664)  # noqa: S103
+
+        # Then
+        project._info['short_description'] = 'short_description'
+        project.save_as_json(overwrite=True)
+
+        # Expect: the temporary file's 0600 must not leak onto the project file
+        assert project.path_json.stat().st_mode & 0o777 == 0o664
+
+    @pytest.mark.skipif(sys.platform == 'win32', reason='POSIX file modes')
+    def test_save_as_json_new_file_is_not_owner_only(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        previous_umask = os.umask(0o022)
+        try:
+            project.save_as_json()
+        finally:
+            os.umask(previous_umask)
+
+        # Expect
+        assert project.path_json.stat().st_mode & 0o777 == 0o644
+
+    def test_save_as_json_overwrite_replaces_content(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project.save_as_json()
+
+        # Then
+        project._info['short_description'] = 'short_description'
+        project.save_as_json(overwrite=True)
+
+        # Expect
+        assert 'short_description' in project.path_json.read_text()
+        assert list(project.path_json.parent.glob('*.tmp')) == []
 
     def test_load_from_json(self, tmp_path):
         # When
@@ -627,6 +776,22 @@ class TestProject:
         assert new_project._path_project_parent == tmp_path
         assert new_project.created is True
 
+    def test_load_from_json_missing_file_raises_and_keeps_the_project(self, tmp_path):
+        # When
+        global_object.map._clear()
+        project = Project()
+        project.default_model()
+        project._info['name'] = 'untouched'
+
+        # Then
+        with pytest.raises(FileNotFoundError):
+            project.load_from_json(tmp_path / 'nowhere' / 'project.json')
+
+        # Expect
+        assert project._info['name'] == 'untouched'
+        assert len(project._models) == 1
+        assert project.created is False
+
     def test_create(self, tmp_path):
         # When
         project = Project()
@@ -647,6 +812,23 @@ class TestProject:
             'short_description': 'Reflectometry, 1D',
             'modified': datetime.datetime.now().strftime('%d.%m.%Y %H:%M'),
         }
+
+    def test_create_existing_directory_raises(self, tmp_path):
+        # When
+        project = Project()
+        project.set_path_project_parent(tmp_path)
+        project._info['name'] = 'TestProject'
+        project._info['modified'] = 'modified'
+        (tmp_path / 'TestProject').mkdir()
+
+        # Then
+        with pytest.raises(FileExistsError):
+            project.create()
+
+        # Expect: nothing was made and the project does not claim to exist on disk
+        assert project.created is False
+        assert not (project.path / 'experiments').exists()
+        assert project._info['modified'] == 'modified'
 
     def test_load_experiment(self):
         # When
@@ -808,9 +990,10 @@ class TestProject:
         # Then
         parameters = project.parameters
 
-        # Expect
-        assert len(parameters) == 14
+        # Expect: 14 layer/material/model parameters + the model's derived total thickness
+        assert len(parameters) == 15
         assert isinstance(parameters[0], Parameter)
+        assert any(parameter is project.models[0].total_thickness for parameter in parameters)
 
     def test_parameters_enabled_flags(self):
         global_object.map._clear()
@@ -973,6 +1156,10 @@ class TestProject:
         assert material_1 in project._materials
         assert material_2 in project._materials
         assert project.current_model_index == 1
+        # Each loaded sample gets its own colour from the collection's cycle;
+        # without this, every ORSO-loaded model rendered in the first palette
+        # colour and their curves were indistinguishable.
+        assert project._models[0].color != project._models[1].color
 
     def test_add_sample_from_orso_with_shared_materials(self):
         # When
