@@ -70,10 +70,14 @@ using **Pixi**.
   ```txt
   pixi add --pypi easyreflectometry
   ```
-- Add a Pixi task to run EasyReflectometry commands easily:
+- Check the installation by printing the installed version:
   ```txt
-  pixi task add easyreflectometry "python -m easyreflectometry"
+  pixi run python -c "import easyreflectometry; print(easyreflectometry.__version__)"
   ```
+
+EasyReflectometry is a Python library and has no command-line interface.
+It is used from Python scripts or Jupyter notebooks, as shown in the
+[:material-school: Tutorials](../tutorials/index.md).
 
 #### Updating Pixi and EasyReflectometry
 
@@ -168,10 +172,10 @@ can be installed using `pip`. To do so, use the following command:
 pip install easyreflectometry
 ```
 
-To install a specific version of EasyReflectometry, e.g., 1.0.3:
+To install a specific version of EasyReflectometry, e.g., 1.8.0:
 
 ```txt
-pip install 'easyreflectometry==1.0.3'
+pip install 'easyreflectometry==1.8.0'
 ```
 
 To upgrade to the latest version:
@@ -224,9 +228,15 @@ tutorials interactively in two different ways: locally or online via
 Google Colab.
 
 If you decide to run the tutorials locally, you need to download them
-first. This can be done individually via the :material-download:
-**Download Notebook** button available on each tutorial page, or all at
-once using the command line, as shown below.
+first. Each tutorial page has a :material-download: **Download
+Notebook** button. Save the notebooks you want into a `tutorials/`
+directory inside your project. The notebooks either download their
+example data when they run or generate it themselves, so no data files
+need to be saved alongside them.
+
+To get all tutorials at once, download the repository as a
+[ZIP archive](https://github.com/easyscience/reflectometry-lib/archive/refs/heads/master.zip)
+and copy its `docs/docs/tutorials/` folder.
 
 ### Run Tutorials Locally with Pixi <small>recommended</small> { #running-with-pixi data-toc-label="Run Tutorials Locally with Pixi" }
 
@@ -237,8 +247,8 @@ once using the command line, as shown below.
   ```txt
   pixi add --pypi jupyterlab ipython pixi-kernel
   ```
-- Download all the EasyReflectometry tutorials to the `tutorials/`
-  directory.
+- Download the EasyReflectometry tutorials to the `tutorials/`
+  directory, as described above.
 - Start the JupyterLab server in the `tutorials/` directory to access
   the notebooks:
   ```txt
@@ -258,8 +268,8 @@ once using the command line, as shown below.
   ```txt
   python -m ipykernel install --user --name=venv --display-name "EasyReflectometry Python kernel"
   ```
-- Download all the EasyReflectometry tutorials to the `tutorials/`
-  directory.
+- Download the EasyReflectometry tutorials to the `tutorials/`
+  directory, as described above.
 - Start the Jupyter Notebook server in the `tutorials/` directory to
   access the notebooks:
   ```txt

@@ -26,14 +26,15 @@ curve from our inputted sample parameters. We rely on third party
 software to provide the necessary calculators. Different calculators
 might have different capabilities and limitations.
 
-Currently, EasyReflectometry can offer two different calculation
-engines:
+EasyReflectometry offers two calculation engines:
 
 - [**refnx**](https://refnx.readthedocs.io/)
 - [**Refl1D**](https://refl1d.readthedocs.io/en/latest/)
 
-And we are working to add more, in particular
-[**BornAgain**](https://www.bornagainproject.org) and
+Refl1D is the engine to choose for magnetic samples and polarized data;
+refnx does not model magnetism.
+
+We are working to add more, in particular
 [**GenX**](https://aglavic.github.io/genx/doc/).
 
 ### Model

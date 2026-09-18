@@ -32,6 +32,25 @@
   experiment with `xe` set to `None` saved without them and the project
   then failed to load.
 
+## Data loading
+
+- Plain text files with more than four columns now load (issue #376).
+  The loader unpacked every column into `Qz, R, sR, sQz`, so a file
+  carrying a fifth column (wavelength, for instance) failed with
+  `ValueError: Failed to load data`. Columns are now read by position in
+  the ORSO order and further **numeric** columns are ignored. A trailing
+  text column, or rows of differing width, are still an error. A
+  single-row file loads as well.
+- The error columns of a plain text file are documented as **standard
+  deviations**, matching the ORSO default; they are squared to obtain
+  the stored variances. Plain text carries no convention marker, so a
+  file holding variances is mis-scaled and the loader cannot detect it.
+  This has always been the behaviour; it is now stated in the `load`
+  docstring.
+- `merge_datagroups` uses `scipp.concat` instead of `scipp.concatenate`,
+  which current scipp releases no longer provide. Merging data groups
+  that share a key failed with an `AttributeError`.
+
 ## Models
 
 - `ModelCollection(interface=...)` with no models now builds its default
@@ -39,6 +58,62 @@
   positionally into `Model`, where it landed as the `sample` argument,
   so constructing a collection with a real calculator and no models
   failed.
+
+## Materials
+
+- New `MaterialDensity.sld_coupled`. A `MaterialDensity` derives `sld`
+  and `isld` from its chemical formula and mass density; this property
+  switches that coupling per material. Set to `False`, `sld` and `isld`
+  become independent parameters that can be set and fitted directly,
+  keeping their current values, while `density` and the formula stop
+  affecting the reflectivity. Setting it back to `True` recomputes the
+  SLDs from the current formula and density and discards the manual
+  values. The state is serialized, including the manual SLDs of a
+  decoupled material; project files from before this release load as
+  coupled.
+- Assigning `MaterialDensity.chemical_structure` now updates the
+  molecular weight along with the scattering lengths. Only the
+  scattering lengths were updated before, so after a formula change the
+  derived SLD mixed the new scattering length with the old molecular
+  weight. SLDs of materials whose formula was changed after construction
+  should be recomputed.
+- Behaviour change: `MaterialDensity.molecular_weight` is a read-only
+  `DescriptorNumber` and no longer a `Parameter`. It is a constant of
+  the formula and only `density / molecular_weight` enters the SLD, so
+  freeing it alongside the density made a fit degenerate.
+- Behaviour change: assigning an invalid formula to
+  `MaterialDensity.chemical_structure` raises `ValueError` and leaves
+  the material unchanged. An empty string, or one without any element
+  symbol, used to be accepted as an empty formula with zero scattering
+  length. An unknown element already raised, but only after the formula
+  string had been stored, leaving the material half-updated.
+- `MaterialCollection.duplicate_material` keeps the type of the material
+  it copies. It always built a plain `Material`, so duplicating a
+  `MaterialDensity`, `MaterialMixture` or `MaterialSolvated` lost the
+  subclass. The duplicate is also bound to the collection's calculator
+  interface now.
+
+## Calculators
+
+- Removed the BornAgain calculator, the
+  `easyreflectometry.calculators.bornagain` package. Its registration
+  had long been commented out, so `CalculatorFactory` never offered it
+  and no supported workflow reached it. The available engines are refnx
+  and Refl1D. Code that imported from `calculators.bornagain` directly
+  will fail with `ModuleNotFoundError`.
+
+## Summary report
+
+- The parameter table leaves the uncertainty cell empty for a parameter
+  that has not been fitted. It used to print `0.0`, which read as a
+  perfectly determined value.
+
+## Dependencies
+
+- `easyscience` is now required as `>=2.5.1,<3`. Release 1.7.0 declared
+  it without bounds, which let a resolver pick the pre-2.0 series; that
+  series lacks the `easyscience.variable` module this library imports
+  and fails on `import easyreflectometry`.
 
 ## Parameter constraints
 
@@ -319,6 +394,15 @@ returned.
 - New API reference pages for constraints, inequality constraints,
   Bayesian analysis, calculators, parameter limits, `LayerMagnetism`,
   ORSO, summary and plotting.
+- The **Open in Google Colab** button on tutorial pages works again. Its
+  link assumed a flat `tutorials/<name>/` layout and had pointed at a
+  missing file since the tutorials were grouped into category folders.
+- The installation guide no longer tells users to set up a
+  `python -m easyreflectometry` task; the library has no command-line
+  interface and the command failed. It now shows how to check the
+  installed version and how to download the tutorial notebooks.
+- The user guide no longer lists BornAgain as a planned calculation
+  engine.
 
 # Version 1.7.0 (1 Aug 2026)
 

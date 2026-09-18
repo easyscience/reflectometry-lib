@@ -8,12 +8,21 @@
   {% set tutorial_name = parts[-2] %}
   {% set filename = parts[-1] %}
 
+  {# Directory of this page on gh-pages. Tutorials are grouped into
+     category folders (tutorials/fitting/simple_fitting/), so take the
+     path from the page URL instead of assuming tutorials/<name>/. #}
+  {% if page.url.endswith('/') %}
+    {% set page_dir = page.url %}
+  {% else %}
+    {% set page_dir = page.url.rsplit('/', 1)[0] ~ "/" ~ tutorial_name ~ "/" %}
+  {% endif %}
+
   {# Colab url #}
   {% set base_colab_url = "https://colab.research.google.com/github/" %}
   {% set colab_url =
     base_colab_url ~ config.extra.vars.github_repository ~
     "/blob/gh-pages/" ~ config.extra.vars.docs_version ~
-    "/tutorials/" ~ tutorial_name ~ "/" ~ filename
+    "/" ~ page_dir ~ filename
   %}
 
   {# Download link: relative to the current page #}
