@@ -2489,10 +2489,13 @@ cd easyreflectometry
 <li>Add EasyReflectometry to the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> environment from <abbr title="The Python Package Index is a repository of software for the Python programming language.">PyPI</abbr>:
   <div class="language-text highlight"><pre><span></span><code>pixi add --pypi easyreflectometry
 </code></pre></div></li>
-<li>Add a <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> task to run EasyReflectometry commands easily:
-  <div class="language-text highlight"><pre><span></span><code>pixi task add easyreflectometry &quot;python -m easyreflectometry&quot;
+<li>Check the installation by printing the installed version:
+  <div class="language-text highlight"><pre><span></span><code>pixi run python -c &quot;import easyreflectometry; print(easyreflectometry.__version__)&quot;
 </code></pre></div></li>
 </ul>
+<p>EasyReflectometry is a Python library and has no command-line interface.
+It is used from Python scripts or Jupyter notebooks, as shown in the
+<a href="../tutorials/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"/></svg></span> Tutorials</a>.</p>
 <h4 id="updating-pixi-and-easyreflectometry">Updating <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> and EasyReflectometry</h4>
 <ul>
 <li>To update all packages in the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> environment, including
@@ -2585,8 +2588,8 @@ simply delete and recreate the environment.</p>
 can be installed using <code>pip</code>. To do so, use the following command:</p>
 <div class="language-text highlight"><pre><span></span><code>pip install easyreflectometry
 </code></pre></div>
-<p>To install a specific version of EasyReflectometry, e.g., 1.0.3:</p>
-<div class="language-text highlight"><pre><span></span><code>pip install &#39;easyreflectometry==1.0.3&#39;
+<p>To install a specific version of EasyReflectometry, e.g., 1.8.0:</p>
+<div class="language-text highlight"><pre><span></span><code>pip install &#39;easyreflectometry==1.8.0&#39;
 </code></pre></div>
 <p>To upgrade to the latest version:</p>
 <div class="language-text highlight"><pre><span></span><code>pip install --upgrade easyreflectometry
@@ -2618,9 +2621,14 @@ workflow. They are available as <strong>static HTML pages</strong> in the
 tutorials interactively in two different ways: locally or online via
 <abbr title="Cloud service that allows you to run Jupyter Notebooks in the cloud.">Google Colab</abbr>.</p>
 <p>If you decide to run the tutorials locally, you need to download them
-first. This can be done individually via the <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7z"/></svg></span>
-<strong>Download Notebook</strong> button available on each tutorial page, or all at
-once using the command line, as shown below.</p>
+first. Each tutorial page has a <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7z"/></svg></span> <strong>Download
+Notebook</strong> button. Save the notebooks you want into a <code>tutorials/</code>
+directory inside your project. The notebooks either download their
+example data when they run or generate it themselves, so no data files
+need to be saved alongside them.</p>
+<p>To get all tutorials at once, download the repository as a
+<a href="https://github.com/easyscience/reflectometry-lib/archive/refs/heads/master.zip">ZIP archive</a>
+and copy its <code>docs/docs/tutorials/</code> folder.</p>
 <h3 id="running-with-pixi">Run Tutorials Locally with <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> <small>recommended</small></h3>
 <ul>
 <li>Navigate to your existing <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> project, created as described in the
@@ -2629,8 +2637,8 @@ once using the command line, as shown below.</p>
   Jupyter:
   <div class="language-text highlight"><pre><span></span><code>pixi add --pypi jupyterlab ipython pixi-kernel
 </code></pre></div></li>
-<li>Download all the EasyReflectometry tutorials to the <code>tutorials/</code>
-  directory.</li>
+<li>Download the EasyReflectometry tutorials to the <code>tutorials/</code>
+  directory, as described above.</li>
 <li>Start the <abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr> server in the <code>tutorials/</code> directory to access
   the notebooks:
   <div class="language-text highlight"><pre><span></span><code>pixi run jupyter lab tutorials/
@@ -2647,8 +2655,8 @@ once using the command line, as shown below.</p>
 <li>Add the virtual environment as a Jupyter kernel:
   <div class="language-text highlight"><pre><span></span><code>python -m ipykernel install --user --name=venv --display-name &quot;EasyReflectometry Python kernel&quot;
 </code></pre></div></li>
-<li>Download all the EasyReflectometry tutorials to the <code>tutorials/</code>
-  directory.</li>
+<li>Download the EasyReflectometry tutorials to the <code>tutorials/</code>
+  directory, as described above.</li>
 <li>Start the <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> server in the <code>tutorials/</code> directory to
   access the notebooks:
   <div class="language-text highlight"><pre><span></span><code>jupyter notebook tutorials/
