@@ -4,7 +4,7 @@
 from typing import Optional
 
 from easyscience import global_object
-from numpy import arange
+from numpy import linspace
 
 from ..collections.layer_collection import LayerCollection
 from ..elements.layers.layer import Layer
@@ -16,6 +16,27 @@ class GradientLayer(BaseAssembly):
     """A set of discrete gradient layers changing from the front to the back material.
 
     The front layer is where the neutron beam starts in, it has an index of 0.
+
+    .. note::
+
+        **The front and back materials are frozen at construction.** Their SLD /
+        iSLD values are sampled once (see :func:`_prepare_gradient_layers`) to
+        seed the discrete sublayers, which span the two endpoints inclusively.
+        The end materials are *not* wired to the sublayers, so mutating or
+        fitting ``front_material`` / ``back_material`` after construction has no
+        effect on the computed reflectivity. To keep this from being a silent
+        no-op, the end materials are excluded from the parameter tree
+        (:meth:`get_all_variables`) and are therefore not offered as fittable
+        parameters. Fit the discrete sublayers (``layers``) directly, or rebuild
+        the :class:`GradientLayer` with new end materials, to change the profile.
+
+        This is a wiring gap, not a calculator limitation: the sublayer SLDs
+        are plain snapshots and no dependency expressions connect them to the
+        end materials. Since easyscience now propagates bound dependent
+        parameters to the calculator (see :class:`MaterialMixture`, whose
+        ``fraction`` drives the mixed SLD through exactly such dependencies),
+        end-material fitting can be implemented by making each sublayer SLD
+        dependent on the end-material SLDs (issue #373).
     """
 
     def __init__(
@@ -58,7 +79,7 @@ class GradientLayer(BaseAssembly):
             back_material = Material(6.36, 0.0, 'D2O')
 
         if discretisation_elements < 2:
-            raise ValueError('Discretisation elements must be greater than 2.')
+            raise ValueError('Discretisation elements must be at least 2.')
 
         gradient_layers = _prepare_gradient_layers(
             front_material=front_material,
@@ -134,6 +155,22 @@ class GradientLayer(BaseAssembly):
         """
         self.front_layer.roughness.value = roughness
 
+    def get_all_variables(self):
+        """Return the fittable variables, excluding the frozen end materials.
+
+        The ``front_material`` / ``back_material`` SLD & iSLD only seed the
+        discrete sublayers at construction and are not wired to them (see the
+        class docstring). Exposing them here would advertise them as fittable
+        while mutating them silently has no effect on the reflectivity, so they
+        are filtered out. The discrete sublayers — which *do* drive the
+        reflectivity — remain in the tree and can be fitted directly.
+        """
+        excluded = set()
+        for material in (self._front_material, self._back_material):
+            for variable in material.get_all_variables():
+                excluded.add(id(variable))
+        return [variable for variable in super().get_all_variables() if id(variable) not in excluded]
+
     @property
     def _dict_repr(self) -> dict[str, str]:
         """A simplified dict representation."""
@@ -175,14 +212,14 @@ def _linear_gradient(
     back_value: float,
     discretisation_elements: int,
 ) -> list[float]:
-    """Linear gradient."""
-    discrete_step = (back_value - front_value) / discretisation_elements
-    if discrete_step != 0:
-        # Both front and back values are included
-        gradient = arange(front_value, back_value + discrete_step, discrete_step)
-    else:
-        gradient = [front_value] * discretisation_elements
-    return gradient
+    """Linear gradient of ``discretisation_elements`` evenly spaced values.
+
+    Both endpoints are included: the first value equals ``front_value`` and the
+    last equals ``back_value``. ``linspace`` guarantees exactly
+    ``discretisation_elements`` values, so the back material is represented by
+    the final sublayer instead of being dropped one step short.
+    """
+    return [float(value) for value in linspace(front_value, back_value, discretisation_elements)]
 
 
 def _prepare_gradient_layers(
