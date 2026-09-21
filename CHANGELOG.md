@@ -87,6 +87,14 @@
   symbol, used to be accepted as an empty formula with zero scattering
   length. An unknown element already raised, but only after the formula
   string had been stored, leaving the material half-updated.
+- The unit metadata of a `MaterialDensity` is now physical (issue #377).
+  `sld` and `isld` reported the unit `kmol/m^5`, and
+  `scattering_length_real`/`scattering_length_imag` carried the SLD unit
+  `1/angstrom^2` although they are lengths. The scattering lengths are
+  now in `angstrom` and the derived SLDs in `1/angstrom^2`, like those
+  of every other material. Values are unchanged; only code that read
+  the `unit` of these parameters, or the unit in the material's string
+  representation, sees a difference.
 - `MaterialCollection.duplicate_material` keeps the type of the material
   it copies. It always built a plain `Material`, so duplicating a
   `MaterialDensity`, `MaterialMixture` or `MaterialSolvated` lost the
