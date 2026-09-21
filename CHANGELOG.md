@@ -92,8 +92,8 @@
   `scattering_length_real`/`scattering_length_imag` carried the SLD unit
   `1/angstrom^2` although they are lengths. The scattering lengths are
   now in `angstrom` and the derived SLDs in `1/angstrom^2`, like those
-  of every other material. Values are unchanged; only code that read
-  the `unit` of these parameters, or the unit in the material's string
+  of every other material. Values are unchanged; only code that read the
+  `unit` of these parameters, or the unit in the material's string
   representation, sees a difference.
 - `MaterialCollection.duplicate_material` keeps the type of the material
   it copies. It always built a plain `Material`, so duplicating a
