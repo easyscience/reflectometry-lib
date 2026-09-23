@@ -4,6 +4,7 @@
 import unittest
 
 import numpy as np
+import scipp as sc
 from easyscience import global_object
 from numpy.testing import assert_almost_equal
 
@@ -86,6 +87,26 @@ class TestMaterialDensity(unittest.TestCase):
         p.sld_coupled = True
         assert str(p.sld.unit) == '1/Å^2'
         assert str(p.isld.unit) == '1/Å^2'
+
+    def test_value_convention_against_physical_formula(self):
+        # Issue #377, scale part: SLD *values* are stored library-wide in
+        # units of 1e-6 1/angstrom^2 while the declared unit is 1/angstrom^2
+        # (EasyScience strips numeric scale factors from units, so
+        # '1e-6/angstrom^2' cannot be declared). Pin that convention against
+        # the physical formula N_A * density * b / M evaluated with units, so
+        # a change on either side is caught. Boron has a nonzero imaginary
+        # scattering length.
+        p = MaterialDensity('B', 2.34, 'Boron')
+        avogadro = sc.scalar(6.02214076e23, unit='1/mol')
+        density = sc.scalar(p.density.value, unit=p.density.unit)
+        mw = sc.scalar(p.molecular_weight.value, unit=p.molecular_weight.unit)
+        for stored, scattering_length in ((p.sld, p.scattering_length_real), (p.isld, p.scattering_length_imag)):
+            b = sc.scalar(scattering_length.value, unit=scattering_length.unit)
+            physical = (avogadro * density * b / mw).to(unit='1/angstrom^2')
+            declared = sc.scalar(stored.value, unit=stored.unit).to(unit='1/angstrom^2')
+            assert_almost_equal(declared.value / physical.value, 1e6, decimal=6)
+            assert_almost_equal(stored.value, physical.value * 1e6, decimal=12)
+        assert p.isld.value != 0
 
     def test_units_after_round_trip(self):
         p = MaterialDensity()
