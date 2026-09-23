@@ -4,10 +4,12 @@
 import unittest
 
 import numpy as np
+import scipp as sc
 from easyscience import global_object
 from numpy.testing import assert_almost_equal
 
 from easyreflectometry.sample.elements.materials.material_density import MaterialDensity
+from easyreflectometry.special.calculations import density_to_sld
 
 
 class TestMaterialDensity(unittest.TestCase):
@@ -54,10 +56,66 @@ class TestMaterialDensity(unittest.TestCase):
         p = MaterialDensity()
         print(p._dict_repr)
         assert p._dict_repr == {
-            'EasyMaterialDensity': {'sld': '2.074e-6 kmol/m^5', 'isld': '0.000e-6 kmol/m^5'},
+            'EasyMaterialDensity': {'sld': '2.074e-6 1/Å^2', 'isld': '0.000e-6 1/Å^2'},
             'chemical_structure': 'Si',
             'density': '2.33e+00 kg/L',
         }
+
+    def test_units(self):
+        # Issue #377: the dependency is evaluated with units, so every
+        # quantity must carry its physical unit and the derived SLDs must
+        # come out as inverse areas.
+        p = MaterialDensity()
+        assert str(p.scattering_length_real.unit) == 'Å'
+        assert str(p.scattering_length_imag.unit) == 'Å'
+        assert str(p.sld.unit) == '1/Å^2'
+        assert str(p.isld.unit) == '1/Å^2'
+
+    def test_sld_matches_density_to_sld(self):
+        p = MaterialDensity('Co', 8.9, 'Cobalt')
+        expected = density_to_sld(p.scattering_length_real.value, p.molecular_weight.value, p.density.value)
+        assert_almost_equal(p.sld.value, expected, decimal=12)
+
+    def test_units_survive_updates_and_recoupling(self):
+        p = MaterialDensity()
+        p.density.value = 2
+        p.chemical_structure = 'B'
+        assert str(p.sld.unit) == '1/Å^2'
+        assert str(p.isld.unit) == '1/Å^2'
+        p.sld_coupled = False
+        assert str(p.sld.unit) == '1/Å^2'
+        p.sld_coupled = True
+        assert str(p.sld.unit) == '1/Å^2'
+        assert str(p.isld.unit) == '1/Å^2'
+
+    def test_value_convention_against_physical_formula(self):
+        # Issue #377, scale part: SLD *values* are stored library-wide in
+        # units of 1e-6 1/angstrom^2 while the declared unit is 1/angstrom^2
+        # (EasyScience strips numeric scale factors from units, so
+        # '1e-6/angstrom^2' cannot be declared). Pin that convention against
+        # the physical formula N_A * density * b / M evaluated with units, so
+        # a change on either side is caught. Boron has a nonzero imaginary
+        # scattering length.
+        p = MaterialDensity('B', 2.34, 'Boron')
+        avogadro = sc.scalar(6.02214076e23, unit='1/mol')
+        density = sc.scalar(p.density.value, unit=p.density.unit)
+        mw = sc.scalar(p.molecular_weight.value, unit=p.molecular_weight.unit)
+        for stored, scattering_length in ((p.sld, p.scattering_length_real), (p.isld, p.scattering_length_imag)):
+            b = sc.scalar(scattering_length.value, unit=scattering_length.unit)
+            physical = (avogadro * density * b / mw).to(unit='1/angstrom^2')
+            declared = sc.scalar(stored.value, unit=stored.unit).to(unit='1/angstrom^2')
+            assert_almost_equal(declared.value / physical.value, 1e6, decimal=6)
+            assert_almost_equal(stored.value, physical.value * 1e6, decimal=12)
+        assert p.isld.value != 0
+
+    def test_units_after_round_trip(self):
+        p = MaterialDensity()
+        p_dict = p.as_dict()
+        global_object.map._clear()
+
+        q = MaterialDensity.from_dict(p_dict)
+        assert str(q.sld.unit) == '1/Å^2'
+        assert str(q.isld.unit) == '1/Å^2'
 
     def test_dict_round_trip(self):
         p = MaterialDensity()
