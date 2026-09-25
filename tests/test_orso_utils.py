@@ -8,14 +8,13 @@ from types import SimpleNamespace
 import pytest
 from orsopy.fileio import orso
 
-import easyreflectometry
 from easyreflectometry.orso_utils import LoadOrso
 from easyreflectometry.orso_utils import _get_sld_values
 from easyreflectometry.orso_utils import load_data_from_orso_file
 from easyreflectometry.orso_utils import load_orso_data
 from easyreflectometry.orso_utils import load_orso_model
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 @pytest.fixture

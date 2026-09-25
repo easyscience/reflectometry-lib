@@ -16,7 +16,6 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
-import easyreflectometry
 from easyreflectometry.data.data_store import DataSet1D
 from easyreflectometry.data.measurement import _load_txt
 from easyreflectometry.data.measurement import dataset_from_datagroup
@@ -25,7 +24,7 @@ from easyreflectometry.data.measurement import load_as_dataset
 from easyreflectometry.data.measurement import merge_datagroups
 from easyreflectometry.orso_utils import load_data_from_orso_file
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 class TestMeasurementFunctions:

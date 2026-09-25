@@ -13,7 +13,6 @@ from numpy.testing import assert_almost_equal
 from orsopy.fileio import Header
 from orsopy.fileio import load_orso
 
-import easyreflectometry
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data.measurement import _load_txt
 from easyreflectometry.data.measurement import load
@@ -21,7 +20,7 @@ from easyreflectometry.data.measurement import load_as_dataset
 from easyreflectometry.data.measurement import merge_datagroups
 from easyreflectometry.orso_utils import load_data_from_orso_file
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 class TestData(unittest.TestCase):

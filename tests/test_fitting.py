@@ -11,7 +11,6 @@ import pytest
 import scipp as sc
 from easyscience.fitting.minimizers.factory import AvailableMinimizers
 
-import easyreflectometry
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data.measurement import load
@@ -25,7 +24,7 @@ from easyreflectometry.sample import Material
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 @pytest.mark.slow
