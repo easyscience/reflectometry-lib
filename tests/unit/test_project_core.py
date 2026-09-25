@@ -9,13 +9,12 @@ import numpy as np
 import pytest
 from easyscience import global_object
 
-import easyreflectometry
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.model import PercentageFwhm
 from easyreflectometry.model import Pointwise
 from easyreflectometry.project import Project
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static')
 
 
 @pytest.fixture(autouse=True)
