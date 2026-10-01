@@ -149,37 +149,36 @@ profiles as `DataSet1D` objects for use in a GUI or a report.
 
 How it is built:
 
-- Every layer is decomposed into its materials: a `MaterialSolvated`
-  or `MaterialMixture` contributes its two parts weighted by its
-  fraction, a `LayerAreaPerMolecule` contributes its molecule and its
-  solvent, a `RepeatingMultilayer` is expanded, and a `GradientLayer`
-  is read as a linear *mixing* gradient between its two end materials
-  (an SLD ramp alone does not identify a mixture; this reading is a
-  definition, and a gradient layer edited after construction is
-  refused).
+- Every layer is decomposed into its materials: a `MaterialSolvated` or
+  `MaterialMixture` contributes its two parts weighted by its fraction,
+  a `LayerAreaPerMolecule` contributes its molecule and its solvent, a
+  `RepeatingMultilayer` is expanded, and a `GradientLayer` is read as a
+  linear _mixing_ gradient between its two end materials (an SLD ramp
+  alone does not identify a mixture; this reading is a definition, and a
+  gradient layer edited after construction is refused).
 - The per-layer fractions are smeared across each interface with the
   same error-function kernel as the plotted SLD profile. The fractions
-  therefore sum to one at every depth, and
-  `sum(rho_c * phi_c(z))` reproduces the SLD profile whenever each
-  component has one SLD throughout.
+  therefore sum to one at every depth, and `sum(rho_c * phi_c(z))`
+  reproduces the SLD profile whenever each component has one SLD
+  throughout.
 - `z = 0` is the interface between the superphase and the first film
   layer, increasing into the sample; this is the refnx calculator's SLD
   convention and the default grid is the same 500 points.
 
 Grouping. Materials the calculator cannot tell apart (same name, same
-SLD) are merged into one component by default
-(`merge_equivalent=True`), so the several default solvent objects of a
-`Bilayer` appear as one "D2O" trace and its two head groups as one
-trace. Materials that share a name but differ in SLD are never merged
-automatically; use `profile.grouped(...)` to merge anything else, such
-as D₂O and H₂O into "Water" across contrasts.
+SLD) are merged into one component by default (`merge_equivalent=True`),
+so the several default solvent objects of a `Bilayer` appear as one
+"D2O" trace and its two head groups as one trace. Materials that share a
+name but differ in SLD are never merged automatically; use
+`profile.grouped(...)` to merge anything else, such as D₂O and H₂O into
+"Water" across contrasts.
 
 Caveats worth knowing:
 
-- The error-function kernel is the *plotting* convention shared with
-  the SLD profile, not the Névot–Croce factor the reflectivity
-  calculation uses. The curves are a model-derived in-plane average,
-  not a measured concentration profile.
+- The error-function kernel is the _plotting_ convention shared with the
+  SLD profile, not the Névot–Croce factor the reflectivity calculation
+  uses. The curves are a model-derived in-plane average, not a measured
+  concentration profile.
 - Fractions sum to one but need not stay within `[0, 1]`: with very
   different roughness on the two sides of a thin layer a fraction dips
   below zero. The values are reported unchanged, a

@@ -4,12 +4,12 @@
 
 - New volume fraction (occupancy) profiles:
   `Sample.volume_fraction_profile()` /
-  `easyreflectometry.sample.volume_fraction_profile()` return the
-  volume fraction of every component of a sample versus depth, built
-  from the sample tree alone and smeared with the same error-function
-  kernel as the SLD profile, so the fractions sum to one and reproduce
-  the SLD profile. `Project.volume_fraction_data_for_model_at_index`
-  returns them as `DataSet1D` objects and
+  `easyreflectometry.sample.volume_fraction_profile()` return the volume
+  fraction of every component of a sample versus depth, built from the
+  sample tree alone and smeared with the same error-function kernel as
+  the SLD profile, so the fractions sum to one and reproduce the SLD
+  profile. `Project.volume_fraction_data_for_model_at_index` returns
+  them as `DataSet1D` objects and
   `easyreflectometry.plot.plot_volume_fraction` draws them. Materials
   with equal name and SLD are merged by default; `profile.grouped(...)`
   merges and renames traces for presentation. A `VolumeFractionWarning`
