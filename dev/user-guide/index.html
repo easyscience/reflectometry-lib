@@ -1282,6 +1282,8 @@
       
         
       
+        
+      
     
     
     
@@ -2259,6 +2261,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/volume_fraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Volume Fraction Profile
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2380,6 +2410,17 @@
     <span class="md-ellipsis">
       
         Getting Started
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#volume-fraction-occupancy-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volume Fraction (Occupancy) Profiles
       
     </span>
   </a>
@@ -2570,6 +2611,69 @@ especially when measured variances are non-positive.</p>
 </code></pre></div>
 <p>Details of specific usage of EasyReflectometry can be found in the
 <a href="../tutorials/">Tutorials</a>.</p>
+<h2 id="volume-fraction-occupancy-profiles">Volume Fraction (Occupancy) Profiles</h2>
+<p>The SLD profile of a sample is a single blended curve. A <strong>volume
+fraction profile</strong> separates it into its components: how much of the
+volume at each depth is lipid head group, tail, solvent, substrate and
+so on. It is the kind of plot shown in the
+<a href="https://refnx.readthedocs.io/en/latest/occupancy.html">refnx occupancy documentation</a>
+and used, for example, to follow an antibiotic into a membrane.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_volume_fraction</span>
+
+<span class="n">profile</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">volume_fraction_profile</span><span class="p">()</span>  <span class="c1"># no calculator needed</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>                       <span class="c1"># component key -&gt; label</span>
+<span class="n">plot_volume_fraction</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>               <span class="c1"># one filled trace per component</span>
+
+<span class="c1"># Presentation grouping: merge and rename traces</span>
+<span class="n">grouped</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">grouped</span><span class="p">({</span><span class="s1">&#39;Heads&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;C10H18NO8P&#39;</span><span class="p">],</span> <span class="s1">&#39;Water&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;D2O&#39;</span><span class="p">]})</span>
+<span class="n">plot_volume_fraction</span><span class="p">(</span><span class="n">grouped</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;line&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><code>Project.volume_fraction_data_for_model_at_index</code> returns the same
+profiles as <code>DataSet1D</code> objects for use in a GUI or a report.</p>
+<p>How it is built:</p>
+<ul>
+<li>Every layer is decomposed into its materials: a <code>MaterialSolvated</code> or
+  <code>MaterialMixture</code> contributes its two parts weighted by its fraction,
+  a <code>LayerAreaPerMolecule</code> contributes its molecule and its solvent, a
+  <code>RepeatingMultilayer</code> is expanded, and a <code>GradientLayer</code> is read as a
+  linear <em>mixing</em> gradient between its two end materials (an SLD ramp
+  alone does not identify a mixture; this reading is a definition, and a
+  gradient layer edited after construction is refused).</li>
+<li>The per-layer fractions are smeared across each interface with the
+  same error-function kernel as the plotted SLD profile. The fractions
+  therefore sum to one at every depth, and <code>sum(rho_c * phi_c(z))</code>
+  reproduces the SLD profile whenever each component has one SLD
+  throughout.</li>
+<li><code>z = 0</code> is the interface between the superphase and the first film
+  layer, increasing into the sample; this is the refnx calculator's SLD
+  convention and the default grid is the same 500 points.</li>
+</ul>
+<p>Grouping. Materials the calculator cannot tell apart (same name, same
+SLD) are merged into one component by default (<code>merge_equivalent=True</code>),
+so the several default solvent objects of a <code>Bilayer</code> appear as one
+"D2O" trace and its two head groups as one trace. Materials that share a
+name but differ in SLD are never merged automatically; use
+<code>profile.grouped(...)</code> to merge anything else, such as D₂O and H₂O into
+"Water" across contrasts.</p>
+<p>Caveats worth knowing:</p>
+<ul>
+<li>The error-function kernel is the <em>plotting</em> convention shared with the
+  SLD profile, not the Névot–Croce factor the reflectivity calculation
+  uses. The curves are a model-derived in-plane average, not a measured
+  concentration profile.</li>
+<li>Fractions sum to one but need not stay within <code>[0, 1]</code>: with very
+  different roughness on the two sides of a thin layer a fraction dips
+  below zero. The values are reported unchanged, a
+  <code>VolumeFractionWarning</code> says where, and the plot shows the dip. The
+  remedy is in the roughness parameters, not in the plot.</li>
+<li>A <code>solvent_fraction</code> may describe lateral patchiness rather than
+  solvation; the in-plane average is drawn either way.</li>
+<li>For a <code>LayerAreaPerMolecule</code> the fractions are those of the current
+  material model, in which the solvent fraction acts as coverage of a
+  layer whose molecule SLD is <code>b / (thickness × area per molecule)</code>.</li>
+<li>The default depth range only looks at the two outer roughnesses; pass
+  <code>z=</code> (or <code>max_delta_z=</code>) for a wider or finer grid.</li>
+</ul>
 <h2 id="objective-functions-and-non-positive-variance-handling">Objective Functions and Non-Positive Variance Handling</h2>
 <p><code>MultiFitter</code> supports several objective modes for handling
 reflectometry data during fitting, especially when measured variances
