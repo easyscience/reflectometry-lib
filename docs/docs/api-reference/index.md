@@ -108,3 +108,4 @@ Summaries of a project and its fit results, and the plotting helpers.
 
 - [Summary](summary.md)
 - [Plotting](plot.md)
+- [Volume Fraction Profile](volume_fraction.md)

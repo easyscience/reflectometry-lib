@@ -186,6 +186,49 @@ class TestProject:
             ]),
         )
 
+    def test_volume_fraction_data_for_model_at_index(self):
+        # When
+        project = Project()
+        project.default_model()
+
+        # Then
+        datasets = project.volume_fraction_data_for_model_at_index(0)
+        sld = project.sld_data_for_model_at_index(0)
+
+        # Expect: one dataset per component, on the refnx SLD grid, summing to one
+        assert len(datasets) == 3
+        assert [dataset.name for dataset in datasets.values()] == [
+            'Air volume fraction for Model 0',
+            'D2O volume fraction for Model 0',
+            'Si volume fraction for Model 0',
+        ]
+        for dataset in datasets.values():
+            assert_allclose(dataset.x, sld.x)
+            assert dataset.x_label == 'z (Å)'
+            assert dataset.y_label == 'Volume fraction'
+        assert_allclose(sum(dataset.y for dataset in datasets.values()), 1.0, atol=1e-12)
+
+    def test_volume_fraction_data_for_model_at_index_with_grid_and_groups(self):
+        # When
+        project = Project()
+        project.default_model()
+        model = project.models[0]
+        model.interface = None  # never bound to a calculator
+
+        # Then
+        z = np.array([-5.0, 0.0, 50.0, 500.0])
+        datasets = project.volume_fraction_data_for_model_at_index(0, z=z, groups={'Solid': ['Si', 'D2O']})
+
+        # Expect: the group first, then the remaining component (Air)
+        assert len(datasets) == 2
+        assert list(datasets)[0] == 'Solid'
+        assert datasets['Solid'].name == 'Solid volume fraction for Model 0'
+        air = list(datasets.values())[1]
+        assert air.name == 'Air volume fraction for Model 0'
+        for dataset in datasets.values():
+            assert_allclose(dataset.x, z)
+        assert_allclose(datasets['Solid'].y + air.y, 1.0, atol=1e-12)
+
     def test_sample_data_for_model_at_index(self):
         # When
         project = Project()

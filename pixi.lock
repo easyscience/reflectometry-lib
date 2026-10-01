@@ -8322,6 +8322,7 @@ packages:
   - refl1d>=1.0.0
   - refnx
   - scipp
+  - scipy
   - svglib<1.6 ; sys_platform == 'darwin' or sys_platform == 'linux'
   - xhtml2pdf
   - arviz ; extra == 'dev'
