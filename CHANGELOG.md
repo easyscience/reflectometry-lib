@@ -1,3 +1,17 @@
+# Unreleased
+
+## Bayesian sampling
+
+- `MultiFitter.mcmc_sample` takes `n_workers`: with a value above 1 the
+  BUMPS DREAM population is evaluated in a process pool (parallel
+  sampling on the EasyScience `parallel-sampling` branch). `None` and
+  `1` keep sequential evaluation; values below 1 raise `ValueError`.
+- `CalculatorFactory` and the calculator wrappers are now picklable, so
+  a model bound to a calculator can be shipped to worker processes with
+  its storage, resolution function and magnetism setting intact.
+- The dependency on `easyscience` points at the `parallel-sampling`
+  branch of the core repository until that work is released.
+
 # Version 1.8.0 (18 Sept 2026)
 
 ## Project persistence

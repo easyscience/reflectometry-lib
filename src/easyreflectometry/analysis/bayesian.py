@@ -10,7 +10,12 @@ import warnings
 from typing import Any
 
 import numpy as np
-from easyscience.fitting.minimizers.minimizer_base import MINIMIZER_PARAMETER_PREFIX
+
+try:
+    # EasyScience 3.x: the BUMPS parameter prefix moved to the engine base.
+    from easyscience.fitting.engine_base import PARAMETER_PREFIX as MINIMIZER_PARAMETER_PREFIX
+except ImportError:  # pragma: no cover - EasyScience 2.x
+    from easyscience.fitting.minimizers.minimizer_base import MINIMIZER_PARAMETER_PREFIX
 
 try:
     import arviz as _arviz

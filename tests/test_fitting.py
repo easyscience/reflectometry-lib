@@ -863,7 +863,10 @@ def _patch_sampler(capture, results=None):
         capture['instance'] = instance
         return instance
 
-    return patch('easyreflectometry.fitting.Sampler', side_effect=_ctor)
+    # ``mcmc_sample`` builds the sampler through ``Sampler.from_fitter``.
+    sampler_cls = MagicMock()
+    sampler_cls.from_fitter = MagicMock(side_effect=_ctor)
+    return patch('easyreflectometry.fitting.Sampler', sampler_cls)
 
 
 class TestMCMCSampleRequiresBumpsEngine:
@@ -902,7 +905,7 @@ class TestMCMCSampleRequiresBumpsEngine:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(RuntimeError, match='Bayesian sampling requires a BUMPS minimizer'):
                 fitter.mcmc_sample(data)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
 
 class TestMCMCSampleBasic:
@@ -1160,7 +1163,7 @@ class TestMCMCSampleMighellWarningsAndZeroVarianceGuard:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data, samples=100, burn=20, thin=2)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_legacy_mask_raises(self):
         fitter = self._make_fitter(objective='legacy_mask')
@@ -1170,7 +1173,7 @@ class TestMCMCSampleMighellWarningsAndZeroVarianceGuard:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data, samples=100, burn=20, thin=2)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_allowed_with_explicit_mighell(self):
         """Explicitly opting in to objective='mighell' keeps working on
@@ -1288,3 +1291,80 @@ def test_fit_weight_convention_matches_analytic_wls(minimizer):
         expected_errors = np.sqrt(np.diag(covariance) * reduced_chi2)
         assert model.scale.error == pytest.approx(expected_errors[0], rel=0.05)
         assert model.background.error == pytest.approx(expected_errors[1], rel=0.05)
+
+
+class TestMCMCSampleWorkers:
+    """``n_workers`` validation and forwarding in mcmc_sample()."""
+
+    @pytest.fixture
+    def sample_fitter(self):
+        model = Model()
+        model.interface = CalculatorFactory()
+        fitter = MultiFitter(model)
+        fitter.easy_science_multi_fitter = MagicMock()
+        fitter.easy_science_multi_fitter.minimizer.package = 'bumps'
+        data = sc.DataGroup({
+            'coords': {'Qz_0': sc.array(dims=['Qz_0'], values=np.linspace(0.01, 0.3, 10))},
+            'data': {'R_0': sc.array(dims=['Qz_0'], values=np.ones(10), variances=np.ones(10) * 0.01)},
+        })
+        return fitter, data
+
+    @pytest.mark.parametrize('n_workers', [1, 2, 8])
+    def test_n_workers_forwarded_to_sampler(self, sample_fitter, n_workers):
+        """An explicit n_workers reaches Sampler.sample() unchanged."""
+        fitter, data = sample_fitter
+        capture = {}
+        with _patch_sampler(capture):
+            fitter.mcmc_sample(data, samples=100, burn=20, thin=2, n_workers=n_workers)
+        assert capture['n_workers'] == n_workers
+
+    @pytest.mark.parametrize('kwargs', [{}, {'n_workers': None}])
+    def test_n_workers_none_is_not_forwarded(self, sample_fitter, kwargs):
+        """None (the default) is left out so sequential sampling works on cores without it."""
+        fitter, data = sample_fitter
+        capture = {}
+        with _patch_sampler(capture):
+            fitter.mcmc_sample(data, samples=100, burn=20, thin=2, **kwargs)
+        assert 'n_workers' not in capture
+
+    def test_falls_back_to_fitter_constructor_without_from_fitter(self, sample_fitter):
+        """A core Sampler without ``from_fitter`` (EasyScience 2.x) is built from the fitter."""
+        fitter, data = sample_fitter
+        capture = {}
+        results = _fake_sampling_results()
+
+        def _ctor(core_fitter, *, x, y, weights):
+            capture['fitter'] = core_fitter
+            instance = MagicMock()
+            instance.sample = MagicMock(return_value=results)
+            return instance
+
+        sampler_cls = MagicMock(side_effect=_ctor)
+        del sampler_cls.from_fitter
+        with patch('easyreflectometry.fitting.Sampler', sampler_cls):
+            result = fitter.mcmc_sample(data, samples=100, burn=20, thin=2)
+        assert capture['fitter'] is fitter.easy_science_multi_fitter
+        assert result['draws'] is results.draws
+
+    def test_with_other_params_combined(self, sample_fitter):
+        """n_workers can be combined with every other mcmc_sample() parameter."""
+        fitter, data = sample_fitter
+        capture = {}
+        with _patch_sampler(capture):
+            fitter.mcmc_sample(data, samples=500, burn=100, thin=5, population=8, initializer='cov', n_workers=4)
+        assert capture['samples'] == 500
+        assert capture['burn'] == 100
+        assert capture['thin'] == 5
+        assert capture['population'] == 8
+        assert capture['sampler_kwargs'] == {'init': 'cov'}
+        assert capture['n_workers'] == 4
+
+    @pytest.mark.parametrize('bad', [0, -1, -100])
+    def test_invalid_n_workers_raises_before_sampler(self, sample_fitter, bad):
+        """n_workers < 1 raises ValueError without ever building the core Sampler."""
+        fitter, data = sample_fitter
+        capture = {}
+        with _patch_sampler(capture) as sampler_cls:
+            with pytest.raises(ValueError, match='n_workers'):
+                fitter.mcmc_sample(data, samples=100, burn=20, thin=2, n_workers=bad)
+        sampler_cls.from_fitter.assert_not_called()

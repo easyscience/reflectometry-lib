@@ -23,7 +23,9 @@ classifiers = [
 ]
 requires-python = '>=3.11'
 dependencies = [
-  'easyscience>=2.5.1,<3',
+  # Parallel (multi-process) BUMPS DREAM sampling lives on the core
+  # ``parallel-sampling`` branch; switch back to a version range once released.
+  'easyscience @ git+https://github.com/easyscience/core.git@parallel-sampling',
   'scipp',
   'refnx',
   'refl1d>=1.0.0',

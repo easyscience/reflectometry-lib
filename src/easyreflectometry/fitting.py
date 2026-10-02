@@ -730,6 +730,7 @@ class MultiFitter:
         progress_callback: Callable[..., Any] | None = None,
         abort_test: Callable[[], bool] | None = None,
         constraints_factory: Callable | None = None,
+        n_workers: int | None = None,
     ) -> dict:
         """Run Bayesian MCMC sampling on reflectometry data using the DREAM sampler.
 
@@ -752,9 +753,17 @@ class MultiFitter:
             :mod:`easyreflectometry.inequality_constraints`); the posterior is
             penalised in the infeasible region. Defaults to what
             :attr:`constraints_factory_provider` returns.
+        :param n_workers: Number of worker processes for parallel DREAM
+            population evaluation. ``None`` (default) and ``1`` evaluate
+            sequentially in this process. Values greater than ``1`` evaluate
+            each generation in a process pool, capped by the core at the
+            number of chains. The model is pickled once per worker, so every
+            calculator wrapper must be serializable (see
+            :meth:`CalculatorFactory.__reduce__`).
         :return: Dictionary with keys ``'draws'``, ``'param_names'``, ``'state'``,
             and ``'logp'``.
         :raises RuntimeError: If the current minimizer is not a BUMPS instance.
+        :raises ValueError: If ``n_workers`` is not None and less than 1.
 
         The underlying :class:`~easyscience.fitting.Sampler` is retained on
         :attr:`sampler`, so the chain can be continued without re-running the
@@ -769,6 +778,9 @@ class MultiFitter:
                 'Bayesian sampling requires a BUMPS minimizer. '
                 'Use ``fitter.switch_minimizer(AvailableMinimizers.Bumps)`` first.'
             )
+
+        if n_workers is not None and n_workers < 1:
+            raise ValueError(f'n_workers must be a positive integer or None, got {n_workers}')
 
         obj = _validate_objective(objective) if objective is not None else self._objective
 
@@ -821,19 +833,31 @@ class MultiFitter:
         with self._constraints(factory):
             # The factory is current only while the problem is being built, so
             # `_keep_constraints_on_extend` covers a later continuation.
-            sampler = Sampler(self.easy_science_multi_fitter, x=x, y=y, weights=dy)
+            # EasyScience 3.x: ``Sampler`` is fitter-agnostic and takes the
+            # model and fit functions directly; ``from_fitter`` lifts both off
+            # the configured core MultiFitter. EasyScience 2.x takes the fitter.
+            from_fitter = getattr(Sampler, 'from_fitter', None)
+            if from_fitter is not None:
+                sampler = from_fitter(self.easy_science_multi_fitter, x=x, y=y, weights=dy)
+            else:
+                sampler = Sampler(self.easy_science_multi_fitter, x=x, y=y, weights=dy)
             self._keep_constraints_on_extend(sampler, factory)
             # Retained so the chain can be continued afterwards via ``self.sampler.extend()``.
             self._sampler = sampler
-            results = sampler.sample(
-                samples=samples,
-                burn=burn,
-                thin=thin,
-                population=population,
-                sampler_kwargs=sampler_kwargs or None,
-                progress_callback=progress_callback,
-                abort_test=abort_test,
-            )
+            sample_kwargs = {
+                'samples': samples,
+                'burn': burn,
+                'thin': thin,
+                'population': population,
+                'sampler_kwargs': sampler_kwargs or None,
+                'progress_callback': progress_callback,
+                'abort_test': abort_test,
+            }
+            # Only cores with parallel sampling accept ``n_workers``; leaving it
+            # out when unset keeps sequential sampling working on older cores.
+            if n_workers is not None:
+                sample_kwargs['n_workers'] = n_workers
+            results = sampler.sample(**sample_kwargs)
         return {
             'draws': results.draws,
             'param_names': results.param_names,

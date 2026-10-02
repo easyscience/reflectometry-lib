@@ -80,7 +80,10 @@ def _patch_sampler(capture: dict, results=None):
         capture['instance'] = instance
         return instance
 
-    return patch('easyreflectometry.fitting.Sampler', side_effect=_ctor)
+    # ``mcmc_sample`` builds the sampler through ``Sampler.from_fitter``.
+    sampler_cls = MagicMock()
+    sampler_cls.from_fitter = MagicMock(side_effect=_ctor)
+    return patch('easyreflectometry.fitting.Sampler', sampler_cls)
 
 
 class TestMCMCSampleGuards:
@@ -100,7 +103,7 @@ class TestMCMCSampleGuards:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_allowed_with_mighell_objective(self):
         """objective='mighell' is the explicit opt-in for missing uncertainties."""

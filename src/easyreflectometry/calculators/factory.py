@@ -16,6 +16,42 @@ class CalculatorFactory(InterfaceFactoryTemplate):
         """Init function."""
         super().__init__(interface_list=CalculatorBase._calculators)
 
+    def __reduce__(self):
+        """Serialize the active calculator state for worker processes.
+
+        The core ``InterfaceFactoryTemplate`` only pickles the name of the
+        active interface, so an unpickled factory would start with empty
+        storage and no record of the models bound to it. Parallel BUMPS
+        sampling evaluates the model in worker processes, which need the
+        wrapper's storage, resolution function and magnetism flag as well.
+        """
+        wrapper = getattr(self(), '_wrapper', None)
+        if wrapper is None and self.current_interface_name is not None:
+            raise RuntimeError(
+                f'Cannot pickle CalculatorFactory: active interface '
+                f"{self.current_interface_name!r} exposes no '_wrapper' attribute. "
+                'The InterfaceFactoryTemplate API may have changed.'
+            )
+        return (
+            self._state_restore,
+            (
+                self.__class__,
+                self.current_interface_name,
+                wrapper.__getstate__() if wrapper is not None else None,
+            ),
+        )
+
+    @staticmethod
+    def _state_restore(factory_cls, interface_str, wrapper_state):
+        """Restore a calculator factory with its active wrapper state."""
+        obj = factory_cls()
+        if interface_str is not None and interface_str in obj.available_interfaces:
+            obj.switch(interface_str)
+        wrapper = getattr(obj(), '_wrapper', None)
+        if wrapper is not None and wrapper_state is not None:
+            wrapper.__setstate__(wrapper_state)
+        return obj
+
     def reset_storage(self) -> None:
         """Reset storage."""
         return self().reset_storage()
