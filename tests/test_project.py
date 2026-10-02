@@ -15,7 +15,6 @@ from easyscience.fitting import AvailableMinimizers
 from easyscience.variable import Parameter
 from numpy.testing import assert_allclose
 
-import easyreflectometry
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.fitting import MultiFitter
 from easyreflectometry.model import Model
@@ -29,7 +28,7 @@ from easyreflectometry.sample import MaterialCollection
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 class TestProject:

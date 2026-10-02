@@ -18,7 +18,6 @@ import numpy as np
 import pytest
 from easyscience.fitting import AvailableMinimizers
 
-import easyreflectometry
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import load
 from easyreflectometry.fitting import MultiFitter
@@ -29,7 +28,7 @@ from easyreflectometry.sample import Material
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static')
 
 
 @pytest.fixture(scope='module')

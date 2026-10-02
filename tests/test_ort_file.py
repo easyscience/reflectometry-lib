@@ -7,10 +7,9 @@ import os
 import numpy as np
 import pytest
 
-import easyreflectometry
 from easyreflectometry.data import load
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 @pytest.fixture(scope='module')

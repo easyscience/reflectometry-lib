@@ -22,7 +22,6 @@ from orsopy.fileio.orso import Orso
 from orsopy.fileio.orso import OrsoDataset
 from orsopy.fileio.orso import save_orso
 
-import easyreflectometry
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data import PolarizedDataSet
 from easyreflectometry.data.measurement import load
@@ -43,7 +42,7 @@ from easyreflectometry.sample import RepeatingMultilayer
 from easyreflectometry.sample import Sample
 from easyreflectometry.sample.elements.materials.material_density import MaterialDensity
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 # The Qz/sQz grids the generated fixtures were built from (see task 7a).
 FIXTURE_QZ = np.linspace(0.01, 0.3, 12)
