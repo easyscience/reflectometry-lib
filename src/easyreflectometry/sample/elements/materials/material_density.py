@@ -198,6 +198,7 @@ class MaterialDensity(Material):
         self._avogadro = avogadro
         self._density = density
         self._chemical_structure = chemical_structure
+        self._sld_coupled = True
 
         if interface is not None:
             self.interface = interface
@@ -238,16 +239,22 @@ class MaterialDensity(Material):
     def sld_coupled(self) -> bool:
         """Whether ``sld``/``isld`` are derived from formula & density (True,
         the default) or independent, directly editable/fittable parameters
-        (False). The dependency state itself is the source of truth."""
-        return not self._sld.independent
+        (False).
+
+        Kept as an explicit flag rather than read off ``sld.independent``: a
+        decoupled ``sld`` may still be made dependent by a user constraint,
+        which must not make the material read as coupled again."""
+        return self._sld_coupled
 
     @sld_coupled.setter
     def sld_coupled(self, couple: bool) -> None:
-        if couple == self.sld_coupled:
+        couple = bool(couple)
+        if couple == self._sld_coupled:
             return
         if couple:
             # Recomputes sld/isld from the current density/scattering
-            # length/molecular weight — manually set values are discarded.
+            # length/molecular weight — manually set values and any user
+            # constraint on them are discarded.
             self._setup_sld_constraints()
         else:
             # make_independent raises on an already-independent parameter,
@@ -255,6 +262,7 @@ class MaterialDensity(Material):
             for parameter in (self._sld, self._isld):
                 if not parameter.independent:
                     parameter.make_independent()
+        self._sld_coupled = couple
 
     def _convert_to_dict(self, d: dict, serializer, skip: Optional[list] = None, **kwargs) -> dict:
         """Serializer hook (see ``SerializerBase._convert_to_dict``).

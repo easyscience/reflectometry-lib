@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+import copy
 from typing import Any
 from typing import List
 from typing import Optional
 
 from easyscience.base_classes import EasyList
 from easyscience.base_classes.new_base import NewBase
+from easyscience.io import SerializerBase
 from easyscience.variable import Parameter
 
 from easyreflectometry.utils import yaml_dump
@@ -319,6 +321,39 @@ class BaseCollection(EasyList):
     def as_dict(self, skip: Optional[List[str]] = None) -> dict:
         """Compatibility alias for :meth:`to_dict`."""
         return self.to_dict(skip=skip)
+
+    @classmethod
+    def from_dict(cls, obj_dict: dict) -> BaseCollection:
+        """Rebuild the collection, each item through its own class's ``from_dict``.
+
+        ``EasyList.from_dict`` deserializes the ``data`` list with the
+        serializer's generic path, which calls every item's constructor with
+        the stored keys. An item whose class restores state in ``from_dict``
+        (e.g. ``MaterialDensity`` and its ``sld_coupled`` key, or any nested
+        item that does) then fails or loses that state. Apart from the items,
+        this mirrors ``EasyList.from_dict``.
+        """
+        if not isinstance(obj_dict, dict) or '@module' not in obj_dict or '@class' not in obj_dict:
+            raise ValueError('Input must be a dictionary representing an EasyScience collection.')
+        if obj_dict['@class'] != cls.__name__:
+            raise ValueError(f'Class name in dictionary does not match the expected class: {cls.__name__}.')
+        temp_dict = copy.deepcopy(obj_dict)
+        protected_types = None
+        if 'protected_types' in temp_dict:
+            protected_types = []
+            for type_dict in temp_dict.pop('protected_types'):
+                if '@module' not in type_dict or '@class' not in type_dict:
+                    raise ValueError('Each protected type must be a serialized EasyScience class with @module and @class keys')
+                module = __import__(type_dict['@module'], globals(), locals(), [type_dict['@class']], 0)
+                if not hasattr(module, type_dict['@class']):
+                    raise ImportError(f'Could not import class {type_dict["@class"]} from module {type_dict["@module"]}')
+                protected_types.append(getattr(module, type_dict['@class']))
+        raw_items = temp_dict.pop('data', [])
+        kwargs = SerializerBase.deserialize_dict(temp_dict)
+        # A single-key dict routes the item through the serializer's per-value path, which uses
+        # the item class's own `from_dict`.
+        data = [SerializerBase.deserialize_dict({'item': item})['item'] for item in raw_items]
+        return cls(data, protected_types=protected_types, **kwargs)
 
     def __deepcopy__(self, memo):
         """Round-trip via dict-skip-unique to get a fresh copy.
