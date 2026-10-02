@@ -14,6 +14,7 @@ from easyreflectometry.sample.assemblies.repeating_multilayer import RepeatingMu
 from easyreflectometry.sample.collections.layer_collection import LayerCollection
 from easyreflectometry.sample.elements.layers.layer import Layer
 from easyreflectometry.sample.elements.materials.material import Material
+from easyreflectometry.sample.elements.materials.material_density import MaterialDensity
 
 
 class TestLayerCollection(unittest.TestCase):
@@ -88,6 +89,23 @@ class TestLayerCollection(unittest.TestCase):
 
         # Expect
         assert sorted(r.as_dict()) == sorted(s.as_dict())
+
+    def test_dict_round_trip_restores_a_decoupled_density_material(self):
+        # Items are rebuilt through their own from_dict: MaterialDensity's stored
+        # 'sld_coupled' is not a constructor argument.
+        material = MaterialDensity(chemical_structure='Ni', density=8.9, name='Ni')
+        material.sld_coupled = False
+        material.sld.value = 9.4
+        r = LayerCollection(Layer(material, 50.0, 4.0, 'Ni film'))
+        r_dict = r.as_dict()
+        global_object.map._clear()
+
+        s = LayerCollection.from_dict(r_dict)
+
+        restored = s[0].material
+        assert isinstance(restored, MaterialDensity)
+        assert restored.sld_coupled is False
+        assert restored.sld.value == 9.4
 
     def test_add_layer(self):
         # When

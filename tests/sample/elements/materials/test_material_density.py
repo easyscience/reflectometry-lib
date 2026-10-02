@@ -175,6 +175,22 @@ class TestMaterialDensity(unittest.TestCase):
         p.sld_coupled = False  # no-op on the decoupled side too
         assert p.sld_coupled is False
 
+    def test_constraint_on_decoupled_sld_keeps_it_decoupled(self):
+        p = MaterialDensity(chemical_structure='Si', density=2.33)
+        coupled_sld = p.sld.value
+        other = MaterialDensity(chemical_structure='Ni', density=8.9)
+        other.sld_coupled = False
+        p.sld_coupled = False
+        p.sld.make_dependent_on(dependency_expression='a', dependency_map={'a': other.sld})
+        assert p.sld.independent is False
+        assert p.sld_coupled is False
+        # Re-coupling replaces the constraint with the density tie.
+        p.sld_coupled = True
+        assert p.sld_coupled is True
+        assert_almost_equal(p.sld.value, coupled_sld)
+        other.sld.value = 1.0
+        assert_almost_equal(p.sld.value, coupled_sld)
+
     def test_decoupled_sld_can_be_freed_for_fitting(self):
         p = MaterialDensity()
         p.sld_coupled = False
