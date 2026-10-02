@@ -12,7 +12,9 @@ import weakref
 from pathlib import Path
 from typing import Dict
 from typing import List
+from typing import Mapping
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 import numpy as np
@@ -56,6 +58,7 @@ from easyreflectometry.sample import Material
 from easyreflectometry.sample import MaterialCollection
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
+from easyreflectometry.sample import volume_fraction_profile
 from easyreflectometry.sample.collections.base_collection import BaseCollection
 
 logger = logging.getLogger(__name__)
@@ -1373,6 +1376,60 @@ class Project:
             'theta_m': DataSet1D(name=f'Moment angle for Model {index}', x=z[has_moment], y=theta_display[has_moment]),
             'spin_up': DataSet1D(name=f'Spin-up potential for Model {index}', x=z, y=sld + projection),
             'spin_down': DataSet1D(name=f'Spin-down potential for Model {index}', x=z, y=sld - projection),
+        }
+
+    def volume_fraction_data_for_model_at_index(
+        self,
+        index: int = 0,
+        *,
+        z: Optional[np.ndarray] = None,
+        max_delta_z: Optional[float] = None,
+        merge_equivalent: bool = True,
+        groups: Optional[Mapping[str, Sequence[str]]] = None,
+    ) -> Dict[str, DataSet1D]:
+        """Volume fraction (occupancy) depth profiles of the components of a model.
+
+        Built from the sample alone, so no calculator binding is needed. See
+        :func:`easyreflectometry.sample.volume_fraction.volume_fraction_profile`
+        for the depth convention and the caveats.
+
+        Parameters
+        ----------
+        index : int
+            Index of the model.
+        z : np.ndarray, optional
+            Depths (Å) to evaluate at; ``z = 0`` is the superphase / first
+            layer interface. By default a 500-point grid spanning the sample,
+            the same grid the refnx calculator uses for its SLD profile.
+        max_delta_z : float, optional
+            Maximum spacing of the default grid. Cannot be combined with ``z``.
+        merge_equivalent : bool, optional
+            Merge materials with equal name and SLD into one component. By default, True.
+        groups : Mapping[str, Sequence[str]], optional
+            Presentation groups forwarded to
+            :meth:`~easyreflectometry.sample.VolumeFractionProfile.grouped`,
+            e.g. ``{'Water': ['D2O', 'H2O']}``.
+
+        Returns
+        -------
+        Dict[str, DataSet1D]
+            One profile per component, keyed by its stable component key (or
+            group label) in front-to-back order; the display label is in the
+            dataset's ``name``. The ``y`` values sum to one at every ``x``.
+        """
+        model = self.models[index]
+        profile = volume_fraction_profile(model.sample, z, max_delta_z=max_delta_z, merge_equivalent=merge_equivalent)
+        if groups:
+            profile = profile.grouped(groups)
+        return {
+            key: DataSet1D(
+                name=f'{profile.labels[key]} volume fraction for Model {index}',
+                x=profile.z,
+                y=values,
+                x_label='z (Å)',
+                y_label='Volume fraction',
+            )
+            for key, values in profile.fractions.items()
         }
 
     def sample_data_for_model_at_index(self, index: int = 0, q_range: Optional[np.array] = None) -> DataSet1D:
