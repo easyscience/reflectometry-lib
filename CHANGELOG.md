@@ -1,5 +1,34 @@
 # Version 1.8.0 (18 Sept 2026)
 
+## Magnetism
+
+- New `magnetic_vector_for_layer(magnetism)` in
+  `easyreflectometry.project` turns a `LayerMagnetism` into the
+  quantities a picture of the moment needs, defined in one place:
+  `phi_param` (the parameter's angle from the guide field,
+  `theta_m - GUIDE_FIELD_ANGLE`), `phi` (the direction the moment
+  physically points - `phi_param` turned by 180 degrees when `rho_m` is
+  negative, since a negative `rho_m` is the same moment reversed), `m`
+  (`abs(rho_m)`), and `m_par`/`m_perp`, the components the non-spin-flip
+  and spin-flip channels see. `rho_m` and `theta_m` are passed through
+  so a caller can show the signed parameters next to the direction.
+- New `Project.magnetic_layer_markers_for_model_at_index(index)` returns
+  one entry per magnetic layer of a model (stack order, repeats
+  expanded) with its `label`, its depth extent `z_min`/`z_max`/
+  `z_center`, `has_moment`, and every key of
+  `magnetic_vector_for_layer`. A non-magnetic model raises `ValueError`.
+  The depths are in the same z frame as
+  `magnetic_sld_data_for_model_at_index`, which is _not_ thickness
+  accumulated from zero: that profile is refl1d's, reversed, and padded
+  by a roughness-dependent (and asymmetric) amount at each end, so a
+  marker placed by naive cumulative thickness would sit a padding-width
+  away from the curve it annotates. The semi-infinite superphase and
+  substrate are clamped to the ends of the profile range. `has_moment`
+  is False below `MAGNETIC_MOMENT_FLOOR_FRACTION` of the model's largest
+  `abs(rho_m)` - the same floor that restricts the reported `theta_m`
+  profile, so a layer never reports a direction while its angle curve is
+  masked.
+
 ## Project persistence
 
 - `Project.save_as_json` now writes atomically: the file is serialized
