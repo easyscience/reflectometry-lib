@@ -10,6 +10,7 @@ import numpy as np
 from easyscience.io import SerializerComponent
 
 from easyreflectometry.model import Model
+from easyreflectometry.model import ResolutionFunction
 
 
 class DataSet1D(SerializerComponent):
@@ -24,9 +25,22 @@ class DataSet1D(SerializerComponent):
         x_label: str = 'x',
         y_label: str = 'y',
         auto_background: bool = True,
+        resolution_function: Optional[ResolutionFunction] = None,
     ):
-        """Init function."""
+        """Init function.
+
+        Parameters
+        ----------
+        resolution_function : Optional[ResolutionFunction], optional
+            The q-resolution this dataset was measured with (typically a
+            ``Pointwise`` built from its sQz column). Fitting and model
+            curves evaluated against this dataset smear with it instead of
+            the model's resolution. ``None`` (the default) means the model's
+            resolution applies; it is not derived from ``xe`` here, see
+            :func:`easyreflectometry.data.resolution_from_dataset`.
+        """
         self._model = model
+        self.resolution_function = resolution_function
         if y is not None and model is not None and auto_background:
             self._model.background = max(np.min(y), 1e-10)
 

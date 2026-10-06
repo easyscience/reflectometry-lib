@@ -10,6 +10,8 @@ from refl1d import names
 from refl1d.profile import build_profile
 from refl1d.sample.layers import Repeat
 
+from easyreflectometry.model import ResolutionFunction
+
 from ..polarization import POLARIZATION_CHANNEL_TO_INDEX
 from ..wrapper_base import WrapperBase
 
@@ -275,7 +277,12 @@ class Refl1dWrapper(WrapperBase):
         del self.storage['model'][model_name]['items'][item_idx]
         del self.storage['item'][item_name]
 
-    def calculate(self, q_array: np.ndarray, model_name: str) -> np.ndarray:
+    def calculate(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """For a given q array calculate the corresponding reflectivity.
 
         Parameters
@@ -284,6 +291,8 @@ class Refl1dWrapper(WrapperBase):
             Array of data points to be calculated.
         model_name : str
             The model name.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------
@@ -291,13 +300,13 @@ class Refl1dWrapper(WrapperBase):
             Reflectivity calculated at q.
         """
         if self._magnetism:
-            reflectivities = self._polarized_reflectivities(q_array, model_name)
+            reflectivities = self._polarized_reflectivities(q_array, model_name, resolution_function)
             # Copy: the arrays live in the polarized cache and must not be mutated.
             return reflectivities[POLARIZATION_CHANNEL_TO_INDEX[self._polarization_channel]].copy()
 
         sample = _build_sample(self.storage, model_name)
         # smearing() returns sigma, which is exactly what refl1d's probe.dQ expects.
-        dq_array = self._resolution_function.smearing(q_array)
+        dq_array = self._resolution_for(model_name, resolution_function).smearing(q_array)
         probe = _get_probe(
             q_array=q_array,
             dq_array=dq_array,
@@ -309,7 +318,12 @@ class Refl1dWrapper(WrapperBase):
         _, reflectivity = names.Experiment(probe=probe, sample=sample).reflectivity()
         return reflectivity
 
-    def calculate_polarized(self, q_array: np.ndarray, model_name: str) -> dict[str, np.ndarray]:
+    def calculate_polarized(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> dict[str, np.ndarray]:
         """For a given q array calculate the reflectivity of all four spin channels.
 
         Parameters
@@ -318,6 +332,8 @@ class Refl1dWrapper(WrapperBase):
             Array of data points to be calculated.
         model_name : str
             The model name.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------
@@ -329,7 +345,7 @@ class Refl1dWrapper(WrapperBase):
                 'Polarized reflectivity requires magnetism: enable it on this calculator first '
                 '(`include_magnetism = True` on the calculator / `magnetism = True` on the wrapper).'
             )
-        reflectivities = self._polarized_reflectivities(q_array, model_name)
+        reflectivities = self._polarized_reflectivities(q_array, model_name, resolution_function)
         # Copies: the arrays live in the polarized cache and must not be mutated.
         return {channel.value: reflectivities[index].copy() for channel, index in POLARIZATION_CHANNEL_TO_INDEX.items()}
 
@@ -361,7 +377,12 @@ class Refl1dWrapper(WrapperBase):
                     values.extend((slab.magnetism.rhoM.value, slab.magnetism.thetaM.value))
         return tuple(values)
 
-    def _polarized_reflectivities(self, q_array: np.ndarray, model_name: str) -> list:
+    def _polarized_reflectivities(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> list:
         """Reflectivity of the four spin cross-sections, in refl1d order (mm, mp, pm, pp).
 
         The list follows `PolarizedNeutronProbe._xs_names`; use
@@ -372,7 +393,8 @@ class Refl1dWrapper(WrapperBase):
         # uniquely identify an ndarray (equal bytes can encode different
         # dtype/shape combinations), which could return a wrong-length hit.
         q_array = np.asarray(q_array, dtype=np.float64)
-        dq_array = np.asarray(self._resolution_function.smearing(q_array), dtype=np.float64)
+        smearing = self._resolution_for(model_name, resolution_function).smearing(q_array)
+        dq_array = np.asarray(smearing, dtype=np.float64)
 
         token = self._model_state_token(model_name)
         grid_key = (q_array.shape, q_array.tobytes(), dq_array.shape, dq_array.tobytes())

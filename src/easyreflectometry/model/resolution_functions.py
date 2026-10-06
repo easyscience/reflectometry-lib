@@ -145,14 +145,24 @@ class Pointwise(ResolutionFunction):
         ``sQz`` is the variance of ``Qz``, so the sigma at each data point is
         ``sqrt(sQz)``; values are linearly interpolated onto the requested
         ``q``.  This already satisfies the sigma smearing() contract, so no
-        FWHM conversion is applied.  When ``q`` is ``None`` the sigma values
-        are returned at the stored data points.
+        FWHM conversion is applied.  When ``q`` is ``None``, or ``q`` is
+        exactly the stored data points, the per-point sigma values are
+        returned as they are: a dataset merged from several measurements can
+        hold the same ``Qz`` twice with different widths (overlapping angles),
+        which no function of ``q`` can represent but a per-point lookup can.
         """
         Qz = np.asarray(self.q_data_points[0], dtype=float)
         sQz = np.asarray(self.q_data_points[2], dtype=float)
-        q_eval = Qz if q is None else np.asarray(q, dtype=float)
         widths = np.sqrt(sQz)
-        return np.asarray(np.interp(q_eval, Qz, widths))
+        if q is None:
+            return widths.copy()
+        q_eval = np.asarray(q, dtype=float)
+        if q_eval.shape == Qz.shape and np.array_equal(q_eval, Qz):
+            return widths.copy()
+        # np.interp needs increasing abscissae; merged datasets are sorted, but
+        # a Pointwise built directly from arrays need not be.
+        order = np.argsort(Qz, kind='stable')
+        return np.asarray(np.interp(q_eval, Qz[order], widths[order]))
 
     def as_dict(
         self, skip: Optional[List[str]] = None

@@ -24,13 +24,15 @@ class CalculatorFactory(InterfaceFactoryTemplate):
         """Sld profile."""
         return self().sld_profile(model_id)
 
-    def polarized_reflectivity_profiles(self, x_array, model_id: str) -> dict:
+    def polarized_reflectivity_profiles(self, x_array, model_id: str, resolution_function=None) -> dict:
         """Reflectivity profiles of all four spin channels ('pp', 'pm', 'mp', 'mm')."""
-        return self().polarized_reflectivity_profiles(x_array, model_id)
+        return self().polarized_reflectivity_profiles(x_array, model_id, resolution_function=resolution_function)
 
-    def reflectivity_profile_channel(self, x_array, model_id: str, channel: PolarizationChannel | str):
+    def reflectivity_profile_channel(
+        self, x_array, model_id: str, channel: PolarizationChannel | str, resolution_function=None
+    ):
         """Reflectivity profile of one explicit spin channel ('pp', 'pm', 'mp' or 'mm')."""
-        return self().reflectivity_profile_channel(x_array, model_id, channel)
+        return self().reflectivity_profile_channel(x_array, model_id, channel, resolution_function=resolution_function)
 
     def magnetic_sld_profile(self, model_id: str) -> tuple:
         """Nuclear and magnetic sld profiles: z, sld(z), rhoM(z) and thetaM(z)."""
@@ -58,7 +60,7 @@ class CalculatorFactory(InterfaceFactoryTemplate):
 
         return __fit_func
 
-    def fit_func_for_channel(self, channel: PolarizationChannel | str) -> Callable:
+    def fit_func_for_channel(self, channel: PolarizationChannel | str, resolution_function=None) -> Callable:
         """A fit function evaluating one explicit spin channel.
 
         Used for simultaneous multi-channel fitting: each channel dataset gets its
@@ -69,16 +71,51 @@ class CalculatorFactory(InterfaceFactoryTemplate):
         ----------
         channel : PolarizationChannel | str
             One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).
+        resolution_function : ResolutionFunction | None, optional
+            Resolution of the channel's dataset; by default the model's.
 
         Returns
         -------
         Callable
             Function of (x_array, model_id) returning the channel reflectivity.
         """
+        return self.fit_func_for(channel=channel, resolution_function=resolution_function)
+
+    def fit_func_for(self, channel: PolarizationChannel | str | None = None, resolution_function=None) -> Callable:
+        """A fit function for one dataset: optional spin channel, optional own resolution.
+
+        A dataset measured with its own q-resolution (a ``Pointwise`` built
+        from its sQz column) is smeared with that resolution rather than with
+        whatever is registered on the model, so several datasets of one model
+        -- different contrasts, angles or spin channels -- are each fitted with
+        the resolution they were measured with.
+
+        Parameters
+        ----------
+        channel : PolarizationChannel | str | None, optional
+            One of 'pp', 'pm', 'mp', 'mm'; ``None`` (the default) gives the
+            ordinary, channel-agnostic reflectivity.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; ``None`` (the default) uses the one
+            registered for the model.
+
+        Returns
+        -------
+        Callable
+            Function of (x_array, model_id) returning the reflectivity.
+        """
+        if channel is None:
+
+            def __fit_func(x_array, model_id):
+                """Fit func with a bound resolution."""
+                return self().reflectity_profile(x_array, model_id, resolution_function=resolution_function)
+
+            return __fit_func
+
         channel = PolarizationChannel(channel)
 
-        def __fit_func(x_array, model_id):
+        def __channel_fit_func(x_array, model_id):
             """Fit func for one spin channel."""
-            return self().reflectivity_profile_channel(x_array, model_id, channel)
+            return self().reflectivity_profile_channel(x_array, model_id, channel, resolution_function=resolution_function)
 
-        return __fit_func
+        return __channel_fit_func

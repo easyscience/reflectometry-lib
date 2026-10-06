@@ -3,7 +3,9 @@
 
 
 import os
+import warnings
 from typing import Optional
+from typing import Sequence
 from typing import TextIO
 from typing import Union
 
@@ -11,6 +13,10 @@ import numpy as np
 import scipp as sc
 
 from easyreflectometry.data import DataSet1D
+from easyreflectometry.model.resolution_functions import DEFAULT_RESOLUTION_FWHM_PERCENTAGE
+from easyreflectometry.model.resolution_functions import PercentageFwhm
+from easyreflectometry.model.resolution_functions import Pointwise
+from easyreflectometry.model.resolution_functions import ResolutionFunction
 from easyreflectometry.orso_utils import is_orso_file
 from easyreflectometry.orso_utils import load_data_from_orso_file
 
@@ -186,6 +192,121 @@ def _load_txt(fname: Union[TextIO, str]) -> sc.DataGroup:
         )
     }
     return sc.DataGroup(data=data, coords=coords)
+
+
+def resolution_from_dataset(dataset: DataSet1D) -> Optional[Pointwise]:
+    """The measured q-resolution of a dataset, or ``None`` when it carries none.
+
+    A dataset carries its resolution as the ``xe`` column, the variance of
+    ``Qz`` (sQz²) at every point. When any of it is positive a
+    :class:`Pointwise` resolution is built from it; an absent, empty, all-zero
+    or all-NaN column gives ``None``, meaning the model's resolution applies.
+
+    Parameters
+    ----------
+    dataset : DataSet1D
+        The dataset.
+
+    Returns
+    -------
+    Optional[Pointwise]
+        The per-point resolution, or ``None``.
+    """
+    xe = getattr(dataset, 'xe', None)
+    if xe is None or len(xe) == 0:
+        return None
+    xe = np.asarray(xe, dtype=float)
+    # nan-robust gate: nan is truthy for np.any, but a nan-carrying xe must
+    # not build a Pointwise (np.interp would propagate the nan everywhere).
+    if not np.any(np.nan_to_num(xe) > 0):
+        return None
+    return Pointwise(q_data_points=[np.asarray(dataset.x, dtype=float), np.asarray(dataset.y, dtype=float), xe])
+
+
+def merge_datasets(
+    datasets: Sequence[DataSet1D],
+    name: Optional[str] = None,
+    fill_resolution: Optional[ResolutionFunction] = None,
+) -> DataSet1D:
+    """Combine several measurements of one contrast into a single dataset.
+
+    A contrast is often measured as several curves -- one per incident angle
+    or wavelength band -- each with its own q-resolution. This concatenates
+    them, sorted by ``Qz``, into one dataset that keeps every point's own
+    resolution, so the fit smears each point with the width it was measured
+    with. Overlapping q ranges are kept as they are: the merged dataset may
+    hold the same ``Qz`` twice with different widths, which
+    :meth:`Pointwise.smearing` honours when evaluated at the data points.
+
+    Parameters
+    ----------
+    datasets : Sequence[DataSet1D]
+        The measurements to combine; at least one. The model, labels and ORSO
+        header of the first one are kept.
+    name : Optional[str], optional
+        Name of the merged dataset. By default the input names joined by ' + '.
+    fill_resolution : Optional[ResolutionFunction], optional
+        Resolution assumed for the points of a dataset that carries no
+        q-resolution when others do, so the merged ``xe`` column is complete.
+        By default the 5% FWHM default resolution. A warning is emitted in
+        that case. When no dataset carries a resolution, ``xe`` stays zero
+        and the merged dataset has no resolution of its own.
+
+    Returns
+    -------
+    DataSet1D
+        The merged dataset. Its ``resolution_function`` is a
+        :class:`Pointwise` over all points when any input carried one.
+
+    Raises
+    ------
+    ValueError
+        No datasets were given.
+    """
+    datasets = list(datasets)
+    if not datasets:
+        raise ValueError('At least one dataset is required to merge.')
+
+    measured = [resolution_from_dataset(dataset) is not None for dataset in datasets]
+    if any(measured) and not all(measured):
+        missing = [dataset.name for dataset, has in zip(datasets, measured) if not has]
+        if fill_resolution is None:
+            fill_resolution = PercentageFwhm(DEFAULT_RESOLUTION_FWHM_PERCENTAGE)
+        warnings.warn(
+            f'Dataset(s) {missing} carry no q-resolution while the others do; their points are '
+            f'given the {type(fill_resolution).__name__} resolution so the merged dataset has one.',
+            UserWarning,
+            stacklevel=2,
+        )
+
+    xs, ys, yes, xes = [], [], [], []
+    for dataset, has in zip(datasets, measured):
+        x = np.asarray(dataset.x, dtype=float)
+        xe = np.zeros_like(x) if dataset.xe is None else np.asarray(dataset.xe, dtype=float)
+        if any(measured) and not has:
+            xe = np.square(fill_resolution.smearing(x))
+        xs.append(x)
+        ys.append(np.asarray(dataset.y, dtype=float))
+        yes.append(np.zeros_like(x) if dataset.ye is None else np.asarray(dataset.ye, dtype=float))
+        xes.append(xe)
+
+    x = np.concatenate(xs)
+    order = np.argsort(x, kind='stable')
+    first = datasets[0]
+    merged = DataSet1D(
+        name=' + '.join(dataset.name for dataset in datasets) if name is None else name,
+        x=x[order],
+        y=np.concatenate(ys)[order],
+        ye=np.concatenate(yes)[order],
+        xe=np.concatenate(xes)[order],
+        model=first.model,
+        x_label=first.x_label,
+        y_label=first.y_label,
+        auto_background=False,
+    )
+    merged.orso_header = getattr(first, 'orso_header', None)
+    merged.resolution_function = resolution_from_dataset(merged)
+    return merged
 
 
 def merge_datagroups(*data_groups: sc.DataGroup) -> sc.DataGroup:

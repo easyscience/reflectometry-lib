@@ -343,6 +343,19 @@ class MultiFitter:
         fitter._constraints_owner = weakref.ref(self)
         return fitter
 
+    def _fitter_like_this(self, models: list, fit_funcs: list[Callable]) -> EasyScienceMultiFitter:
+        """A fresh core fitter over *fit_funcs* with this fitter's minimizer settings.
+
+        The minimizer selection and its generic settings (tolerance,
+        max_evaluations) are carried over. Engine-specific settings applied
+        directly to the minimizer instance of this fitter are not.
+        """
+        fitter = EasyScienceMultiFitter(models, fit_funcs)
+        fitter.switch_minimizer(self.easy_science_multi_fitter.minimizer.enum)
+        fitter.tolerance = self.easy_science_multi_fitter.tolerance
+        fitter.max_evaluations = self.easy_science_multi_fitter.max_evaluations
+        return fitter
+
     def _resolve_constraints_factory(self, explicit: Callable | None) -> Callable | None:
         if explicit is not None:
             return explicit
@@ -480,8 +493,12 @@ class MultiFitter:
         fit_funcs = []
         for dataset, channel in zip(datasets, channels):
             model = dataset.model
-            interface = model.interface
-            func = interface.fit_func if channel is None else interface.fit_func_for_channel(channel)
+            # Each dataset is smeared with the resolution it was measured with
+            # (its own `Pointwise` when it carries one), not with whatever the
+            # last-loaded dataset left on the shared model.
+            func = model.interface.fit_func_for(
+                channel=channel, resolution_function=getattr(dataset, 'resolution_function', None)
+            )
             fit_funcs.append(_bind_fit_func(func, model.unique_name))
 
         fitter._fit_func = fit_funcs
@@ -607,10 +624,21 @@ class MultiFitter:
         if obj == 'legacy_mask' and len(x_out) == 0:
             raise ValueError('Cannot fit single dataset: all points have zero variance.')
 
-        with self._constraints(constraints_factory):
-            result = self.easy_science_multi_fitter.fit(x=[x_out], y=[y_eff], weights=[weights])[0]
+        fitter = self.easy_science_multi_fitter
+        fit_func = self._fit_func[0]
+        resolution_function = getattr(data, 'resolution_function', None)
+        if resolution_function is not None:
+            # The dataset was measured with its own q-resolution: smear with it
+            # rather than with the model's, through a fitter bound to that
+            # resolution (the stored one is bound to the model's).
+            model = self._models[0]
+            fit_func = _bind_fit_func(model.interface.fit_func_for(resolution_function=resolution_function), model.unique_name)
+            fitter = self._fitter_like_this([model], [fit_func])
+
+        with self._constraints(constraints_factory, fitter=fitter):
+            result = fitter.fit(x=[x_out], y=[y_eff], weights=[weights])[0]
         self._fit_results = [result]
-        model_curve = self._fit_func[0](x_vals)
+        model_curve = fit_func(x_vals)
         self._classical_fit_metrics = [
             _classical_metrics_for({'y': y_vals, 'variances': variances}, model_curve, result, n_points=len(x_out))
         ]
@@ -670,18 +698,20 @@ class MultiFitter:
             if data[channel].model is not model:
                 raise ValueError(f"The '{channel.value}' channel dataset is bound to a different model than the fitter's.")
 
+        # One fit function per channel, all bound to the single model, each
+        # smeared with its channel's own measured resolution (falling back to
+        # the model's). Constructed per call because the channel set comes
+        # from the data.
         channel_fit_funcs = [
-            _bind_fit_func(model.interface.fit_func_for_channel(channel), model.unique_name) for channel in channels
+            _bind_fit_func(
+                model.interface.fit_func_for(
+                    channel=channel, resolution_function=getattr(data[channel], 'resolution_function', None)
+                ),
+                model.unique_name,
+            )
+            for channel in channels
         ]
-        # One fit function per channel, all bound to the single model. Constructed
-        # per call because the channel set comes from the data; the minimizer
-        # selection and its generic settings (tolerance, max_evaluations) are
-        # carried over. Engine-specific settings applied directly to the minimizer
-        # instance of this fitter would not be.
-        polarized_fitter = EasyScienceMultiFitter([model], channel_fit_funcs)
-        polarized_fitter.switch_minimizer(self.easy_science_multi_fitter.minimizer.enum)
-        polarized_fitter.tolerance = self.easy_science_multi_fitter.tolerance
-        polarized_fitter.max_evaluations = self.easy_science_multi_fitter.max_evaluations
+        polarized_fitter = self._fitter_like_this([model], channel_fit_funcs)
 
         x = []
         y = []

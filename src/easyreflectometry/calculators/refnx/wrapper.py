@@ -8,6 +8,7 @@ import numpy as np
 from refnx import reflect
 
 from easyreflectometry.model import PercentageFwhm
+from easyreflectometry.model import ResolutionFunction
 from easyreflectometry.model.resolution_functions import SIGMA_TO_FWHM
 
 from ..wrapper_base import WrapperBase
@@ -151,7 +152,12 @@ class RefnxWrapper(WrapperBase):
         del self.storage['model'][model_name].structure.components[item_idx]
         del self.storage['item'][item_name]
 
-    def calculate(self, q_array: np.ndarray, model_name: str) -> np.ndarray:
+    def calculate(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """For a given q array calculate the corresponding reflectivity.
 
         Parameters
@@ -160,6 +166,8 @@ class RefnxWrapper(WrapperBase):
             Array of data points to be calculated.
         model_name : str
             The model name.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------
@@ -174,11 +182,12 @@ class RefnxWrapper(WrapperBase):
             dq_type='pointwise',
         )
 
-        dq_vector = self._resolution_function.smearing(q_array)
-        if isinstance(self._resolution_function, PercentageFwhm):
+        resolution_function = self._resolution_for(model_name, resolution_function)
+        dq_vector = resolution_function.smearing(q_array)
+        if isinstance(resolution_function, PercentageFwhm):
             # refnx interprets a scalar x_err as a constant dq/q (FWHM percentage),
             # so pass the percentage directly rather than a per-point vector.
-            dq_vector = self._resolution_function.constant
+            dq_vector = resolution_function.constant
         else:
             # smearing() returns sigma; refnx expects the FWHM at each point.
             dq_vector = dq_vector * SIGMA_TO_FWHM

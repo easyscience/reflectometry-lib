@@ -311,8 +311,9 @@ class TestModel(unittest.TestCase):
         # Then
         model.resolution_function = mock_resolution_function
 
-        # Expect
-        assert model.interface()._wrapper._resolution_function == mock_resolution_function
+        # Expect - registered for this model, not as the calculator-wide default
+        assert model.interface().resolution_function_for(model.unique_name) == mock_resolution_function
+        assert model.interface().resolution_function_for(None) != mock_resolution_function
 
     def test_set_resolution_function_interface_refnx(self):
         mock_resolution_function = MagicMock()
@@ -323,8 +324,9 @@ class TestModel(unittest.TestCase):
         # Then
         model.resolution_function = mock_resolution_function
 
-        # Expect
-        assert model.interface()._wrapper._resolution_function == mock_resolution_function
+        # Expect - registered for this model, not as the calculator-wide default
+        assert model.interface().resolution_function_for(model.unique_name) == mock_resolution_function
+        assert model.interface().resolution_function_for(None) != mock_resolution_function
 
     def test_repr(self):
         model = Model()
