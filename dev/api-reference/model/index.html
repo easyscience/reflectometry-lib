@@ -1904,10 +1904,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.model.model.Model.interface" class="md-nav__link">
+  <a href="#easyreflectometry.model.model.Model.generate_bindings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        interface
+        generate_bindings
       
     </span>
   </a>
@@ -3430,10 +3430,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.model.model.Model.interface" class="md-nav__link">
+  <a href="#easyreflectometry.model.model.Model.generate_bindings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        interface
+        generate_bindings
       
     </span>
   </a>
@@ -6846,7 +6846,10 @@ absolute sigma so the smearing() contract is sigma for all types.</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model is the class that represents the experiment.</span>
 
 <span class="sd">    It is used to store the information about the experiment and to perform the calculations.</span>
@@ -7076,19 +7079,22 @@ absolute sigma so the smearing() contract is sigma for all types.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the resolution function for the model.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">)</span>
+            <span class="c1"># Registered per model: one calculator serves every model of a</span>
+            <span class="c1"># project, each possibly with a different resolution.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
-    <span class="c1"># ----- interface (override BaseCore&#39;s to add resolution-function side effect) -----</span>
+    <span class="c1"># ----- bindings (override BaseCore&#39;s to add the resolution-function side effect) -----</span>
 
-    <span class="nd">@BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the interface; runs `generate_bindings` and then refreshes the</span>
-<span class="sd">        calculator&#39;s resolution function.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagate the interface over the sample tree, then register this</span>
+<span class="sd">        model&#39;s resolution function on the calculator.</span>
+
+<span class="sd">        Runs on every interface assignment and on every engine switch (the</span>
+<span class="sd">        project regenerates bindings on a fresh calculator then), so the new</span>
+<span class="sd">        calculator always knows this model&#39;s resolution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Call BaseCore.interface.setter for the binding propagation.</span>
-        <span class="n">BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">new_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">new_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="c1"># ----- representation -----</span>
 
@@ -8012,16 +8018,19 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
 <div class="doc doc-object doc-function">
 
 
-<h3 id="easyreflectometry.model.model.Model.interface" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">interface</span><span class="p">(</span><span class="n">new_interface</span><span class="p">)</span></code>
+<h3 id="easyreflectometry.model.model.Model.generate_bindings" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate_bindings</span><span class="p">()</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Set the interface; runs <code>generate_bindings</code> and then refreshes the
-calculator's resolution function.</p>
+        <p>Propagate the interface over the sample tree, then register this
+model's resolution function on the calculator.</p>
+<p>Runs on every interface assignment and on every engine switch (the
+project regenerates bindings on a fresh calculator then), so the new
+calculator always knows this model's resolution.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -8029,23 +8038,25 @@ calculator's resolution function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/model/model.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">setter</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the interface; runs `generate_bindings` and then refreshes the</span>
-<span class="sd">    calculator&#39;s resolution function.</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagate the interface over the sample tree, then register this</span>
+<span class="sd">    model&#39;s resolution function on the calculator.</span>
+
+<span class="sd">    Runs on every interface assignment and on every engine switch (the</span>
+<span class="sd">    project regenerates bindings on a fresh calculator then), so the new</span>
+<span class="sd">    calculator always knows this model&#39;s resolution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Call BaseCore.interface.setter for the binding propagation.</span>
-    <span class="n">BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">new_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">new_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8071,10 +8082,7 @@ calculator's resolution function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/model/model.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
@@ -8084,7 +8092,10 @@ calculator's resolution function.</p>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
-<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the model, encoding the resolution function and interface name.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
@@ -8123,9 +8134,9 @@ calculator's resolution function.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/model/model.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -8182,10 +8193,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/model/model.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
 <span class="normal">352</span>
@@ -8199,7 +8207,10 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">360</span>
 <span class="normal">361</span>
 <span class="normal">362</span>
-<span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_orso</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_orso</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The sample as an ORSO simple-model (``sample.model``) dictionary.</span>
 
 <span class="sd">    Slab representation: lengths in angstrom, SLDs in 1/angstrom^2,</span>
@@ -8246,10 +8257,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/model/model.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
 <span class="normal">371</span>
@@ -8265,7 +8273,10 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">passed_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Model from a dictionary.&quot;&quot;&quot;</span>
     <span class="c1"># Circular import if hoisted to module-top.</span>
