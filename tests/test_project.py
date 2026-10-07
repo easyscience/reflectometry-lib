@@ -579,7 +579,10 @@ class TestProject:
         # Expect - name and model are recorded regardless of xe
         assert project_dict['experiments_names'][1] == 'Example data file from refnx docs'
         assert project_dict['experiments_models'][1] == project.models[1].name
-        assert len(project_dict['experiments'][1]) == 3
+        # xe is recorded as cleared; the measured resolution the experiment
+        # still fits with is kept alongside it.
+        assert project_dict['experiments'][1][3] is None
+        assert project_dict['experiments'][1][4]['smearing'] == 'Pointwise'
 
         # Then - the project loads back with the experiment attached to the same model
         global_object.map._clear()

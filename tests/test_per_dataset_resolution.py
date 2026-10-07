@@ -27,6 +27,7 @@ from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.calculators import PolarizationChannel
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data import PolarizedDataSet
+from easyreflectometry.data import load_as_dataset
 from easyreflectometry.data import merge_datasets
 from easyreflectometry.data import resolution_from_dataset
 from easyreflectometry.fitting import MultiFitter
@@ -295,9 +296,12 @@ class TestPointwiseAtDataPoints:
 class TestMergeDatasets:
     @staticmethod
     def _dataset(name, q, relative_sigma=None):
+        """A measured curve as the file loaders return it: resolution set from xe."""
         r = np.exp(-30 * q)
         xe = None if relative_sigma is None else (relative_sigma * q) ** 2
-        return DataSet1D(name=name, x=q, y=r, ye=(0.05 * r) ** 2, xe=xe)
+        dataset = DataSet1D(name=name, x=q, y=r, ye=(0.05 * r) ** 2, xe=xe)
+        dataset.resolution_function = resolution_from_dataset(dataset)
+        return dataset
 
     def test_points_are_concatenated_sorted_and_keep_their_own_widths(self):
         low = self._dataset('low', np.linspace(0.01, 0.1, 10), 0.01)
@@ -322,11 +326,52 @@ class TestMergeDatasets:
         q = np.array([0.01, 0.02])
         first = DataSet1D(name='a', x=q, y=[1.0, 1.0], ye=[1.0, 1.0], xe=[1e-8, 1e-8])
         second = DataSet1D(name='b', x=q, y=[1.0, 1.0], ye=[1.0, 1.0], xe=[4e-8, 4e-8])
+        for dataset in (first, second):
+            dataset.resolution_function = resolution_from_dataset(dataset)
 
         merged = merge_datasets([first, second])
 
         assert_allclose(merged.x, [0.01, 0.01, 0.02, 0.02])
         assert_allclose(merged.resolution_function.smearing(merged.x), [1e-4, 2e-4, 1e-4, 2e-4])
+
+    def test_explicitly_assigned_resolutions_survive_the_merge(self):
+        q = np.array([0.01, 0.02])
+        first = DataSet1D(name='a', x=q, y=[1.0, 1.0], ye=[1.0, 1.0], resolution_function=PercentageFwhm(1))
+        # Explicit resolution wins over the measured xe column.
+        second = DataSet1D(name='b', x=q, y=[1.0, 1.0], ye=[1.0, 1.0], xe=[1e-12, 1e-12])
+        second.resolution_function = PercentageFwhm(20)
+
+        merged = merge_datasets([first, second])
+
+        expected = np.array([0.01 * 0.01, 0.20 * 0.01, 0.01 * 0.02, 0.20 * 0.02]) / SIGMA_TO_FWHM
+        assert isinstance(merged.resolution_function, Pointwise)
+        assert_allclose(merged.resolution_function.smearing(merged.x), expected)
+        assert_allclose(merged.xe, expected**2)
+
+    def test_merged_curve_matches_the_unmerged_curves(self):
+        interface = CalculatorFactory()
+        model = _film_model('model', interface=interface)
+        calculator = interface()
+        sharp = DataSet1D(name='sharp', x=Q, y=np.ones_like(Q), ye=np.ones_like(Q), resolution_function=_sharp())
+        broad = DataSet1D(name='broad', x=Q, y=np.ones_like(Q), ye=np.ones_like(Q), resolution_function=_broad())
+
+        merged = merge_datasets([sharp, broad])
+        merged.model = model
+
+        expected = np.empty(2 * len(Q))
+        expected[0::2] = calculator.reflectity_profile(Q, model.unique_name, resolution_function=_sharp())
+        expected[1::2] = calculator.reflectity_profile(Q, model.unique_name, resolution_function=_broad())
+        assert_allclose(MultiFitter.for_experiments([merged])._fit_func[0](merged.x), expected, rtol=1e-10)
+
+    def test_dataset_using_the_models_resolution_is_filled_not_read_from_xe(self):
+        measured = self._dataset('measured', np.linspace(0.01, 0.1, 5), 0.01)
+        overridden = self._dataset('overridden', np.linspace(0.2, 0.3, 5), 0.01)
+        overridden.resolution_function = None
+
+        with pytest.warns(UserWarning, match="\\['overridden'\\]"):
+            merged = merge_datasets([measured, overridden], fill_resolution=PercentageFwhm(2.0))
+
+        assert_allclose(merged.resolution_function.smearing(merged.x)[5:], 0.02 * overridden.x / SIGMA_TO_FWHM)
 
     def test_mixed_resolution_fills_missing_points_and_warns(self):
         with_resolution = self._dataset('measured', np.linspace(0.01, 0.1, 5), 0.01)
@@ -375,6 +420,118 @@ class TestMergeDatasets:
     def test_empty_input_is_rejected(self):
         with pytest.raises(ValueError, match='At least one dataset'):
             merge_datasets([])
+
+
+class TestMaskedFitKeepsPointWidths:
+    """`legacy_mask` drops points; a merged dataset's repeated q must keep their own widths."""
+
+    @staticmethod
+    def _merged_truth(model_name='truth', channel=None, magnetism=None, engine='refnx'):
+        interface = CalculatorFactory()
+        interface.switch(engine)
+        truth = _film_model(model_name, magnetism=magnetism, interface=interface)
+        calculator = interface()
+        sharp, broad = _sharp(), _broad()
+        curves = []
+        for resolution in (sharp, broad):
+            if channel is None:
+                curves.append(calculator.reflectity_profile(Q, truth.unique_name, resolution_function=resolution))
+            else:
+                curves.append(
+                    calculator.reflectivity_profile_channel(Q, truth.unique_name, channel, resolution_function=resolution)
+                )
+        datasets = [
+            DataSet1D(name=str(i), x=Q, y=curve, ye=(0.01 * curve) ** 2, resolution_function=resolution)
+            for i, (curve, resolution) in enumerate(zip(curves, (sharp, broad)))
+        ]
+        merged = merge_datasets(datasets)
+        # Dropping any one point leaves the other repeated-q pairs to be fitted
+        # with their own widths, not with q-interpolated ones.
+        merged.ye[0] = 0.0
+        # The truth model is returned to keep it alive: its unique name must not be
+        # reused by the model fitted on the same calculator.
+        return interface, merged, truth
+
+    def test_resolution_for_fitted_points_keeps_identities(self):
+        from easyreflectometry.fitting import _resolution_for_fitted_points
+
+        q = np.array([0.01, 0.02, 0.02, 0.03])
+        sigma = np.array([1e-4, 2e-4, 5e-4, 3e-4])
+        resolution = Pointwise([q, np.ones_like(q), sigma**2])
+        variances = np.array([0.0, 1.0, 1.0, 1.0])
+
+        subset = _resolution_for_fitted_points(resolution, q, np.ones_like(q), variances, 'legacy_mask')
+
+        assert_allclose(subset.smearing(q[1:]), sigma[1:])
+        # Nothing dropped, or another objective: the resolution is used as it is.
+        assert _resolution_for_fitted_points(resolution, q, np.ones_like(q), variances, 'hybrid') is resolution
+        assert _resolution_for_fitted_points(resolution, q, np.ones_like(q), np.ones_like(q), 'legacy_mask') is resolution
+
+    @pytest.mark.slow
+    def test_single_dataset_masked_fit_recovers_scale(self):
+        interface, merged, _truth = self._merged_truth()
+        model = _film_model('model', interface=interface)
+        model.scale.value = 0.5
+        model.scale.fixed = False
+        model.scale.min = 0.1
+        model.scale.max = 2.0
+        merged.model = model
+
+        with pytest.warns(UserWarning, match='Masked 1'):
+            result = MultiFitter(model).fit_single_data_set_1d(merged, objective='legacy_mask')
+
+        assert result.success
+        assert_allclose(model.scale.value, 1.0, atol=1e-4)
+
+    @pytest.mark.slow
+    def test_polarized_masked_fit_recovers_scale(self):
+        magnetism = LayerMagnetism(rho_m=1.5, theta_m=270.0)
+        interface, merged, _truth = self._merged_truth(channel='pp', magnetism=magnetism, engine='refl1d')
+        model = _film_model('model', magnetism=LayerMagnetism(rho_m=1.5, theta_m=270.0), interface=interface)
+        model.scale.value = 0.5
+        model.scale.fixed = False
+        model.scale.min = 0.1
+        model.scale.max = 2.0
+        data = PolarizedDataSet(name='polarized', channels={'pp': merged}, model=model)
+
+        with pytest.warns(UserWarning, match='Masked 1'):
+            results = MultiFitter(model).fit_polarized(data, objective='legacy_mask')
+
+        assert results['pp'].success
+        assert_allclose(model.scale.value, 1.0, atol=1e-4)
+
+
+class TestLoadersSetMeasuredResolution:
+    def test_load_as_dataset_sets_pointwise(self):
+        dataset = load_as_dataset(os.path.join(PATH_STATIC, 'example.ort'))
+
+        assert isinstance(dataset.resolution_function, Pointwise)
+        assert_allclose(dataset.resolution_function.smearing(dataset.x), np.sqrt(dataset.xe))
+
+    def test_three_column_file_keeps_none(self, tmp_path):
+        path = tmp_path / 'bare.txt'
+        np.savetxt(path, np.column_stack([Q, np.ones_like(Q), 0.1 * np.ones_like(Q)]))
+
+        assert load_as_dataset(str(path)).resolution_function is None
+
+    def test_fitter_uses_each_loaded_files_widths(self, tmp_path):
+        interface = CalculatorFactory()
+        model = _film_model('model', interface=interface)
+        model.resolution_function = PercentageFwhm(5)
+        calculator = interface()
+        datasets = []
+        for name, relative in (('sharp', 0.002), ('broad', 0.08)):
+            path = tmp_path / f'{name}.txt'
+            _write_four_column_file(path, Q, np.exp(-30 * Q), 0.05 * np.exp(-30 * Q), relative * Q)
+            dataset = load_as_dataset(str(path))
+            dataset.model = model
+            datasets.append(dataset)
+
+        fitter = MultiFitter.for_experiments(datasets)
+
+        for index, dataset in enumerate(datasets):
+            expected = calculator.reflectity_profile(Q, model.unique_name, resolution_function=resolution_from_dataset(dataset))
+            assert_allclose(fitter._fit_func[index](Q), expected, rtol=1e-12)
 
 
 class TestResolutionFromDataset:
@@ -578,11 +735,12 @@ class TestProjectResolution:
         mm = restored.experiments[1]['mm']
         assert_allclose(mm.resolution_function.smearing(mm.x), np.sqrt(mm.xe))
 
-    def test_dataset_without_xe_round_trips_without_a_resolution(self):
+    def test_dataset_without_xe_or_resolution_round_trips_without_either(self):
         project = Project()
         project.default_model()
         project.load_new_experiment(os.path.join(PATH_STATIC, 'example.ort'))
         project.experiments[0].xe = None
+        project.experiments[0].resolution_function = None
         project_dict = project.as_dict()
 
         assert len(project_dict['experiments'][0]) == 3
@@ -591,3 +749,77 @@ class TestProjectResolution:
         restored = Project()
         restored.from_dict(project_dict)
         assert restored.experiments[0].resolution_function is None
+
+    @staticmethod
+    def _round_trip(project):
+        project_dict = project.as_dict()
+        global_object.map._clear()
+        restored = Project()
+        restored.from_dict(project_dict)
+        return project_dict, restored
+
+    def test_explicit_model_resolution_choice_round_trips(self):
+        project = Project()
+        project.default_model()
+        project.load_new_experiment(os.path.join(PATH_STATIC, 'example.ort'))
+        project.experiments[0].resolution_function = None
+        project.models[0].resolution_function = PercentageFwhm(1)
+        before = project.model_data_for_experiment_at_index(0).y
+
+        project_dict, restored = self._round_trip(project)
+
+        assert len(project_dict['experiments'][0]) == 5
+        assert project_dict['experiments'][0][4] is None
+        assert restored.experiments[0].resolution_function is None
+        assert_allclose(restored.model_data_for_experiment_at_index(0).y, before, rtol=1e-10)
+
+    def test_explicit_model_resolution_choice_round_trips_for_a_channel(self, tmp_path):
+        paths = self._two_files(tmp_path)
+        project = Project()
+        project.default_model()
+        project.load_polarized_experiment({'pp': paths[0], 'mm': paths[1]})
+        # 'pp' of a non-magnetic model is the unpolarized calculation.
+        project.experiments[0]['pp'].resolution_function = None
+        project.models[0].resolution_function = PercentageFwhm(1)
+        before = project.model_data_for_experiment_at_index(0, channel='pp').y
+
+        _, restored = self._round_trip(project)
+
+        assert restored.experiments[0]['pp'].resolution_function is None
+        assert isinstance(restored.experiments[0]['mm'].resolution_function, Pointwise)
+        assert_allclose(restored.model_data_for_experiment_at_index(0, channel='pp').y, before, rtol=1e-10)
+
+    def test_explicit_resolution_without_xe_round_trips(self):
+        project = Project()
+        project.default_model()
+        project.load_new_experiment(os.path.join(PATH_STATIC, 'example.ort'))
+        project.experiments[0].xe = None
+        project.experiments[0].resolution_function = PercentageFwhm(2)
+        before = project.model_data_for_experiment_at_index(0).y
+
+        project_dict, restored = self._round_trip(project)
+
+        assert project_dict['experiments'][0][3] is None
+        assert isinstance(restored.experiments[0].resolution_function, PercentageFwhm)
+        assert_allclose(restored.model_data_for_experiment_at_index(0).y, before, rtol=1e-10)
+
+    def test_append_keeps_the_experiments_explicit_resolution(self, tmp_path):
+        paths = self._two_files(tmp_path)
+        project = Project()
+        project.default_model()
+        project.load_new_experiment(paths[0])
+        project.experiments[0].resolution_function = PercentageFwhm(20)
+        original_x = np.array(project.experiments[0].x)
+
+        project.append_to_experiment_at_index(0, paths[1])
+
+        experiment = project.experiments[0]
+        widths = experiment.resolution_function.smearing(experiment.x)
+        appended_q = np.linspace(0.08, 0.3, 12)
+        for q, width in zip(experiment.x, widths):
+            candidates = []
+            if np.any(np.isclose(original_x, q)):
+                candidates.append(0.20 * q / SIGMA_TO_FWHM)
+            if np.any(np.isclose(appended_q, q)):
+                candidates.append(0.03 * q)
+            assert any(np.isclose(width, candidate) for candidate in candidates)

@@ -1136,15 +1136,20 @@ class Project:
         self._auto_set_background(experiment)
         self._experiments[new_index] = experiment
         self._with_experiments = True
-        self._apply_resolution_function(experiment, model)
+        # The merged resolution is kept as merge_datasets built it from the
+        # inputs' own resolutions; only the model follows it.
+        model.resolution_function = (
+            PercentageFwhm(5.0) if experiment.resolution_function is None else experiment.resolution_function
+        )
         return new_index
 
     def append_to_experiment_at_index(self, index: int, path: Union[Path, str]) -> None:
         """Add another measured curve of the same contrast to an existing experiment.
 
         The file's points are merged into the experiment at *index* (sorted by
-        q), each keeping its own measured resolution. The experiment's name
-        and model are kept.
+        q), each keeping its own resolution: the file's measured one, and the
+        experiment's ``resolution_function`` as currently assigned. The
+        experiment's name and model are kept.
 
         Parameters
         ----------
@@ -1171,8 +1176,11 @@ class Project:
         merged = merge_datasets([experiment, addition], name=experiment.name, fill_resolution=self._fill_resolution_for(model))
         merged.model = model
         self._experiments[index] = merged
-        if model is not None:
-            self._apply_resolution_function(merged, model)
+        # merge_datasets kept the experiment's own resolution (measured or
+        # explicitly assigned) for its points; the model follows the merged
+        # one. Without any, the experiment keeps using the model's as it is.
+        if model is not None and merged.resolution_function is not None:
+            model.resolution_function = merged.resolution_function
 
     @staticmethod
     def _fill_resolution_for(model: Optional[Model]) -> Optional[ResolutionFunction]:
@@ -2126,13 +2134,14 @@ class Project:
                 list(experiment.y),
                 list(experiment.ye),
             ]
-            if experiment.xe is not None:
-                project_dict['experiments'][key].append(list(experiment.xe))
-                resolution = self._dataset_resolution_as_dict(experiment)
-                if resolution is not None:
-                    # Fifth entry. A dataset's own resolution is measured, i.e.
-                    # derived from xe; clearing xe discards it.
-                    project_dict['experiments'][key].append(resolution)
+            resolution = self._dataset_resolution_as_dict(experiment)
+            if experiment.xe is not None or resolution is not None:
+                # Fourth entry xe (None when cleared), fifth the dataset's own
+                # resolution. The fifth is written even when None, an explicit
+                # "use the model's resolution"; only its absence (files written
+                # before it existed) means "derive it from xe".
+                project_dict['experiments'][key].append(None if experiment.xe is None else list(experiment.xe))
+                project_dict['experiments'][key].append(resolution)
             project_dict['experiments_models'][key] = experiment.model.name
             project_dict['experiments_names'][key] = experiment.name
 
@@ -2145,12 +2154,19 @@ class Project:
         return resolution_function.as_dict()
 
     @staticmethod
-    def _dataset_resolution_from_dict(dataset: DataSet1D, raw: Optional[dict]) -> None:
-        """Restore a dataset's own resolution; older files without one get it from ``xe``."""
-        if raw is not None:
-            dataset.resolution_function = ResolutionFunction.from_dict(raw)
-        else:
+    def _dataset_resolution_from_dict(dataset: DataSet1D, arrays: list, position: int) -> None:
+        """Restore a dataset's own resolution from ``arrays[position]``.
+
+        A present entry is used as it is, ``None`` included (the dataset uses
+        the model's resolution). Older files, written before the entry
+        existed, get the measured resolution derived from ``xe``.
+        """
+        if len(arrays) <= position:
             dataset.resolution_function = resolution_from_dataset(dataset)
+        elif arrays[position] is None:
+            dataset.resolution_function = None
+        else:
+            dataset.resolution_function = ResolutionFunction.from_dict(arrays[position])
 
     @classmethod
     def _as_dict_add_polarized_experiment(cls, project_dict: dict, key: int, experiment: PolarizedDataSet) -> None:
@@ -2168,7 +2184,8 @@ class Project:
                     list(experiment[channel].x),
                     list(experiment[channel].y),
                     list(experiment[channel].ye),
-                    list(experiment[channel].xe),
+                    None if experiment[channel].xe is None else list(experiment[channel].xe),
+                    # Written even when None; see `_dataset_resolution_from_dict`.
                     cls._dataset_resolution_as_dict(experiment[channel]),
                 ]
                 for channel in experiment.available_channels
@@ -2278,7 +2295,7 @@ class Project:
                 model=self._models[project_dict['experiments_models'][key]],
                 auto_background=False,
             )
-            self._dataset_resolution_from_dict(dataset, raw[4] if len(raw) > 4 else None)
+            self._dataset_resolution_from_dict(dataset, raw, 4)
             experiments[int(key)] = dataset
         return experiments
 
@@ -2296,7 +2313,7 @@ class Project:
                 model=model,
                 auto_background=False,
             )
-            self._dataset_resolution_from_dict(dataset, arrays[5] if len(arrays) > 5 else None)
+            self._dataset_resolution_from_dict(dataset, arrays, 5)
             channels[channel_value] = dataset
         return PolarizedDataSet(
             name=project_dict['experiments_names'][key],

@@ -22,6 +22,8 @@ from easyreflectometry._bumps_constraints import is_applied as _constraints_acti
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data import PolarizedDataSet
 from easyreflectometry.model import Model
+from easyreflectometry.model import Pointwise
+from easyreflectometry.model import ResolutionFunction
 
 _VALID_OBJECTIVES = ('legacy_mask', 'mighell', 'hybrid', 'auto')
 _EPS = 1e-30
@@ -217,6 +219,31 @@ def _bind_fit_func(func: Callable, unique_name: str) -> Callable:
         return func(*args, unique_name, **kwargs)
 
     return wrapped
+
+
+def _resolution_for_fitted_points(
+    resolution_function: ResolutionFunction | None,
+    x_vals: np.ndarray,
+    y_vals: np.ndarray,
+    variances: np.ndarray,
+    objective: str,
+) -> ResolutionFunction | None:
+    """The dataset resolution restricted to the points :func:`_prepare_fit_arrays` keeps.
+
+    ``legacy_mask`` drops zero-variance points, so the fit evaluates the model
+    on a subset of ``x``. A merged dataset can hold the same q twice with
+    different widths; looked up by q alone, the subset would lose which width
+    belongs to which point (:meth:`Pointwise.smearing` only keeps per-point
+    widths when evaluated on exactly its stored q). The widths are therefore
+    evaluated on the full grid and selected together with the points.
+    """
+    if resolution_function is None or objective != 'legacy_mask':
+        return resolution_function
+    keep = ~(variances <= 0.0)
+    if np.all(keep):
+        return resolution_function
+    sigma = np.asarray(resolution_function.smearing(x_vals), dtype=float)
+    return Pointwise([x_vals[keep], y_vals[keep], np.square(sigma[keep])])
 
 
 def _emit_array_prep_warnings(stats: dict, y_vals: np.ndarray, label: str, *, action: str = 'fitting', extra: str = '') -> None:
@@ -430,7 +457,12 @@ class MultiFitter:
         The resulting fitter is *not* run: the caller supplies the data arrays
         to ``easy_science_multi_fitter.fit(...)`` in the order given by
         :attr:`fit_datasets`, which lets a GUI drive it from a worker thread.
-        That call resolves :attr:`constraints_factory_provider` at call time,
+        Each fit function is bound to its dataset's resolution as a whole, so
+        the caller should pass every point of the dataset: a dataset merged
+        from overlapping measurements can hold the same q twice with
+        different widths, and a subset loses which width belongs to which
+        point (use ``objective='hybrid'``/``'mighell'`` rather than dropping
+        zero-variance points). That call resolves :attr:`constraints_factory_provider` at call time,
         so inequality constraints are applied on this path too — pass
         ``constraints_factory_provider`` (e.g.
         ``project.build_constraints_factory``) or set the attribute before
@@ -611,6 +643,14 @@ class MultiFitter:
         -------
         FitResults
             Fit results from the minimizer.
+
+        Note
+        ----
+        When ``data`` carries its own ``resolution_function`` the fit runs on
+        a temporary core fitter bound to that resolution. It carries over the
+        minimizer selection, ``tolerance`` and ``max_evaluations``, but not
+        engine-specific settings applied directly to this fitter's minimizer
+        instance.
         """
         obj = _validate_objective(objective) if objective is not None else self._objective
 
@@ -626,19 +666,27 @@ class MultiFitter:
 
         fitter = self.easy_science_multi_fitter
         fit_func = self._fit_func[0]
+        curve_func = fit_func
         resolution_function = getattr(data, 'resolution_function', None)
         if resolution_function is not None:
             # The dataset was measured with its own q-resolution: smear with it
             # rather than with the model's, through a fitter bound to that
             # resolution (the stored one is bound to the model's).
             model = self._models[0]
-            fit_func = _bind_fit_func(model.interface.fit_func_for(resolution_function=resolution_function), model.unique_name)
+            fitted_resolution = _resolution_for_fitted_points(resolution_function, x_vals, y_vals, variances, obj)
+            fit_func = _bind_fit_func(model.interface.fit_func_for(resolution_function=fitted_resolution), model.unique_name)
+            curve_func = fit_func
+            if fitted_resolution is not resolution_function:
+                # The classical metrics below evaluate every point, not the fitted subset.
+                curve_func = _bind_fit_func(
+                    model.interface.fit_func_for(resolution_function=resolution_function), model.unique_name
+                )
             fitter = self._fitter_like_this([model], [fit_func])
 
         with self._constraints(constraints_factory, fitter=fitter):
             result = fitter.fit(x=[x_out], y=[y_eff], weights=[weights])[0]
         self._fit_results = [result]
-        model_curve = fit_func(x_vals)
+        model_curve = curve_func(x_vals)
         self._classical_fit_metrics = [
             _classical_metrics_for({'y': y_vals, 'variances': variances}, model_curve, result, n_points=len(x_out))
         ]
@@ -698,25 +746,17 @@ class MultiFitter:
             if data[channel].model is not model:
                 raise ValueError(f"The '{channel.value}' channel dataset is bound to a different model than the fitter's.")
 
-        # One fit function per channel, all bound to the single model, each
-        # smeared with its channel's own measured resolution (falling back to
-        # the model's). Constructed per call because the channel set comes
-        # from the data.
-        channel_fit_funcs = [
-            _bind_fit_func(
-                model.interface.fit_func_for(
-                    channel=channel, resolution_function=getattr(data[channel], 'resolution_function', None)
-                ),
-                model.unique_name,
-            )
-            for channel in channels
-        ]
-        polarized_fitter = self._fitter_like_this([model], channel_fit_funcs)
-
         x = []
         y = []
         dy = []
         original_arrays = []
+        # One fit function per channel, all bound to the single model, each
+        # smeared with its channel's own measured resolution (falling back to
+        # the model's). Constructed per call because the channel set comes
+        # from the data. `channel_curve_funcs` evaluate every point of the
+        # channel, for the classical metrics.
+        channel_fit_funcs = []
+        channel_curve_funcs = []
         for channel in channels:
             dataset = data[channel]
             x_vals = np.asarray(dataset.x)
@@ -733,6 +773,23 @@ class MultiFitter:
             dy.append(weights)
             original_arrays.append({'x': x_vals, 'y': y_vals, 'variances': variances})
 
+            resolution_function = getattr(dataset, 'resolution_function', None)
+            fitted_resolution = _resolution_for_fitted_points(resolution_function, x_vals, y_vals, variances, obj)
+            fit_func = _bind_fit_func(
+                model.interface.fit_func_for(channel=channel, resolution_function=fitted_resolution), model.unique_name
+            )
+            channel_fit_funcs.append(fit_func)
+            if fitted_resolution is resolution_function:
+                channel_curve_funcs.append(fit_func)
+            else:
+                channel_curve_funcs.append(
+                    _bind_fit_func(
+                        model.interface.fit_func_for(channel=channel, resolution_function=resolution_function),
+                        model.unique_name,
+                    )
+                )
+        polarized_fitter = self._fitter_like_this([model], channel_fit_funcs)
+
         with self._constraints(constraints_factory, fitter=polarized_fitter):
             results = polarized_fitter.fit(x, y, weights=dy)
         # All channels are fitted against one parameter vector (the shared model),
@@ -743,7 +800,7 @@ class MultiFitter:
         self._classical_fit_metrics = []
         for index, (channel, result) in enumerate(zip(channels, results)):
             original = original_arrays[index]
-            model_curve = channel_fit_funcs[index](original['x'])
+            model_curve = channel_curve_funcs[index](original['x'])
             self._classical_fit_metrics.append(_classical_metrics_for(original, model_curve, result))
 
         return {channel.value: result for channel, result in zip(channels, results)}

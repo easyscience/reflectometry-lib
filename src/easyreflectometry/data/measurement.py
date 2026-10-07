@@ -56,6 +56,12 @@ def dataset_from_datagroup(data_group: sc.DataGroup, data_key: Optional[str] = N
     ``orso_header`` attribute (a plain dict), so exporters can reuse the
     original ``data_source``/``reduction`` provenance.
 
+    The measured q-resolution, when the data carry one (positive sQz), is set
+    as the dataset's ``resolution_function`` (see
+    :func:`resolution_from_dataset`), so fitting smears the dataset with the
+    widths it was measured with. Otherwise it stays ``None`` and the model's
+    resolution applies.
+
     Parameters
     ----------
     data_group : sc.DataGroup
@@ -86,6 +92,7 @@ def dataset_from_datagroup(data_group: sc.DataGroup, data_key: Optional[str] = N
         except (KeyError, AttributeError):
             header = None
     dataset.orso_header = header
+    dataset.resolution_function = resolution_from_dataset(dataset)
     return dataset
 
 
@@ -238,6 +245,13 @@ def merge_datasets(
     hold the same ``Qz`` twice with different widths, which
     :meth:`Pointwise.smearing` honours when evaluated at the data points.
 
+    Each input contributes the widths of its own ``resolution_function``,
+    evaluated at its points -- the measured :class:`Pointwise` set by the
+    file loaders, or whatever was assigned explicitly -- so merging does not
+    change the resolution a measurement is fitted with. An input whose
+    ``resolution_function`` is ``None`` (the model's resolution applies) has
+    no widths of its own; its ``xe`` column is not consulted.
+
     Parameters
     ----------
     datasets : Sequence[DataSet1D]
@@ -247,16 +261,18 @@ def merge_datasets(
         Name of the merged dataset. By default the input names joined by ' + '.
     fill_resolution : Optional[ResolutionFunction], optional
         Resolution assumed for the points of a dataset that carries no
-        q-resolution when others do, so the merged ``xe`` column is complete.
-        By default the 5% FWHM default resolution. A warning is emitted in
-        that case. When no dataset carries a resolution, ``xe`` stays zero
-        and the merged dataset has no resolution of its own.
+        resolution when others do, so the merged resolution covers every
+        point. By default the 5% FWHM default resolution. A warning is
+        emitted in that case. When no dataset carries a resolution, the
+        merged dataset has none either and ``xe`` is the inputs' columns
+        concatenated.
 
     Returns
     -------
     DataSet1D
-        The merged dataset. Its ``resolution_function`` is a
-        :class:`Pointwise` over all points when any input carried one.
+        The merged dataset. When any input carried a resolution, its
+        ``resolution_function`` is a :class:`Pointwise` over all points and
+        ``xe`` holds the matching variances.
 
     Raises
     ------
@@ -267,9 +283,10 @@ def merge_datasets(
     if not datasets:
         raise ValueError('At least one dataset is required to merge.')
 
-    measured = [resolution_from_dataset(dataset) is not None for dataset in datasets]
-    if any(measured) and not all(measured):
-        missing = [dataset.name for dataset, has in zip(datasets, measured) if not has]
+    resolutions = [getattr(dataset, 'resolution_function', None) for dataset in datasets]
+    any_resolution = any(resolution is not None for resolution in resolutions)
+    if any_resolution and not all(resolution is not None for resolution in resolutions):
+        missing = [dataset.name for dataset, resolution in zip(datasets, resolutions) if resolution is None]
         if fill_resolution is None:
             fill_resolution = PercentageFwhm(DEFAULT_RESOLUTION_FWHM_PERCENTAGE)
         warnings.warn(
@@ -280,11 +297,14 @@ def merge_datasets(
         )
 
     xs, ys, yes, xes = [], [], [], []
-    for dataset, has in zip(datasets, measured):
+    for dataset, resolution in zip(datasets, resolutions):
         x = np.asarray(dataset.x, dtype=float)
-        xe = np.zeros_like(x) if dataset.xe is None else np.asarray(dataset.xe, dtype=float)
-        if any(measured) and not has:
-            xe = np.square(fill_resolution.smearing(x))
+        if any_resolution:
+            # Evaluated at the dataset's own points, so a Pointwise returns
+            # its per-point widths rather than interpolating by q.
+            xe = np.square(np.asarray((resolution or fill_resolution).smearing(x), dtype=float))
+        else:
+            xe = np.zeros_like(x) if dataset.xe is None else np.asarray(dataset.xe, dtype=float)
         xs.append(x)
         ys.append(np.asarray(dataset.y, dtype=float))
         yes.append(np.zeros_like(x) if dataset.ye is None else np.asarray(dataset.ye, dtype=float))
@@ -305,7 +325,8 @@ def merge_datasets(
         auto_background=False,
     )
     merged.orso_header = getattr(first, 'orso_header', None)
-    merged.resolution_function = resolution_from_dataset(merged)
+    if any_resolution:
+        merged.resolution_function = Pointwise(q_data_points=[merged.x, merged.y, merged.xe])
     return merged
 
 
