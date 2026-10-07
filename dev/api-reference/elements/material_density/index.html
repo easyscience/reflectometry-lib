@@ -3558,7 +3558,13 @@ enters the derived SLD).</p>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
-<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialDensity</span><span class="p">(</span><span class="n">Material</span><span class="p">):</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialDensity</span><span class="p">(</span><span class="n">Material</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A material defined by chemical formula and mass density.</span>
 
 <span class="sd">    The scattering length density is derived rather than set: from the</span>
@@ -3736,7 +3742,13 @@ enters the derived SLD).</p>
 <span class="sd">        as coupled again; and the density dependencies may be removed behind</span>
 <span class="sd">        the material&#39;s back (``unconstrain(material.sld)`` or a raw</span>
 <span class="sd">        ``make_independent()``), after which the flag alone would still claim</span>
-<span class="sd">        coupling and serialization would drop the manual values.&quot;&quot;&quot;</span>
+<span class="sd">        coupling and serialization would drop the manual values.</span>
+
+<span class="sd">        The coupling is all-or-nothing: ``sld`` and ``isld`` are decoupled and</span>
+<span class="sd">        recoupled together, and only that joint state is serialized. Freeing</span>
+<span class="sd">        just one of them (``unconstrain(material.sld)`` alone) reads as</span>
+<span class="sd">        decoupled, and a save/load restores *both* as independent with their</span>
+<span class="sd">        saved values; such a mixed state is session-only.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld_coupled</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">independent</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">independent</span>
 
     <span class="nd">@sld_coupled</span><span class="o">.</span><span class="n">setter</span>
@@ -3904,6 +3916,11 @@ as coupled again; and the density dependencies may be removed behind
 the material's back (<code>unconstrain(material.sld)</code> or a raw
 <code>make_independent()</code>), after which the flag alone would still claim
 coupling and serialization would drop the manual values.</p>
+<p>The coupling is all-or-nothing: <code>sld</code> and <code>isld</code> are decoupled and
+recoupled together, and only that joint state is serialized. Freeing
+just one of them (<code>unconstrain(material.sld)</code> alone) reads as
+decoupled, and a save/load restores <em>both</em> as independent with their
+saved values; such a mixed state is session-only.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4325,13 +4342,7 @@ without them (pre-feature project files) restores as coupled.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_density.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
@@ -4356,7 +4367,13 @@ without them (pre-feature project files) restores as coupled.</p>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
-<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialDensity&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-attach sld/isld dependencies after deserialization.</span>
 
