@@ -7,10 +7,14 @@ from __future__ import annotations
 import hashlib
 import json
 import warnings
+from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
 from easyscience.fitting.minimizers.minimizer_base import MINIMIZER_PARAMETER_PREFIX
+
+if TYPE_CHECKING:
+    from easyreflectometry.model import ResolutionFunction
 
 try:
     import arviz as _arviz
@@ -1168,11 +1172,14 @@ def posterior_predictive_reflectivity(
     model,
     q_values: np.ndarray,
     n_samples: int = 200,
+    resolution_function: ResolutionFunction | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Compute the posterior predictive reflectivity with credible intervals.
 
     Parameter values and errors are saved before applying any posterior draw
     and restored in a ``finally`` block, so the model is not left mutated.
+    The same holds for the model's resolution function when a different one
+    is passed in.
 
     :param draws: Posterior samples, shape ``(n_samples_posterior, n_params)``.
     :type draws: np.ndarray
@@ -1183,6 +1190,12 @@ def posterior_predictive_reflectivity(
     :type q_values: np.ndarray
     :param n_samples: Number of posterior draws to use (last ``n_samples``).
     :type n_samples: int
+    :param resolution_function: Resolution to smear with, typically the
+        measured resolution of the dataset the band is drawn over, as
+        :class:`~easyreflectometry.project.Project` registers it on the
+        model when the experiment is loaded (``model.resolution_function``).
+        ``None`` uses the model's current resolution.
+    :type resolution_function: ResolutionFunction | None
     :return: Tuple of ``(median, lower_95, upper_95)`` reflectivity arrays.
     :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
     """
@@ -1193,14 +1206,26 @@ def posterior_predictive_reflectivity(
     n_use = min(n_samples, n_total)
     sample_indices = range(n_total - n_use, n_total)
 
+    fit_func = model.interface.fit_func
+
     saved_state = _save_parameter_state(model)
+    # The resolution is calculator state registered through the model, so a
+    # different one is swapped in for the duration of the band and restored
+    # afterwards (the pattern `Project.sample_data_for_model_at_index` uses).
+    # It gives the band the same smearing the fit used for this dataset, so
+    # it sits on the fitted curve rather than on a differently smeared one.
+    original_resolution_function = model.resolution_function
     try:
+        if resolution_function is not None:
+            model.resolution_function = resolution_function
         reflectivity_samples = []
         for i in sample_indices:
             _apply_draw(model, draws, param_names, i)
-            r_calc = model.interface.fit_func(q_values, model.unique_name)
+            r_calc = fit_func(q_values, model.unique_name)
             reflectivity_samples.append(np.asarray(r_calc))
     finally:
+        if resolution_function is not None:
+            model.resolution_function = original_resolution_function
         _restore_parameter_state(model, saved_state)
 
     reflectivity_samples = np.array(reflectivity_samples)

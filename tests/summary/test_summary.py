@@ -8,12 +8,11 @@ import numpy as np
 import pytest
 from easyscience import global_object
 
-import easyreflectometry
 from easyreflectometry import Project
 from easyreflectometry.model.resolution_functions import PercentageFwhm
 from easyreflectometry.summary import Summary
 
-PATH_STATIC = os.path.join(os.path.dirname(easyreflectometry.__file__), '..', '..', 'tests', '_static')
+PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static')
 
 
 class TestSummary:
