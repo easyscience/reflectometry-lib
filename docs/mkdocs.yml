@@ -228,3 +228,4 @@ nav:
       - ORSO: api-reference/orso.md
       - Summary: api-reference/summary.md
       - Plotting: api-reference/plot.md
+      - Volume Fraction Profile: api-reference/volume_fraction.md

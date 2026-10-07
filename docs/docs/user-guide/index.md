@@ -123,6 +123,75 @@ plot(analysed)
 Details of specific usage of EasyReflectometry can be found in the
 [Tutorials](../tutorials/index.md).
 
+## Volume Fraction (Occupancy) Profiles
+
+The SLD profile of a sample is a single blended curve. A **volume
+fraction profile** separates it into its components: how much of the
+volume at each depth is lipid head group, tail, solvent, substrate and
+so on. It is the kind of plot shown in the
+[refnx occupancy documentation](https://refnx.readthedocs.io/en/latest/occupancy.html)
+and used, for example, to follow an antibiotic into a membrane.
+
+```python
+from easyreflectometry.plot import plot_volume_fraction
+
+profile = sample.volume_fraction_profile()  # no calculator needed
+print(profile.labels)                       # component key -> label
+plot_volume_fraction(profile)               # one filled trace per component
+
+# Presentation grouping: merge and rename traces
+grouped = profile.grouped({'Heads': ['C10H18NO8P'], 'Water': ['D2O']})
+plot_volume_fraction(grouped, style='line')
+```
+
+`Project.volume_fraction_data_for_model_at_index` returns the same
+profiles as `DataSet1D` objects for use in a GUI or a report.
+
+How it is built:
+
+- Every layer is decomposed into its materials: a `MaterialSolvated` or
+  `MaterialMixture` contributes its two parts weighted by its fraction,
+  a `LayerAreaPerMolecule` contributes its molecule and its solvent, a
+  `RepeatingMultilayer` is expanded, and a `GradientLayer` is read as a
+  linear _mixing_ gradient between its two end materials (an SLD ramp
+  alone does not identify a mixture; this reading is a definition, and a
+  gradient layer edited after construction is refused).
+- The per-layer fractions are smeared across each interface with the
+  same error-function kernel as the plotted SLD profile. The fractions
+  therefore sum to one at every depth, and `sum(rho_c * phi_c(z))`
+  reproduces the SLD profile whenever each component has one SLD
+  throughout.
+- `z = 0` is the interface between the superphase and the first film
+  layer, increasing into the sample; this is the refnx calculator's SLD
+  convention and the default grid is the same 500 points.
+
+Grouping. Materials the calculator cannot tell apart (same name, same
+SLD) are merged into one component by default (`merge_equivalent=True`),
+so the several default solvent objects of a `Bilayer` appear as one
+"D2O" trace and its two head groups as one trace. Materials that share a
+name but differ in SLD are never merged automatically; use
+`profile.grouped(...)` to merge anything else, such as D₂O and H₂O into
+"Water" across contrasts.
+
+Caveats worth knowing:
+
+- The error-function kernel is the _plotting_ convention shared with the
+  SLD profile, not the Névot–Croce factor the reflectivity calculation
+  uses. The curves are a model-derived in-plane average, not a measured
+  concentration profile.
+- Fractions sum to one but need not stay within `[0, 1]`: with very
+  different roughness on the two sides of a thin layer a fraction dips
+  below zero. The values are reported unchanged, a
+  `VolumeFractionWarning` says where, and the plot shows the dip. The
+  remedy is in the roughness parameters, not in the plot.
+- A `solvent_fraction` may describe lateral patchiness rather than
+  solvation; the in-plane average is drawn either way.
+- For a `LayerAreaPerMolecule` the fractions are those of the current
+  material model, in which the solvent fraction acts as coverage of a
+  layer whose molecule SLD is `b / (thickness × area per molecule)`.
+- The default depth range only looks at the two outer roughnesses; pass
+  `z=` (or `max_delta_z=`) for a wider or finer grid.
+
 ## Objective Functions and Non-Positive Variance Handling
 
 `MultiFitter` supports several objective modes for handling
