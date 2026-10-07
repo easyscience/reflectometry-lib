@@ -15,6 +15,7 @@
   merges and renames traces for presentation. A `VolumeFractionWarning`
   reports fractions below zero (very unequal roughness around a thin
   layer) instead of clipping them.
+
 ## Collections
 
 - Collections (`LayerCollection`, `MaterialCollection`, `Sample`, ...)
