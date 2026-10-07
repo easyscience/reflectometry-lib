@@ -36,6 +36,8 @@ from easyreflectometry.data import PolarizedDataSet
 from easyreflectometry.data import detect_polarization_channel
 from easyreflectometry.data import detect_polarization_channels_per_dataset
 from easyreflectometry.data import load_as_dataset
+from easyreflectometry.data import merge_datasets
+from easyreflectometry.data import resolution_from_dataset
 from easyreflectometry.data.measurement import dataset_from_datagroup
 from easyreflectometry.data.measurement import extract_orso_title
 from easyreflectometry.data.measurement import load as load_measurement_file
@@ -50,7 +52,7 @@ from easyreflectometry.limits import apply_default_limits
 from easyreflectometry.model import Model
 from easyreflectometry.model import ModelCollection
 from easyreflectometry.model import PercentageFwhm
-from easyreflectometry.model import Pointwise
+from easyreflectometry.model import ResolutionFunction
 from easyreflectometry.orso_utils import is_orso_file
 from easyreflectometry.orso_utils import save_orso_experiment
 from easyreflectometry.sample import Layer
@@ -949,11 +951,17 @@ class Project:
         experiment: DataSet1D,
         model: Model,
     ) -> None:
-        """Set the resolution function on *model* based on variance data in *experiment*.
+        """Set the resolution of *experiment*, and of *model*, from the experiment's variance data.
 
         Uses the measured per-point q-resolution (``Pointwise``) when the
         experiment carries q-variance data (``xe``, i.e. sQz²); otherwise
         falls back to the default 5% FWHM percentage resolution.
+
+        The measured resolution is stored on the experiment itself, so every
+        dataset is fitted and plotted with the resolution it was measured
+        with even when several datasets share one model. The model's
+        resolution is set as well: it is what simulations, the GUI's
+        resolution field and datasets without a measured resolution use.
 
         Parameters
         ----------
@@ -962,12 +970,9 @@ class Project:
         model : Model
             The model whose resolution function is set.
         """
-        # nan-robust gate: nan is truthy for np.any, but a nan-carrying xe must
-        # not build a Pointwise (np.interp would propagate the nan everywhere).
-        if experiment.xe is not None and np.any(np.nan_to_num(experiment.xe) > 0):
-            model.resolution_function = Pointwise(q_data_points=[experiment.x, experiment.y, experiment.xe])
-        else:
-            model.resolution_function = PercentageFwhm(5.0)
+        measured = resolution_from_dataset(experiment)
+        experiment.resolution_function = measured
+        model.resolution_function = PercentageFwhm(5.0) if measured is None else measured
 
     @staticmethod
     def _auto_set_background(experiment: DataSet1D) -> None:
@@ -1071,6 +1076,124 @@ class Project:
 
         self._with_experiments = True
         return len(data_keys)
+
+    def _load_single_dataset(self, path: Union[Path, str]) -> DataSet1D:
+        """Load a file that holds exactly one dataset, keeping its ORSO title as name."""
+        data_group = load_measurement_file(str(path))
+        if len(data_group['data']) > 1:
+            raise ValueError(
+                f"File '{path}' contains multiple datasets; a contrast is combined from single-dataset files "
+                '(use load_all_experiments_from_file to load each dataset of this file as its own experiment).'
+            )
+        dataset = load_as_dataset(str(path), data_group=data_group)
+        self._apply_experiment_metadata(path, dataset, Path(path).name, data_group=data_group)
+        return dataset
+
+    def load_experiment_from_files(
+        self,
+        paths: List[Union[Path, str]],
+        model_index: Optional[int] = None,
+        name: Optional[str] = None,
+    ) -> int:
+        """Load several files measured on one contrast as a single experiment.
+
+        A contrast is often measured as several curves -- one per incident
+        angle or wavelength band -- each with its own q-resolution. The files
+        are concatenated (sorted by q) into one experiment whose every point
+        keeps the resolution it was measured with, so the fit smears each
+        point correctly. See :func:`easyreflectometry.data.merge_datasets`.
+
+        Parameters
+        ----------
+        paths : List[Union[Path, str]]
+            The files, one dataset each.
+        model_index : Optional[int], optional
+            Index of the model the experiment belongs to. By default, the
+            current model.
+        name : Optional[str], optional
+            Name of the experiment. By default, the ORSO title of the first
+            file, or ``'Experiment N'``.
+
+        Returns
+        -------
+        int
+            Index of the newly loaded experiment.
+        """
+        if not paths:
+            raise ValueError('At least one file is required.')
+        if model_index is None:
+            model_index = self._current_model_index
+        model = self.models[model_index]
+        new_index = len(self._experiments)
+
+        datasets = [self._load_single_dataset(path) for path in paths]
+        # 'Series' is the DataSet1D default that _apply_experiment_metadata
+        # replaces by the ORSO title of the first file, or else the fallback.
+        experiment = merge_datasets(
+            datasets, name='Series' if name is None else name, fill_resolution=self._fill_resolution_for(model)
+        )
+        if name is None:
+            self._apply_experiment_metadata(paths[0], experiment, f'Experiment {new_index}')
+
+        experiment.model = model
+        self._auto_set_background(experiment)
+        self._experiments[new_index] = experiment
+        self._with_experiments = True
+        # The merged resolution is kept as merge_datasets built it from the
+        # inputs' own resolutions; only the model follows it.
+        model.resolution_function = (
+            PercentageFwhm(5.0) if experiment.resolution_function is None else experiment.resolution_function
+        )
+        return new_index
+
+    def append_to_experiment_at_index(self, index: int, path: Union[Path, str]) -> None:
+        """Add another measured curve of the same contrast to an existing experiment.
+
+        The file's points are merged into the experiment at *index* (sorted by
+        q), each keeping its own resolution: the file's measured one, and the
+        experiment's ``resolution_function`` as currently assigned. The
+        experiment's name and model are kept.
+
+        Parameters
+        ----------
+        index : int
+            Index of the experiment to extend.
+        path : Union[Path, str]
+            The file to add, one dataset.
+
+        Raises
+        ------
+        IndexError
+            No experiment is loaded at *index*.
+        ValueError
+            The experiment is polarized (extend its channels one file at a
+            time instead), or the file holds several datasets.
+        """
+        if index not in self._experiments:
+            raise IndexError(f'No experiment at index {index}')
+        experiment = self._experiments[index]
+        if isinstance(experiment, PolarizedDataSet):
+            raise ValueError('Cannot append a file to a polarized experiment; its channels are separate datasets.')
+        model = experiment.model
+        addition = self._load_single_dataset(path)
+        merged = merge_datasets([experiment, addition], name=experiment.name, fill_resolution=self._fill_resolution_for(model))
+        merged.model = model
+        self._experiments[index] = merged
+        # merge_datasets kept the experiment's own resolution (measured or
+        # explicitly assigned) for its points; the model follows the merged
+        # one. Without any, the experiment keeps using the model's as it is.
+        if model is not None and merged.resolution_function is not None:
+            model.resolution_function = merged.resolution_function
+
+    @staticmethod
+    def _fill_resolution_for(model: Optional[Model]) -> Optional[ResolutionFunction]:
+        """The resolution to assume for merged points that carry none: the model's, unless that is itself measured."""
+        if model is None:
+            return None
+        resolution_function = model.resolution_function
+        if isinstance(resolution_function, PercentageFwhm):
+            return resolution_function
+        return None
 
     def suggest_polarized_channel_assignment(self, paths: List[Union[Path, str]]) -> Dict[str, Optional[PolarizationChannel]]:
         """Suggest a spin-channel assignment for a set of data files.
@@ -1213,9 +1336,11 @@ class Project:
     def _register_polarized_experiment(self, channels, model_index, title_path, title_data_group) -> int:
         """Shared tail of the polarized loaders: build, name, and register the experiment.
 
-        Background and resolution follow the first (in canonical order)
-        channel; per-channel resolution functions are not supported (one per
-        experiment).
+        The background follows the first (in canonical order) channel. Every
+        channel keeps the resolution it was measured with (its own
+        ``Pointwise`` when the file carries sQz), which the fit and the
+        per-channel model curves use; the model's resolution follows the
+        first channel for simulations and the GUI's resolution field.
 
         Parameters
         ----------
@@ -1250,7 +1375,9 @@ class Project:
 
         first_dataset = experiment[experiment.available_channels[0]]
         self._auto_set_background(first_dataset)
-        self._apply_resolution_function(first_dataset, model)
+        for channel in reversed(experiment.available_channels):
+            # Reversed so the model ends up with the first channel's resolution.
+            self._apply_resolution_function(experiment[channel], model)
 
         self._experiments[new_index] = experiment
         self._with_experiments = True
@@ -1446,6 +1573,7 @@ class Project:
         index: int = 0,
         q_range: Optional[np.array] = None,
         channel: Optional[Union[PolarizationChannel, str]] = None,
+        resolution_function: Optional[ResolutionFunction] = None,
     ) -> DataSet1D:
         """Model data for model at index.
 
@@ -1461,23 +1589,75 @@ class Project:
             magnetic model (except 'pp', which falls back to the unpolarized
             calculation) and a calculator supporting magnetism, otherwise the
             calculator raises.
+        resolution_function : Optional[ResolutionFunction]
+            Resolution to smear with; the model's by default. Pass a dataset's
+            own resolution to get the curve the fit compares that dataset to
+            (see :meth:`model_data_for_experiment_at_index`).
         """
         if q_range is None:
             q_range = np.linspace(self.q_min, self.q_max, self.q_resolution)
         self._bind_calculator(self.models[index])
+        interface = self.models[index].interface()
+        unique_name = self._models[index].unique_name
         if channel is None:
-            reflectivity = self.models[index].interface().reflectity_profile(q_range, self._models[index].unique_name)
+            reflectivity = interface.reflectity_profile(q_range, unique_name, resolution_function=resolution_function)
             name = f'Reflectivity for Model {index}'
         else:
             channel = PolarizationChannel(channel)
-            reflectivity = (
-                self.models[index].interface().reflectivity_profile_channel(q_range, self._models[index].unique_name, channel)
+            reflectivity = interface.reflectivity_profile_channel(
+                q_range, unique_name, channel, resolution_function=resolution_function
             )
             name = f'Reflectivity ({channel.value}) for Model {index}'
         return DataSet1D(
             name=name,
             x=q_range,
             y=reflectivity,
+        )
+
+    def model_data_for_experiment_at_index(
+        self,
+        index: int = 0,
+        channel: Optional[Union[PolarizationChannel, str]] = None,
+        q_range: Optional[np.array] = None,
+    ) -> DataSet1D:
+        """The model curve an experiment is compared to: its model, at its q, with its resolution.
+
+        Parameters
+        ----------
+        index : int
+            Index of the experiment.
+        channel : Optional[Union[PolarizationChannel, str]]
+            Spin channel of a polarized experiment; required for one, not
+            allowed for an unpolarized one.
+        q_range : Optional[np.array]
+            Points to calculate at; the experiment's own q by default.
+
+        Raises
+        ------
+        IndexError
+            No experiment is loaded at `index`.
+        ValueError
+            The experiment has no model, or `channel` does not match the
+            experiment's kind.
+        """
+        experiment = self.experimental_data_for_model_at_index(index)
+        if isinstance(experiment, PolarizedDataSet):
+            if channel is None:
+                raise ValueError(f'Experiment at index {index} is polarized; a channel is required.')
+            dataset = experiment[channel]
+        else:
+            if channel is not None:
+                raise ValueError(f'Experiment at index {index} is not polarized; it has no channel.')
+            dataset = experiment
+        model = experiment.model
+        if model is None:
+            raise ValueError(f'Experiment at index {index} has no model.')
+        model_index = next(i for i, candidate in enumerate(self.models) if candidate is model)
+        return self.model_data_for_model_at_index(
+            model_index,
+            q_range=np.asarray(dataset.x) if q_range is None else q_range,
+            channel=channel,
+            resolution_function=getattr(dataset, 'resolution_function', None),
         )
 
     def experimental_data_for_model_at_index(
@@ -2011,14 +2191,43 @@ class Project:
                 list(experiment.y),
                 list(experiment.ye),
             ]
-            if experiment.xe is not None:
-                project_dict['experiments'][key].append(list(experiment.xe))
+            resolution = self._dataset_resolution_as_dict(experiment)
+            if experiment.xe is not None or resolution is not None:
+                # Fourth entry xe (None when cleared), fifth the dataset's own
+                # resolution. The fifth is written even when None, an explicit
+                # "use the model's resolution"; only its absence (files written
+                # before it existed) means "derive it from xe".
+                project_dict['experiments'][key].append(None if experiment.xe is None else list(experiment.xe))
+                project_dict['experiments'][key].append(resolution)
             project_dict['experiments_models'][key] = experiment.model.name
             project_dict['experiments_names'][key] = experiment.name
 
     @staticmethod
-    def _as_dict_add_polarized_experiment(project_dict: dict, key: int, experiment: PolarizedDataSet) -> None:
-        """Serialize a `PolarizedDataSet`: one (name, x, y, ye, xe) array set per measured channel.
+    def _dataset_resolution_as_dict(dataset: DataSet1D) -> Optional[dict]:
+        """The dataset's own resolution, serialized, or None when it uses the model's."""
+        resolution_function = getattr(dataset, 'resolution_function', None)
+        if resolution_function is None:
+            return None
+        return resolution_function.as_dict()
+
+    @staticmethod
+    def _dataset_resolution_from_dict(dataset: DataSet1D, arrays: list, position: int) -> None:
+        """Restore a dataset's own resolution from ``arrays[position]``.
+
+        A present entry is used as it is, ``None`` included (the dataset uses
+        the model's resolution). Older files, written before the entry
+        existed, get the measured resolution derived from ``xe``.
+        """
+        if len(arrays) <= position:
+            dataset.resolution_function = resolution_from_dataset(dataset)
+        elif arrays[position] is None:
+            dataset.resolution_function = None
+        else:
+            dataset.resolution_function = ResolutionFunction.from_dict(arrays[position])
+
+    @classmethod
+    def _as_dict_add_polarized_experiment(cls, project_dict: dict, key: int, experiment: PolarizedDataSet) -> None:
+        """Serialize a `PolarizedDataSet`: one (name, x, y, ye, xe, resolution) array set per measured channel.
 
         `experiments[key]` is a plain list for an ordinary `DataSet1D` (see
         `_as_dict_add_experiments`); a dict here — tagged `'polarized': True` —
@@ -2032,7 +2241,9 @@ class Project:
                     list(experiment[channel].x),
                     list(experiment[channel].y),
                     list(experiment[channel].ye),
-                    list(experiment[channel].xe),
+                    None if experiment[channel].xe is None else list(experiment[channel].xe),
+                    # Written even when None; see `_dataset_resolution_from_dict`.
+                    cls._dataset_resolution_as_dict(experiment[channel]),
                 ]
                 for channel in experiment.available_channels
             },
@@ -2132,7 +2343,7 @@ class Project:
             if isinstance(raw, dict) and raw.get('polarized'):
                 experiments[int(key)] = self._polarized_experiment_from_dict(key, raw, project_dict)
                 continue
-            experiments[int(key)] = DataSet1D(
+            dataset = DataSet1D(
                 name=project_dict['experiments_names'][key],
                 x=raw[0],
                 y=raw[1],
@@ -2141,13 +2352,16 @@ class Project:
                 model=self._models[project_dict['experiments_models'][key]],
                 auto_background=False,
             )
+            self._dataset_resolution_from_dict(dataset, raw, 4)
+            experiments[int(key)] = dataset
         return experiments
 
     def _polarized_experiment_from_dict(self, key: str, raw: dict, project_dict: dict) -> PolarizedDataSet:
         """Reconstruct a `PolarizedDataSet` serialized by `_as_dict_add_polarized_experiment`."""
         model = self._models[project_dict['experiments_models'][key]]
-        channels = {
-            channel_value: DataSet1D(
+        channels = {}
+        for channel_value, arrays in raw['channels'].items():
+            dataset = DataSet1D(
                 name=arrays[0],
                 x=arrays[1],
                 y=arrays[2],
@@ -2156,8 +2370,8 @@ class Project:
                 model=model,
                 auto_background=False,
             )
-            for channel_value, arrays in raw['channels'].items()
-        }
+            self._dataset_resolution_from_dict(dataset, arrays, 5)
+            channels[channel_value] = dataset
         return PolarizedDataSet(
             name=project_dict['experiments_names'][key],
             channels=channels,

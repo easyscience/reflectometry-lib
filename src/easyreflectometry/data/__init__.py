@@ -6,6 +6,8 @@ from .measurement import dataset_from_datagroup
 from .measurement import load
 from .measurement import load_as_dataset
 from .measurement import merge_datagroups
+from .measurement import merge_datasets
+from .measurement import resolution_from_dataset
 from .polarized import PolarizedDataSet
 from .polarized import channel_from_orso_polarization
 from .polarized import detect_polarization_channel
@@ -16,6 +18,8 @@ __all__ = [
     'load_as_dataset',
     'dataset_from_datagroup',
     'merge_datagroups',
+    'merge_datasets',
+    'resolution_from_dataset',
     'DataSet1D',
     'PolarizedDataSet',
     'channel_from_orso_polarization',

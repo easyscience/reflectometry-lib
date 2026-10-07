@@ -287,19 +287,22 @@ class Model(BaseCore):
         """Set the resolution function for the model."""
         self._resolution_function = resolution_function
         if self.interface is not None:
-            self.interface().set_resolution_function(self._resolution_function)
+            # Registered per model: one calculator serves every model of a
+            # project, each possibly with a different resolution.
+            self.interface().set_resolution_function(self._resolution_function, self.unique_name)
 
-    # ----- interface (override BaseCore's to add resolution-function side effect) -----
+    # ----- bindings (override BaseCore's to add the resolution-function side effect) -----
 
-    @BaseCore.interface.setter
-    def interface(self, new_interface) -> None:
-        """Set the interface; runs `generate_bindings` and then refreshes the
-        calculator's resolution function.
+    def generate_bindings(self) -> None:
+        """Propagate the interface over the sample tree, then register this
+        model's resolution function on the calculator.
+
+        Runs on every interface assignment and on every engine switch (the
+        project regenerates bindings on a fresh calculator then), so the new
+        calculator always knows this model's resolution.
         """
-        # Call BaseCore.interface.setter for the binding propagation.
-        BaseCore.interface.fset(self, new_interface)
-        if new_interface is not None:
-            new_interface().set_resolution_function(self._resolution_function)
+        super().generate_bindings()
+        self._interface().set_resolution_function(self._resolution_function, self.unique_name)
 
     # ----- representation -----
 

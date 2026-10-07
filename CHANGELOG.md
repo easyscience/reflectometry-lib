@@ -1,5 +1,48 @@
 # Unreleased
 
+## Resolution functions
+
+- The resolution function now follows the model and the dataset, not the
+  calculator. One calculator serves every model of a project but held a
+  single resolution function, so when two models (two contrasts) had
+  different `Pointwise` resolutions both were smeared with whichever was
+  set last. The calculator keeps one resolution per model
+  (`set_resolution_function(resolution, model_id)`), `Model` registers
+  its own on every interface assignment and engine switch (which
+  previously reverted the model to the 5% default until the resolution
+  was set again), and `reflectity_profile`,
+  `reflectivity_profile_channel` and `polarized_reflectivity_profiles`
+  accept an explicit `resolution_function`. The per-model
+  `CalculatorFactory()` workaround in the multi-contrast tutorial is no
+  longer needed.
+- A `DataSet1D` carries the resolution it was measured with
+  (`resolution_function`, a `Pointwise` built from its sQz column on
+  load; `None` means the model's resolution applies).
+  `MultiFitter.for_experiments`, `fit_polarized` and
+  `fit_single_data_set_1d` smear each dataset with its own resolution,
+  so several datasets of one model — different angles, contrasts or spin
+  channels — are each fitted with the width they were measured with.
+  Each channel of a polarized experiment keeps its own resolution;
+  previously the first channel's was used for all of them.
+  `Project.model_data_for_experiment_at_index` returns the curve the fit
+  compares an experiment (or one of its channels) to, and
+  `model_data_for_model_at_index` takes an optional
+  `resolution_function`. Project files store a dataset's resolution next
+  to its arrays (a fifth entry, a sixth per polarized channel); older
+  files derive it from the stored `xe` on load.
+- Several measured curves of one contrast can be combined into a single
+  experiment: `Project.load_experiment_from_files(paths)` and
+  `Project.append_to_experiment_at_index(index, path)`, built on
+  `easyreflectometry.data.merge_datasets`. Points are concatenated
+  sorted by q and every point keeps its own width; `Pointwise.smearing`
+  returns the stored per-point widths exactly when evaluated at the data
+  points (so overlapping angles with different widths at the same q are
+  honoured) and interpolates from sorted points otherwise. Mixing files
+  with and without a resolution column fills the latter from the model's
+  percentage resolution and warns.
+- `easyreflectometry.data.resolution_from_dataset` gives a dataset's
+  measured resolution, or `None`.
+
 ## Volume fraction profiles
 
 - New volume fraction (occupancy) profiles:

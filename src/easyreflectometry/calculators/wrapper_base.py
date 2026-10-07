@@ -25,7 +25,13 @@ class WrapperBase:
             'item': {},
             'model': {},
         }
+        # Default resolution, used for every model that has not registered its own.
         self._resolution_function = PercentageFwhm()
+        # Per-model resolution functions, keyed by model name. One wrapper serves
+        # every model of a project, so the resolution cannot be a single shared
+        # value: two contrasts measured with different q-resolution would
+        # otherwise both be smeared with whichever was set last.
+        self._model_resolution_functions: dict[str, ResolutionFunction] = {}
 
     def reset_storage(self):
         """Reset the storage area to blank."""
@@ -171,7 +177,12 @@ class WrapperBase:
         ...
 
     @abstractmethod
-    def calculate(self, q_array: np.ndarray, model_name: str) -> np.ndarray:
+    def calculate(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """For a given q array calculate the corresponding reflectivity.
 
         Parameters
@@ -180,6 +191,10 @@ class WrapperBase:
             Array of data points to be calculated.
         model_name : str
             The model name.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the
+            model (see :meth:`set_resolution_function`). A dataset measured
+            with its own q-resolution passes it here.
 
         Returns
         -------
@@ -299,15 +314,39 @@ class WrapperBase:
         item = getattr(item, key)
         return getattr(item, 'value')
 
-    def set_resolution_function(self, resolution_function: ResolutionFunction) -> None:
-        """Set the resolution function for the calculator.
+    def set_resolution_function(self, resolution_function: ResolutionFunction, model_name: str | None = None) -> None:
+        """Set the resolution function for one model, or the default for all others.
 
         Parameters
         ----------
         resolution_function : ResolutionFunction
             The resolution function.
+        model_name : str | None, optional
+            Name of the model the resolution belongs to. ``None`` sets the
+            default used by every model without a resolution of its own.
         """
-        self._resolution_function = resolution_function
+        if model_name is None:
+            self._resolution_function = resolution_function
+        else:
+            self._model_resolution_functions[model_name] = resolution_function
+
+    def resolution_function_for(self, model_name: str | None = None) -> ResolutionFunction:
+        """The resolution function used when calculating *model_name*.
+
+        Parameters
+        ----------
+        model_name : str | None, optional
+            The model name; ``None`` (or an unknown name) gives the default.
+        """
+        if model_name is None:
+            return self._resolution_function
+        return self._model_resolution_functions.get(model_name, self._resolution_function)
+
+    def _resolution_for(self, model_name: str, resolution_function: ResolutionFunction | None) -> ResolutionFunction:
+        """An explicit resolution function, or else the one registered for the model."""
+        if resolution_function is None:
+            return self.resolution_function_for(model_name)
+        return resolution_function
 
     @property
     def magnetism(self) -> bool:
@@ -378,7 +417,13 @@ class WrapperBase:
             raise ValueError(f"Selecting the '{channel.value}' channel requires magnetism to be enabled.")
         self._polarization_channel = channel
 
-    def calculate_channel(self, q_array: np.ndarray, model_name: str, channel: PolarizationChannel | str) -> np.ndarray:
+    def calculate_channel(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        channel: PolarizationChannel | str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """For a given q array calculate the reflectivity of one explicit spin channel.
 
         Unlike the `polarization_channel` property (global calculator state used by
@@ -394,6 +439,10 @@ class WrapperBase:
             The model name.
         channel : PolarizationChannel | str
             One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the
+            model. Each spin channel is measured with its own q-resolution, so
+            a channel dataset passes its own here.
 
         Returns
         -------
@@ -406,11 +455,16 @@ class WrapperBase:
                 # No explicit `.copy()` needed here: `calculate()` always returns
                 # a fresh array (a cached, shared array only exists on the
                 # magnetism-enabled `calculate_polarized` path below).
-                return self.calculate(q_array, model_name)
+                return self.calculate(q_array, model_name, resolution_function=resolution_function)
             raise ValueError(f"Calculating the '{channel.value}' channel requires magnetism to be enabled.")
-        return self.calculate_polarized(q_array, model_name)[channel.value]
+        return self.calculate_polarized(q_array, model_name, resolution_function=resolution_function)[channel.value]
 
-    def calculate_polarized(self, q_array: np.ndarray, model_name: str) -> dict[str, np.ndarray]:
+    def calculate_polarized(
+        self,
+        q_array: np.ndarray,
+        model_name: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> dict[str, np.ndarray]:
         """For a given q array calculate the reflectivity of all four spin channels.
 
         Parameters
@@ -419,6 +473,8 @@ class WrapperBase:
             Array of data points to be calculated.
         model_name : str
             The model name.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------

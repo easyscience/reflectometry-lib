@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from abc import ABCMeta
-from typing import Callable
 
 import numpy as np
 from easyscience.fitting.calculators.interface_factory import ItemContainer
@@ -12,6 +11,7 @@ from easyscience.io import SerializerComponent
 
 # if TYPE_CHECKING:
 from easyreflectometry.model import Model
+from easyreflectometry.model import ResolutionFunction
 from easyreflectometry.sample import BaseAssembly
 from easyreflectometry.sample import Layer
 from easyreflectometry.sample import Material
@@ -189,7 +189,12 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         """
         self._wrapper.remove_item(item_id, model_id)
 
-    def reflectity_profile(self, x_array: np.ndarray, model_id: str) -> np.ndarray:
+    def reflectity_profile(
+        self,
+        x_array: np.ndarray,
+        model_id: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """Determines the reflectivity profile for the given range and model.
 
         Parameters
@@ -198,10 +203,19 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             Points to be calculated at.
         model_id : str
             The model id.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the
+            model through :meth:`set_resolution_function`.
         """
-        return self._wrapper.calculate(x_array, model_id)
+        return self._wrapper.calculate(x_array, model_id, resolution_function=resolution_function)
 
-    def reflectivity_profile_channel(self, x_array: np.ndarray, model_id: str, channel) -> np.ndarray:
+    def reflectivity_profile_channel(
+        self,
+        x_array: np.ndarray,
+        model_id: str,
+        channel,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> np.ndarray:
         """Determine the reflectivity profile of one explicit spin channel.
 
         Unlike `polarization_channel` (global calculator state), the channel is an
@@ -216,15 +230,22 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             The model id.
         channel : PolarizationChannel | str
             One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------
         np.ndarray
             Reflectivity of the requested channel at q.
         """
-        return self._wrapper.calculate_channel(x_array, model_id, channel)
+        return self._wrapper.calculate_channel(x_array, model_id, channel, resolution_function=resolution_function)
 
-    def polarized_reflectivity_profiles(self, x_array: np.ndarray, model_id: str) -> dict[str, np.ndarray]:
+    def polarized_reflectivity_profiles(
+        self,
+        x_array: np.ndarray,
+        model_id: str,
+        resolution_function: ResolutionFunction | None = None,
+    ) -> dict[str, np.ndarray]:
         """Determines the reflectivity profiles of all four spin channels for the given range and model.
 
         Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).
@@ -235,13 +256,15 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             Points to be calculated at.
         model_id : str
             The model id.
+        resolution_function : ResolutionFunction | None, optional
+            Resolution to smear with; by default the one registered for the model.
 
         Returns
         -------
         dict[str, np.ndarray]
             Reflectivity per spin channel, keyed 'pp', 'pm', 'mp', 'mm' (in that order).
         """
-        return self._wrapper.calculate_polarized(x_array, model_id)
+        return self._wrapper.calculate_polarized(x_array, model_id, resolution_function=resolution_function)
 
     def sld_profile(self, model_id: str) -> tuple[np.ndarray, np.ndarray]:
         """Return the scattering length density profile.
@@ -275,9 +298,22 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         """
         return self._wrapper.magnetic_sld_profile(model_id)
 
-    def set_resolution_function(self, resolution_function: Callable[[np.array], np.array]) -> None:
-        """Set resolution function."""
-        return self._wrapper.set_resolution_function(resolution_function)
+    def set_resolution_function(self, resolution_function: ResolutionFunction, model_id: str | None = None) -> None:
+        """Set the resolution function of one model, or the default for all others.
+
+        Parameters
+        ----------
+        resolution_function : ResolutionFunction
+            The resolution function.
+        model_id : str | None, optional
+            The model id. ``None`` sets the default used by every model that
+            has not registered a resolution of its own.
+        """
+        return self._wrapper.set_resolution_function(resolution_function, model_id)
+
+    def resolution_function_for(self, model_id: str | None = None) -> ResolutionFunction:
+        """The resolution function used when calculating the model with *model_id*."""
+        return self._wrapper.resolution_function_for(model_id)
 
     @property
     def supports_magnetism(self) -> bool:
