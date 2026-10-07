@@ -1264,10 +1264,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-interfaces-and-performing-the-fitting" class="md-nav__link">
+  <a href="#creating-the-interface-and-performing-the-fitting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating interfaces and performing the fitting
+        Creating the interface and performing the fitting
       
     </span>
   </a>
@@ -2549,10 +2549,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-interfaces-and-performing-the-fitting" class="md-nav__link">
+  <a href="#creating-the-interface-and-performing-the-fitting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating interfaces and performing the fitting
+        Creating the interface and performing the fitting
       
     </span>
   </a>
@@ -4496,8 +4496,9 @@ d13d2o.head_layer.thickness.max = 12</div>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="creating-interfaces-and-performing-the-fitting">Creating interfaces and performing the fitting<a class="anchor-link" href="#creating-interfaces-and-performing-the-fitting">¶</a></h2><p>The model has been created and the parameters defined, so the fitting process can begin.
-First, we should create a unique interface for each of the models.</p>
+<h2 id="creating-the-interface-and-performing-the-fitting">Creating the interface and performing the fitting<a class="anchor-link" href="#creating-the-interface-and-performing-the-fitting">¶</a></h2><p>The models have been created and the parameters defined, so the fitting process can begin.
+First, we attach a calculator interface to the models.
+One interface serves all three models: each model registers its own resolution function on it, so the models can be smeared differently even though they share a calculator.</p>
 </div>
 </div>
 </div>
@@ -4520,13 +4521,17 @@ First, we should create a unique interface for each of the models.</p>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">d13d2o_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
-<span class="n">d70d2o_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
-<span class="n">d83acmw_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
+
+<span class="n">d13d2o_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+<span class="n">d70d2o_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+<span class="n">d83acmw_model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-22">d13d2o_model.interface = CalculatorFactory()
-d70d2o_model.interface = CalculatorFactory()
-d83acmw_model.interface = CalculatorFactory()</div>
+<div class="clipboard-copy-txt" id="cell-22">interface = CalculatorFactory()
+
+d13d2o_model.interface = interface
+d70d2o_model.interface = interface
+d83acmw_model.interface = interface</div>
 </div>
 </div>
 </div>
