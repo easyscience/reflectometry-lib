@@ -5,8 +5,10 @@
 Tests for LayerCollection class.
 """
 
+import copy
 import unittest
 
+import pytest
 from easyscience import global_object
 from numpy.testing import assert_equal
 
@@ -106,6 +108,55 @@ class TestLayerCollection(unittest.TestCase):
         assert isinstance(restored, MaterialDensity)
         assert restored.sld_coupled is False
         assert restored.sld.value == 9.4
+
+    def test_from_dict_rejects_a_non_collection_dict(self):
+        with pytest.raises(ValueError, match='EasyScience collection'):
+            LayerCollection.from_dict({'data': []})
+        with pytest.raises(ValueError, match='EasyScience collection'):
+            LayerCollection.from_dict([])
+
+    def test_from_dict_rejects_another_class(self):
+        r_dict = LayerCollection().as_dict()
+        r_dict['@class'] = 'MaterialCollection'
+        with pytest.raises(ValueError, match='does not match'):
+            LayerCollection.from_dict(r_dict)
+
+    def test_from_dict_rejects_a_malformed_protected_type(self):
+        r_dict = LayerCollection().as_dict()
+        r_dict['protected_types'] = [{'@class': 'Layer'}]
+        with pytest.raises(ValueError, match='protected type'):
+            LayerCollection.from_dict(r_dict)
+
+    def test_from_dict_rejects_an_unknown_protected_type(self):
+        r_dict = LayerCollection().as_dict()
+        r_dict['protected_types'] = [{'@module': 'easyreflectometry.sample.elements.layers.layer', '@class': 'NoSuch'}]
+        with pytest.raises(ImportError, match='NoSuch'):
+            LayerCollection.from_dict(r_dict)
+
+    def test_from_dict_does_not_mutate_its_input(self):
+        r = LayerCollection(Layer(Material(sld=2.07), 10, 1, 'film'))
+        r_dict = r.as_dict()
+        before = copy.deepcopy(r_dict)
+        global_object.map._clear()
+
+        LayerCollection.from_dict(r_dict)
+
+        assert r_dict == before
+
+    def test_dict_round_trip_keeps_declared_protected_types(self):
+        # `from_dict` hands `protected_types` to the constructor as a list of
+        # classes; the legacy list-valued-kwarg handling must not take them as items.
+        r = LayerCollection(Layer(Material(sld=2.07), 10, 1, 'film'), protected_types=[Layer])
+        assert r._protected_types == [Layer]
+        r_dict = r.as_dict()
+        assert r_dict['protected_types'] == [{'@module': Layer.__module__, '@class': 'Layer'}]
+        global_object.map._clear()
+
+        s = LayerCollection.from_dict(r_dict)
+
+        assert len(s) == 1
+        assert isinstance(s[0], Layer)
+        assert s._protected_types == [Layer]
 
     def test_add_layer(self):
         # When

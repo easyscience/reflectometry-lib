@@ -55,10 +55,12 @@ class BaseCollection(EasyList):
         # Legacy `CollectionBase` accepted items either positionally or as a
         # list-valued keyword (e.g. ``LayerCollection(layers=[a, b])``). Pull
         # any list-valued kwarg into the positional stream so callers using
-        # that older pattern keep working.
+        # that older pattern keep working. `data` and `protected_types` are
+        # `EasyList`'s own list-valued arguments (`from_dict` passes the
+        # latter as a list of classes) and must reach it untouched.
         extra_items = []
         for key in list(kwargs.keys()):
-            if isinstance(kwargs[key], list) and kwargs[key] and key != 'data':
+            if isinstance(kwargs[key], list) and kwargs[key] and key not in ('data', 'protected_types'):
                 extra_items.extend(kwargs.pop(key))
         if extra_items:
             args = tuple(args) + tuple(extra_items)

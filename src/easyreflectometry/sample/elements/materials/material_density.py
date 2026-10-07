@@ -252,7 +252,13 @@ class MaterialDensity(Material):
         as coupled again; and the density dependencies may be removed behind
         the material's back (``unconstrain(material.sld)`` or a raw
         ``make_independent()``), after which the flag alone would still claim
-        coupling and serialization would drop the manual values."""
+        coupling and serialization would drop the manual values.
+
+        The coupling is all-or-nothing: ``sld`` and ``isld`` are decoupled and
+        recoupled together, and only that joint state is serialized. Freeing
+        just one of them (``unconstrain(material.sld)`` alone) reads as
+        decoupled, and a save/load restores *both* as independent with their
+        saved values; such a mixed state is session-only."""
         return self._sld_coupled and not self._sld.independent and not self._isld.independent
 
     @sld_coupled.setter

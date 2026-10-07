@@ -919,7 +919,7 @@ class TestMetadataHelpers:
 
 
 class TestPosteriorPredictiveReflectivityResolution:
-    def test_dataset_resolution_selects_a_bound_fit_function(self, sample_draws):
+    def test_dataset_resolution_is_swapped_in_during_the_band_and_restored(self, sample_draws):
         """With a resolution the band is smeared like the fit smeared that dataset."""
         from unittest.mock import MagicMock
 
@@ -927,36 +927,111 @@ class TestPosteriorPredictiveReflectivityResolution:
 
         draws, param_names = sample_draws
         resolution = object()
-        bound = MagicMock(return_value=np.ones(50))
+        original_resolution = object()
         mock_model = MagicMock()
         mock_model.unique_name = 'test_model'
+        mock_model.resolution_function = original_resolution
+        seen_resolutions = []
+
+        def fit_func(_q, _model_id):
+            seen_resolutions.append(mock_model.resolution_function)
+            return np.ones(50)
+
         mock_model.interface = MagicMock()
-        mock_model.interface.fit_func = MagicMock(return_value=np.zeros(50))
-        mock_model.interface.fit_func_for = MagicMock(return_value=bound)
+        mock_model.interface.fit_func = fit_func
         mock_model.get_parameters = MagicMock(return_value=[])
 
         median, _lower, _upper = posterior_predictive_reflectivity(
             draws, param_names, mock_model, np.linspace(0.01, 0.3, 50), n_samples=5, resolution_function=resolution
         )
 
-        mock_model.interface.fit_func_for.assert_called_once_with(resolution_function=resolution)
-        assert bound.call_count == 5
-        mock_model.interface.fit_func.assert_not_called()
+        assert seen_resolutions == [resolution] * 5
+        assert mock_model.resolution_function is original_resolution
         np.testing.assert_allclose(median, 1.0)
 
-    def test_without_resolution_the_models_fit_function_is_used(self, sample_draws):
+    def test_resolution_is_restored_when_evaluation_raises(self, sample_draws):
         from unittest.mock import MagicMock
 
         from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
 
         draws, param_names = sample_draws
+        original_resolution = object()
         mock_model = MagicMock()
         mock_model.unique_name = 'test_model'
+        mock_model.resolution_function = original_resolution
+        mock_model.interface = MagicMock()
+        mock_model.interface.fit_func = MagicMock(side_effect=RuntimeError('calculator failed'))
+        mock_model.get_parameters = MagicMock(return_value=[])
+
+        with pytest.raises(RuntimeError, match='calculator failed'):
+            posterior_predictive_reflectivity(
+                draws, param_names, mock_model, np.linspace(0.01, 0.3, 50), n_samples=5, resolution_function=object()
+            )
+
+        assert mock_model.resolution_function is original_resolution
+
+    def test_without_resolution_the_model_is_left_alone(self, sample_draws):
+        from unittest.mock import MagicMock
+
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+
+        draws, param_names = sample_draws
+        original_resolution = object()
+        mock_model = MagicMock()
+        mock_model.unique_name = 'test_model'
+        mock_model.resolution_function = original_resolution
         mock_model.interface = MagicMock()
         mock_model.interface.fit_func = MagicMock(return_value=np.ones(50))
         mock_model.get_parameters = MagicMock(return_value=[])
 
         posterior_predictive_reflectivity(draws, param_names, mock_model, np.linspace(0.01, 0.3, 50), n_samples=5)
 
-        mock_model.interface.fit_func_for.assert_not_called()
         assert mock_model.interface.fit_func.call_count == 5
+        assert mock_model.resolution_function is original_resolution
+
+    @pytest.mark.parametrize('calculator', ['refnx', 'refl1d'])
+    def test_real_interface_band_uses_the_given_resolution(self, calculator):
+        """Guards the wiring against the real `CalculatorFactory`, which a mock cannot."""
+        from easyscience import global_object
+
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+        from easyreflectometry.calculators import CalculatorFactory
+        from easyreflectometry.model import Model
+        from easyreflectometry.model import PercentageFwhm
+        from easyreflectometry.sample import Layer
+        from easyreflectometry.sample import Material
+        from easyreflectometry.sample import Multilayer
+        from easyreflectometry.sample import Sample
+
+        global_object.map._clear()
+        interface = CalculatorFactory()
+        interface.switch(calculator)
+        film = Layer(Material(sld=4.0), 100.0, 3.0, 'film')
+        substrate = Layer(Material(sld=2.07), 0.0, 3.0, 'substrate')
+        model = Model(
+            Sample(Multilayer(Layer(Material(sld=0.0), 0.0, 0.0, 'air')), Multilayer(film), Multilayer(substrate)),
+            resolution_function=PercentageFwhm(5.0),
+            interface=interface,
+        )
+        model_resolution = model.resolution_function
+        q = np.linspace(0.01, 0.3, 100)
+        draws = np.array([[90.0], [100.0], [110.0]])
+        param_names = [film.thickness.unique_name]
+
+        model_band = posterior_predictive_reflectivity(draws, param_names, model, q, n_samples=3)
+        same_band = posterior_predictive_reflectivity(
+            draws, param_names, model, q, n_samples=3, resolution_function=model_resolution
+        )
+        sharp_band = posterior_predictive_reflectivity(
+            draws, param_names, model, q, n_samples=3, resolution_function=PercentageFwhm(0.0)
+        )
+
+        for ours, theirs in zip(model_band, same_band):
+            np.testing.assert_allclose(ours, theirs)
+        assert not np.allclose(model_band[0], sharp_band[0])
+        # The model is left as it was found: its own resolution and parameters.
+        assert model.resolution_function is model_resolution
+        assert film.thickness.value == 100.0
+        restored_band = posterior_predictive_reflectivity(draws, param_names, model, q, n_samples=3)
+        for before, after in zip(model_band, restored_band):
+            np.testing.assert_allclose(before, after)
