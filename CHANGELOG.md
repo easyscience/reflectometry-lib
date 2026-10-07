@@ -43,6 +43,64 @@
 - `easyreflectometry.data.resolution_from_dataset` gives a dataset's
   measured resolution, or `None`.
 
+## Volume fraction profiles
+
+- New volume fraction (occupancy) profiles:
+  `Sample.volume_fraction_profile()` /
+  `easyreflectometry.sample.volume_fraction_profile()` return the volume
+  fraction of every component of a sample versus depth, built from the
+  sample tree alone and smeared with the same error-function kernel as
+  the SLD profile, so the fractions sum to one and reproduce the SLD
+  profile. `Project.volume_fraction_data_for_model_at_index` returns
+  them as `DataSet1D` objects and
+  `easyreflectometry.plot.plot_volume_fraction` draws them. Materials
+  with equal name and SLD are merged by default; `profile.grouped(...)`
+  merges and renames traces for presentation. A `VolumeFractionWarning`
+  reports fractions below zero (very unequal roughness around a thin
+  layer) instead of clipping them.
+
+## Collections
+
+- Collections (`LayerCollection`, `MaterialCollection`, `Sample`, ...)
+  now deserialize each item through the item's own `from_dict`. The
+  generic `EasyList.from_dict` path called every item's constructor with
+  the stored keys, so a collection holding a `MaterialDensity` (whose
+  `sld_coupled` key is not a constructor argument), or any nested item
+  that restores state in `from_dict`, failed to load or lost that state.
+  Copying such a collection (`copy.deepcopy`) is fixed the same way.
+- A collection constructed with an explicit `protected_types` list no
+  longer has those classes swallowed as items by the legacy list-valued
+  keyword handling, so a collection declaring protected types now
+  round-trips through `as_dict`/`from_dict`.
+
+## Materials
+
+- Behaviour change: `MaterialDensity.sld_coupled` now reports the live
+  state. Removing the density dependency from `sld`/`isld` directly,
+  with `unconstrain()` or a raw `make_independent()`, makes it read
+  `False` (it kept reporting `True`), so the manually entered values are
+  saved instead of being dropped, and setting `sld_coupled = True`
+  afterwards restores the density coupling instead of being a no-op. A
+  user constraint placed on a decoupled `sld` still reads as decoupled.
+- Behaviour change: setting `sld_coupled = True` on a decoupled material
+  whose `sld`/`isld` carry a user constraint (`constrain`,
+  `constrain_equal`) now replaces that constraint with the density
+  coupling; the setter used to return without restoring it. The
+  constraint's persistence marker is removed with it, so a saved project
+  no longer records the material's internal density formula as a user
+  constraint, which on reload overrode the correct coupling with a
+  wrongly scaled value and a frozen molecular weight. The coupling is
+  all-or-nothing: freeing only one of `sld`/`isld` is session-only and
+  restores as both independent.
+
+## Analysis
+
+- `posterior_predictive_reflectivity` takes an optional
+  `resolution_function`, so the posterior predictive band can be smeared
+  with the resolution the fit used for a dataset rather than the model's
+  current one. The model's resolution is swapped for the duration of the
+  calculation and restored afterwards.
+
 # Version 1.8.0 (18 Sept 2026)
 
 ## Project persistence

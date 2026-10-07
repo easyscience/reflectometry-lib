@@ -6,11 +6,15 @@ from __future__ import annotations
 from typing import List
 from typing import Optional
 
+import numpy as np
+
 from ..assemblies.base_assembly import BaseAssembly
 from ..assemblies.multilayer import Multilayer
 from ..assemblies.repeating_multilayer import RepeatingMultilayer
 from ..assemblies.surfactant_layer import SurfactantLayer
 from ..elements.layers.layer import Layer
+from ..volume_fraction import VolumeFractionProfile
+from ..volume_fraction import volume_fraction_profile
 from .base_collection import BaseCollection
 
 
@@ -158,3 +162,32 @@ class Sample(BaseCollection):
             return self[-1].front_layer
         else:
             return self[-1].back_layer
+
+    def volume_fraction_profile(
+        self,
+        z: Optional[np.ndarray] = None,
+        *,
+        max_delta_z: Optional[float] = None,
+        merge_equivalent: bool = True,
+    ) -> VolumeFractionProfile:
+        """Volume fraction (occupancy) of every component of the sample versus depth.
+
+        A thin wrapper around :func:`easyreflectometry.sample.volume_fraction.volume_fraction_profile`;
+        see there for the parameters, the depth convention and the caveats.
+
+        Parameters
+        ----------
+        z : np.ndarray, optional
+            Depths (Å) to evaluate at; ``z = 0`` is the superphase / first layer interface.
+            By default a 500-point grid spanning the sample.
+        max_delta_z : float, optional
+            Maximum spacing of the default grid. Cannot be combined with ``z``.
+        merge_equivalent : bool, optional
+            Merge materials with equal name and SLD into one component. By default, True.
+
+        Returns
+        -------
+        VolumeFractionProfile
+            The per-component profiles, summing to one at every depth.
+        """
+        return volume_fraction_profile(self, z, max_delta_z=max_delta_z, merge_equivalent=merge_equivalent)
