@@ -20,8 +20,14 @@ from easyreflectometry import derived_parameter
 from easyreflectometry import is_constrained_to_sum
 from easyreflectometry import restore_sum_partners
 from easyreflectometry import unconstrain
+from easyreflectometry.model import Model
+from easyreflectometry.model import ModelCollection
 from easyreflectometry.project import Project
+from easyreflectometry.sample import Layer
 from easyreflectometry.sample import Material
+from easyreflectometry.sample import MaterialDensity
+from easyreflectometry.sample import Multilayer
+from easyreflectometry.sample import Sample
 
 
 @pytest.fixture(autouse=True)
@@ -333,6 +339,40 @@ class TestProjectRoundTrip:
         roughness = model.sample[1].layers[0].roughness
         assert roughness.independent is False
         assert roughness.value == model.total_thickness.value / 100
+
+    def test_recoupled_density_material_is_not_persisted_as_user_constraint(self):
+        """Recoupling a user-constrained `MaterialDensity` must hand its SLDs back to
+        the material: the internal density formula carries no user marker, is not
+        written to `parameter_constraints`, and the reloaded material keeps its
+        numeric SLD, its unit and its live molecular weight."""
+        source = Project()
+        film = MaterialDensity(name='film', chemical_structure='Si', density=2.33)
+        substrate = Material(name='substrate', sld=7)
+        source.models = ModelCollection(Model(Sample(Multilayer(Layer(film)), Multilayer(Layer(substrate)))))
+        film.sld_coupled = False
+        constrain_equal(film.sld, substrate.sld)
+        constrain_equal(film.isld, substrate.isld)
+        film.sld_coupled = True
+        coupled_sld = film.sld.value
+        coupled_isld = film.isld.value
+        sld_unit = str(film.sld.unit)
+
+        project_dict = json.loads(json.dumps(source.as_dict()))
+        assert 'parameter_constraints' not in project_dict
+        global_object.map._clear()
+
+        project = Project()
+        project.from_dict(project_dict)
+        restored = project.models[0].sample[0].layers[0].material
+        assert restored.sld_coupled is True
+        assert restored.sld.value == pytest.approx(coupled_sld)
+        assert restored.isld.value == pytest.approx(coupled_isld)
+        assert str(restored.sld.unit) == sld_unit
+        # Density and formula still drive the SLD, exactly as on a fresh material.
+        restored.density.value = 4.66
+        assert restored.sld.value == pytest.approx(2 * coupled_sld)
+        restored.chemical_structure = 'Ni'
+        assert restored.sld.value == pytest.approx(MaterialDensity(chemical_structure='Ni', density=4.66).sld.value)
 
     def test_unconstrain_does_not_resurrect_on_reload(self):
         source = Project()

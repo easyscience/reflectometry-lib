@@ -9,6 +9,7 @@ from easyscience import global_object
 from easyscience.variable import DescriptorNumber
 from easyscience.variable import Parameter
 
+from easyreflectometry.constraints import unconstrain
 from easyreflectometry.special.calculations import density_to_sld
 from easyreflectometry.special.calculations import molecular_weight
 from easyreflectometry.special.calculations import neutron_scattering_length
@@ -231,8 +232,12 @@ class MaterialDensity(Material):
             (self._sld, self._scattering_length_real),
             (self._isld, self._scattering_length_imag),
         ):
-            if not derived.independent:
-                derived.make_independent()
+            # Drops any previous dependency together with the user-constraint
+            # marker set by `easyreflectometry.constraints`. Left behind, the
+            # marker would make `Project` persist the internal density formula
+            # as a user constraint and replay it on load, without its unit
+            # conversion and with the molecular weight frozen as a constant.
+            unconstrain(derived)
             self._make_sld_dependent(derived, self._density, scattering_length, self._molecular_weight, self._avogadro)
 
     @property
@@ -241,27 +246,32 @@ class MaterialDensity(Material):
         the default) or independent, directly editable/fittable parameters
         (False).
 
-        Kept as an explicit flag rather than read off ``sld.independent``: a
-        decoupled ``sld`` may still be made dependent by a user constraint,
-        which must not make the material read as coupled again."""
-        return self._sld_coupled
+        An explicit flag reconciled with the live dependency state, because
+        neither alone is reliable: a decoupled ``sld`` may still be made
+        dependent by a user constraint, which must not make the material read
+        as coupled again; and the density dependencies may be removed behind
+        the material's back (``unconstrain(material.sld)`` or a raw
+        ``make_independent()``), after which the flag alone would still claim
+        coupling and serialization would drop the manual values."""
+        return self._sld_coupled and not self._sld.independent and not self._isld.independent
 
     @sld_coupled.setter
     def sld_coupled(self, couple: bool) -> None:
         couple = bool(couple)
-        if couple == self._sld_coupled:
-            return
-        if couple:
-            # Recomputes sld/isld from the current density/scattering
-            # length/molecular weight — manually set values and any user
-            # constraint on them are discarded.
-            self._setup_sld_constraints()
-        else:
-            # make_independent raises on an already-independent parameter,
-            # so guard each individually. Values are kept.
-            for parameter in (self._sld, self._isld):
-                if not parameter.independent:
-                    parameter.make_independent()
+        # Compared against the reconciled property, not the raw flag: a stale
+        # flag must not stop an explicit request to restore the coupling.
+        if couple != self.sld_coupled:
+            if couple:
+                # Recomputes sld/isld from the current density/scattering
+                # length/molecular weight — manually set values and any user
+                # constraint on them are discarded.
+                self._setup_sld_constraints()
+            else:
+                # make_independent raises on an already-independent parameter,
+                # so guard each individually. Values are kept.
+                for parameter in (self._sld, self._isld):
+                    if not parameter.independent:
+                        parameter.make_independent()
         self._sld_coupled = couple
 
     def _convert_to_dict(self, d: dict, serializer, skip: Optional[list] = None, **kwargs) -> dict:

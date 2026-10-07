@@ -916,3 +916,47 @@ class TestMetadataHelpers:
         from easyreflectometry.analysis.bayesian import _data_fingerprint
 
         assert _data_fingerprint([object()], [], []) is None
+
+
+class TestPosteriorPredictiveReflectivityResolution:
+    def test_dataset_resolution_selects_a_bound_fit_function(self, sample_draws):
+        """With a resolution the band is smeared like the fit smeared that dataset."""
+        from unittest.mock import MagicMock
+
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+
+        draws, param_names = sample_draws
+        resolution = object()
+        bound = MagicMock(return_value=np.ones(50))
+        mock_model = MagicMock()
+        mock_model.unique_name = 'test_model'
+        mock_model.interface = MagicMock()
+        mock_model.interface.fit_func = MagicMock(return_value=np.zeros(50))
+        mock_model.interface.fit_func_for = MagicMock(return_value=bound)
+        mock_model.get_parameters = MagicMock(return_value=[])
+
+        median, _lower, _upper = posterior_predictive_reflectivity(
+            draws, param_names, mock_model, np.linspace(0.01, 0.3, 50), n_samples=5, resolution_function=resolution
+        )
+
+        mock_model.interface.fit_func_for.assert_called_once_with(resolution_function=resolution)
+        assert bound.call_count == 5
+        mock_model.interface.fit_func.assert_not_called()
+        np.testing.assert_allclose(median, 1.0)
+
+    def test_without_resolution_the_models_fit_function_is_used(self, sample_draws):
+        from unittest.mock import MagicMock
+
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+
+        draws, param_names = sample_draws
+        mock_model = MagicMock()
+        mock_model.unique_name = 'test_model'
+        mock_model.interface = MagicMock()
+        mock_model.interface.fit_func = MagicMock(return_value=np.ones(50))
+        mock_model.get_parameters = MagicMock(return_value=[])
+
+        posterior_predictive_reflectivity(draws, param_names, mock_model, np.linspace(0.01, 0.3, 50), n_samples=5)
+
+        mock_model.interface.fit_func_for.assert_not_called()
+        assert mock_model.interface.fit_func.call_count == 5

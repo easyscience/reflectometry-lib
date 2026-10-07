@@ -8,6 +8,9 @@ import scipp as sc
 from easyscience import global_object
 from numpy.testing import assert_almost_equal
 
+from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
+from easyreflectometry.constraints import constrain_equal
+from easyreflectometry.constraints import unconstrain
 from easyreflectometry.sample.elements.materials.material_density import MaterialDensity
 from easyreflectometry.special.calculations import density_to_sld
 
@@ -190,6 +193,82 @@ class TestMaterialDensity(unittest.TestCase):
         assert_almost_equal(p.sld.value, coupled_sld)
         other.sld.value = 1.0
         assert_almost_equal(p.sld.value, coupled_sld)
+
+    def test_recouple_clears_user_constraint_marker(self):
+        """The marker set by the public constraint helpers must not survive
+        recoupling: `Project` would otherwise persist the internal density
+        formula as a user constraint and replay it on load."""
+        p = MaterialDensity(chemical_structure='Si', density=2.33)
+        other = MaterialDensity(chemical_structure='Ni', density=8.9)
+        other.sld_coupled = False
+        p.sld_coupled = False
+        constrain_equal(p.sld, other.sld)
+        constrain_equal(p.isld, other.isld)
+        assert hasattr(p.sld, USER_CONSTRAINT_FLAG)
+        assert hasattr(p.isld, USER_CONSTRAINT_FLAG)
+
+        p.sld_coupled = True
+
+        assert not hasattr(p.sld, USER_CONSTRAINT_FLAG)
+        assert not hasattr(p.isld, USER_CONSTRAINT_FLAG)
+        assert p.sld.independent is False
+        assert p.isld.independent is False
+
+    def test_unconstrain_on_sld_reads_as_decoupled(self):
+        """Removing the density dependency through the public helper, behind the
+        material's back, must be reflected by the coupling flag."""
+        p = MaterialDensity()
+        assert p.sld_coupled is True
+        unconstrain(p.sld)
+        unconstrain(p.isld)
+        assert p.sld_coupled is False
+        p.sld.value = 9.4
+        p.isld.value = 0.2
+        p.density.value = 9.99  # no propagation any more
+        assert p.sld.value == 9.4
+
+    def test_raw_make_independent_on_sld_reads_as_decoupled(self):
+        p = MaterialDensity()
+        p.sld.make_independent()
+        p.isld.make_independent()
+        assert p.sld_coupled is False
+
+    def test_externally_decoupled_round_trip_preserves_manual_values(self):
+        """`_convert_to_dict` trusts the coupling flag; a stale flag would drop the
+        manually entered values from the saved dict."""
+        p = MaterialDensity()
+        unconstrain(p.sld)
+        unconstrain(p.isld)
+        p.sld.value = 9.4
+        p.isld.value = 0.2
+        p_dict = p.as_dict()
+        assert p_dict['sld_coupled'] is False
+        assert p_dict['sld'] == 9.4
+        assert p_dict['isld'] == 0.2
+        global_object.map._clear()
+
+        q = MaterialDensity.from_dict(p_dict)
+        assert q.sld_coupled is False
+        assert_almost_equal(q.sld.value, 9.4)
+        assert_almost_equal(q.isld.value, 0.2)
+
+    def test_recouple_after_external_unconstrain_restores_propagation(self):
+        """An explicit request to couple must not be short-circuited by a flag that
+        still claims coupling after the dependencies were removed externally."""
+        p = MaterialDensity(chemical_structure='Si', density=2.33)
+        coupled_sld = p.sld.value
+        unconstrain(p.sld)
+        unconstrain(p.isld)
+        p.sld.value = 9.4
+
+        p.sld_coupled = True
+
+        assert p.sld_coupled is True
+        assert p.sld.independent is False
+        assert p.isld.independent is False
+        assert_almost_equal(p.sld.value, coupled_sld)
+        p.density.value = 4.66
+        assert_almost_equal(p.sld.value, 2 * coupled_sld)
 
     def test_decoupled_sld_can_be_freed_for_fitting(self):
         p = MaterialDensity()

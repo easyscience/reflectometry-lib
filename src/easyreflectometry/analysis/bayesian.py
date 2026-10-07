@@ -1168,6 +1168,7 @@ def posterior_predictive_reflectivity(
     model,
     q_values: np.ndarray,
     n_samples: int = 200,
+    resolution_function=None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Compute the posterior predictive reflectivity with credible intervals.
 
@@ -1183,6 +1184,9 @@ def posterior_predictive_reflectivity(
     :type q_values: np.ndarray
     :param n_samples: Number of posterior draws to use (last ``n_samples``).
     :type n_samples: int
+    :param resolution_function: Resolution to smear with, typically the
+        measured resolution of the dataset the band is drawn over
+        (``DataSet1D.resolution_function``). ``None`` uses the model's.
     :return: Tuple of ``(median, lower_95, upper_95)`` reflectivity arrays.
     :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
     """
@@ -1193,12 +1197,19 @@ def posterior_predictive_reflectivity(
     n_use = min(n_samples, n_total)
     sample_indices = range(n_total - n_use, n_total)
 
+    if resolution_function is None:
+        fit_func = model.interface.fit_func
+    else:
+        # The same smearing the fit used for this dataset, so the band sits
+        # on the fitted curve rather than on a differently smeared one.
+        fit_func = model.interface.fit_func_for(resolution_function=resolution_function)
+
     saved_state = _save_parameter_state(model)
     try:
         reflectivity_samples = []
         for i in sample_indices:
             _apply_draw(model, draws, param_names, i)
-            r_calc = model.interface.fit_func(q_values, model.unique_name)
+            r_calc = fit_func(q_values, model.unique_name)
             reflectivity_samples.append(np.asarray(r_calc))
     finally:
         _restore_parameter_state(model, saved_state)
