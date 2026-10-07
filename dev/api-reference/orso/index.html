@@ -4307,96 +4307,83 @@ and with sub-stack repetitions mapped to
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/data/data_store.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 16</span>
-<span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataSet1D</span><span class="p">(</span><span class="n">SerializerComponent</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataSet1D</span><span class="p">(</span><span class="n">SerializerComponent</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Series&#39;</span><span class="p">,</span>
@@ -4408,22 +4395,9 @@ and with sub-stack repetitions mapped to
         <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
         <span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
         <span class="n">auto_background</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">resolution_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ResolutionFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init function.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        resolution_function : Optional[ResolutionFunction], optional</span>
-<span class="sd">            The q-resolution this dataset was measured with (typically a</span>
-<span class="sd">            ``Pointwise`` built from its sQz column). Fitting and model</span>
-<span class="sd">            curves evaluated against this dataset smear with it instead of</span>
-<span class="sd">            the model&#39;s resolution. ``None`` (the default) means the model&#39;s</span>
-<span class="sd">            resolution applies; it is not derived from ``xe`` here, see</span>
-<span class="sd">            :func:`easyreflectometry.data.resolution_from_dataset`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
         <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">auto_background</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mf">1e-10</span><span class="p">)</span>
 
@@ -4582,7 +4556,7 @@ and with sub-stack repetitions mapped to
 
 
 <h3 id="easyreflectometry.orso_utils.DataSet1D.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Series&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ye</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y_label</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">auto_background</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Series&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ye</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y_label</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">auto_background</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 </h3>
 
@@ -4595,48 +4569,10 @@ and with sub-stack repetitions mapped to
 <!-- prettier-ignore-end -->
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>resolution_function</code>
-            </td>
-            <td>
-                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;ResolutionFunction&lt;/code&gt; (&lt;code&gt;easyreflectometry.model.ResolutionFunction&lt;/code&gt;)" href="../calculators/#easyreflectometry.calculators.calculator_base.ResolutionFunction">ResolutionFunction</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The q-resolution this dataset was measured with (typically a
-<code>Pointwise</code> built from its sQz column). Fitting and model
-curves evaluated against this dataset smear with it instead of
-the model's resolution. <code>None</code> (the default) means the model's
-resolution applies; it is not derived from <code>xe</code> here, see
-:func:<code>easyreflectometry.data.resolution_from_dataset</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/data/data_store.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -4682,21 +4618,7 @@ resolution applies; it is not derived from <code>xe</code> here, see
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Series&#39;</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4707,22 +4629,9 @@ resolution applies; it is not derived from <code>xe</code> here, see
     <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
     <span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
     <span class="n">auto_background</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">resolution_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ResolutionFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Init function.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    resolution_function : Optional[ResolutionFunction], optional</span>
-<span class="sd">        The q-resolution this dataset was measured with (typically a</span>
-<span class="sd">        ``Pointwise`` built from its sQz column). Fitting and model</span>
-<span class="sd">        curves evaluated against this dataset smear with it instead of</span>
-<span class="sd">        the model&#39;s resolution. ``None`` (the default) means the model&#39;s</span>
-<span class="sd">        resolution applies; it is not derived from ``xe`` here, see</span>
-<span class="sd">        :func:`easyreflectometry.data.resolution_from_dataset`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
     <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">auto_background</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mf">1e-10</span><span class="p">)</span>
 
@@ -4782,9 +4691,9 @@ resolution applies; it is not derived from <code>xe</code> here, see
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/data/data_store.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">data_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">data_points</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Data points.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ye</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xe</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4812,9 +4721,9 @@ resolution applies; it is not derived from <code>xe</code> here, see
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/data/data_store.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Repr function.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;1D DataStore of &#39;</span><span class="si">{:s}</span><span class="s2">&#39; Vs &#39;</span><span class="si">{:s}</span><span class="s2">&#39; with </span><span class="si">{}</span><span class="s2"> data points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_label</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
@@ -8659,8 +8568,7 @@ enters the derived SLD).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_density.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 76</span>
-<span class="normal"> 77</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
 <span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
@@ -8947,7 +8855,25 @@ enters the derived SLD).</p>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
-<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialDensity</span><span class="p">(</span><span class="n">Material</span><span class="p">):</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialDensity</span><span class="p">(</span><span class="n">Material</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A material defined by chemical formula and mass density.</span>
 
 <span class="sd">    The scattering length density is derived rather than set: from the</span>
@@ -9072,6 +8998,7 @@ enters the derived SLD).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_avogadro</span> <span class="o">=</span> <span class="n">avogadro</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_density</span> <span class="o">=</span> <span class="n">density</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chemical_structure</span> <span class="o">=</span> <span class="n">chemical_structure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sld_coupled</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
@@ -9104,31 +9031,47 @@ enters the derived SLD).</p>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scattering_length_real</span><span class="p">),</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scattering_length_imag</span><span class="p">),</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">derived</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
-                <span class="n">derived</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
+            <span class="c1"># Drops any previous dependency together with the user-constraint</span>
+            <span class="c1"># marker set by `easyreflectometry.constraints`. Left behind, the</span>
+            <span class="c1"># marker would make `Project` persist the internal density formula</span>
+            <span class="c1"># as a user constraint and replay it on load, without its unit</span>
+            <span class="c1"># conversion and with the molecular weight frozen as a constant.</span>
+            <span class="n">unconstrain</span><span class="p">(</span><span class="n">derived</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_make_sld_dependent</span><span class="p">(</span><span class="n">derived</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_density</span><span class="p">,</span> <span class="n">scattering_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecular_weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avogadro</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sld_coupled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether ``sld``/``isld`` are derived from formula &amp; density (True,</span>
 <span class="sd">        the default) or independent, directly editable/fittable parameters</span>
-<span class="sd">        (False). The dependency state itself is the source of truth.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">independent</span>
+<span class="sd">        (False).</span>
+
+<span class="sd">        An explicit flag reconciled with the live dependency state, because</span>
+<span class="sd">        neither alone is reliable: a decoupled ``sld`` may still be made</span>
+<span class="sd">        dependent by a user constraint, which must not make the material read</span>
+<span class="sd">        as coupled again; and the density dependencies may be removed behind</span>
+<span class="sd">        the material&#39;s back (``unconstrain(material.sld)`` or a raw</span>
+<span class="sd">        ``make_independent()``), after which the flag alone would still claim</span>
+<span class="sd">        coupling and serialization would drop the manual values.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld_coupled</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">independent</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">independent</span>
 
     <span class="nd">@sld_coupled</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sld_coupled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">couple</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">couple</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">sld_coupled</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">couple</span><span class="p">:</span>
-            <span class="c1"># Recomputes sld/isld from the current density/scattering</span>
-            <span class="c1"># length/molecular weight — manually set values are discarded.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_sld_constraints</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># make_independent raises on an already-independent parameter,</span>
-            <span class="c1"># so guard each individually. Values are kept.</span>
-            <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
-                    <span class="n">parameter</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
+        <span class="n">couple</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">couple</span><span class="p">)</span>
+        <span class="c1"># Compared against the reconciled property, not the raw flag: a stale</span>
+        <span class="c1"># flag must not stop an explicit request to restore the coupling.</span>
+        <span class="k">if</span> <span class="n">couple</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sld_coupled</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">couple</span><span class="p">:</span>
+                <span class="c1"># Recomputes sld/isld from the current density/scattering</span>
+                <span class="c1"># length/molecular weight — manually set values and any user</span>
+                <span class="c1"># constraint on them are discarded.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_sld_constraints</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># make_independent raises on an already-independent parameter,</span>
+                <span class="c1"># so guard each individually. Values are kept.</span>
+                <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
+                        <span class="n">parameter</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sld_coupled</span> <span class="o">=</span> <span class="n">couple</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">serializer</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializer hook (see ``SerializerBase._convert_to_dict``).</span>
@@ -9268,7 +9211,14 @@ enters the derived SLD).</p>
 
         <p>Whether <code>sld</code>/<code>isld</code> are derived from formula &amp; density (True,
 the default) or independent, directly editable/fittable parameters
-(False). The dependency state itself is the source of truth.</p>
+(False).</p>
+<p>An explicit flag reconciled with the live dependency state, because
+neither alone is reliable: a decoupled <code>sld</code> may still be made
+dependent by a user constraint, which must not make the material read
+as coupled again; and the density dependencies may be removed behind
+the material's back (<code>unconstrain(material.sld)</code> or a raw
+<code>make_independent()</code>), after which the flag alone would still claim
+coupling and serialization would drop the manual values.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -9461,8 +9411,7 @@ recomputed whenever :attr:<code>chemical_structure</code> is assigned.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_density.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
@@ -9555,7 +9504,9 @@ recomputed whenever :attr:<code>chemical_structure</code> is assigned.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chemical_structure</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">density</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -9647,6 +9598,7 @@ recomputed whenever :attr:<code>chemical_structure</code> is assigned.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_avogadro</span> <span class="o">=</span> <span class="n">avogadro</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_density</span> <span class="o">=</span> <span class="n">density</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_chemical_structure</span> <span class="o">=</span> <span class="n">chemical_structure</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_sld_coupled</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
@@ -9688,25 +9640,7 @@ without them (pre-feature project files) restores as coupled.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_density.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
@@ -9719,7 +9653,25 @@ without them (pre-feature project files) restores as coupled.</p>
 <span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
-<span class="normal">303</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialDensity&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-attach sld/isld dependencies after deserialization.</span>
 

@@ -7149,7 +7149,7 @@ or multi-contrast fits contain similarly named parameters.</p>
 
 
 <h2 id="easyreflectometry.analysis.bayesian.posterior_predictive_reflectivity" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">posterior_predictive_reflectivity</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">q_values</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">posterior_predictive_reflectivity</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">q_values</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -7168,6 +7168,9 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 :type q_values: np.ndarray
 :param n_samples: Number of posterior draws to use (last <code>n_samples</code>).
 :type n_samples: int
+:param resolution_function: Resolution to smear with, typically the
+    measured resolution of the dataset the band is drawn over
+    (<code>DataSet1D.resolution_function</code>). <code>None</code> uses the model's.
 :return: Tuple of <code>(median, lower_95, upper_95)</code> reflectivity arrays.
 :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]</p>
 <!-- prettier-ignore-start -->
@@ -7222,12 +7225,24 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 <span class="normal">1207</span>
 <span class="normal">1208</span>
 <span class="normal">1209</span>
-<span class="normal">1210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">posterior_predictive_reflectivity</span><span class="p">(</span>
+<span class="normal">1210</span>
+<span class="normal">1211</span>
+<span class="normal">1212</span>
+<span class="normal">1213</span>
+<span class="normal">1214</span>
+<span class="normal">1215</span>
+<span class="normal">1216</span>
+<span class="normal">1217</span>
+<span class="normal">1218</span>
+<span class="normal">1219</span>
+<span class="normal">1220</span>
+<span class="normal">1221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">posterior_predictive_reflectivity</span><span class="p">(</span>
     <span class="n">draws</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">param_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">model</span><span class="p">,</span>
     <span class="n">q_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">resolution_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the posterior predictive reflectivity with credible intervals.</span>
 
@@ -7243,6 +7258,9 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 <span class="sd">    :type q_values: np.ndarray</span>
 <span class="sd">    :param n_samples: Number of posterior draws to use (last ``n_samples``).</span>
 <span class="sd">    :type n_samples: int</span>
+<span class="sd">    :param resolution_function: Resolution to smear with, typically the</span>
+<span class="sd">        measured resolution of the dataset the band is drawn over</span>
+<span class="sd">        (``DataSet1D.resolution_function``). ``None`` uses the model&#39;s.</span>
 <span class="sd">    :return: Tuple of ``(median, lower_95, upper_95)`` reflectivity arrays.</span>
 <span class="sd">    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7253,12 +7271,19 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
     <span class="n">n_use</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_total</span><span class="p">)</span>
     <span class="n">sample_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_total</span> <span class="o">-</span> <span class="n">n_use</span><span class="p">,</span> <span class="n">n_total</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">resolution_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fit_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fit_func</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># The same smearing the fit used for this dataset, so the band sits</span>
+        <span class="c1"># on the fitted curve rather than on a differently smeared one.</span>
+        <span class="n">fit_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fit_func_for</span><span class="p">(</span><span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
+
     <span class="n">saved_state</span> <span class="o">=</span> <span class="n">_save_parameter_state</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">reflectivity_samples</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sample_indices</span><span class="p">:</span>
             <span class="n">_apply_draw</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">draws</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-            <span class="n">r_calc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fit_func</span><span class="p">(</span><span class="n">q_values</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
+            <span class="n">r_calc</span> <span class="o">=</span> <span class="n">fit_func</span><span class="p">(</span><span class="n">q_values</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
             <span class="n">reflectivity_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_calc</span><span class="p">))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_restore_parameter_state</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">saved_state</span><span class="p">)</span>
@@ -7304,18 +7329,7 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/analysis/bayesian.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1213</span>
-<span class="normal">1214</span>
-<span class="normal">1215</span>
-<span class="normal">1216</span>
-<span class="normal">1217</span>
-<span class="normal">1218</span>
-<span class="normal">1219</span>
-<span class="normal">1220</span>
-<span class="normal">1221</span>
-<span class="normal">1222</span>
-<span class="normal">1223</span>
-<span class="normal">1224</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1224</span>
 <span class="normal">1225</span>
 <span class="normal">1226</span>
 <span class="normal">1227</span>
@@ -7348,7 +7362,18 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 <span class="normal">1254</span>
 <span class="normal">1255</span>
 <span class="normal">1256</span>
-<span class="normal">1257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">posterior_predictive_sld_profile</span><span class="p">(</span>
+<span class="normal">1257</span>
+<span class="normal">1258</span>
+<span class="normal">1259</span>
+<span class="normal">1260</span>
+<span class="normal">1261</span>
+<span class="normal">1262</span>
+<span class="normal">1263</span>
+<span class="normal">1264</span>
+<span class="normal">1265</span>
+<span class="normal">1266</span>
+<span class="normal">1267</span>
+<span class="normal">1268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">posterior_predictive_sld_profile</span><span class="p">(</span>
     <span class="n">draws</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">param_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">model</span><span class="p">,</span>
@@ -7418,14 +7443,14 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/analysis/bayesian.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1267</span>
-<span class="normal">1268</span>
-<span class="normal">1269</span>
-<span class="normal">1270</span>
-<span class="normal">1271</span>
-<span class="normal">1272</span>
-<span class="normal">1273</span>
-<span class="normal">1274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_easyreflectometry_version</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1278</span>
+<span class="normal">1279</span>
+<span class="normal">1280</span>
+<span class="normal">1281</span>
+<span class="normal">1282</span>
+<span class="normal">1283</span>
+<span class="normal">1284</span>
+<span class="normal">1285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_easyreflectometry_version</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the installed easyreflectometry version string.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">_v</span>
@@ -7458,19 +7483,19 @@ and restored in a <code>finally</code> block, so the model is not left mutated.<
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/analysis/bayesian.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1277</span>
-<span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
-<span class="normal">1282</span>
-<span class="normal">1283</span>
-<span class="normal">1284</span>
-<span class="normal">1285</span>
-<span class="normal">1286</span>
-<span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_data_fingerprint</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1288</span>
+<span class="normal">1289</span>
+<span class="normal">1290</span>
+<span class="normal">1291</span>
+<span class="normal">1292</span>
+<span class="normal">1293</span>
+<span class="normal">1294</span>
+<span class="normal">1295</span>
+<span class="normal">1296</span>
+<span class="normal">1297</span>
+<span class="normal">1298</span>
+<span class="normal">1299</span>
+<span class="normal">1300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_data_fingerprint</span><span class="p">(</span>
     <span class="n">x_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">y_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">w_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
@@ -7524,18 +7549,7 @@ prefix; the actual files will be <code>&lt;path&gt;-chain.mc</code>,
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/analysis/bayesian.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1292</span>
-<span class="normal">1293</span>
-<span class="normal">1294</span>
-<span class="normal">1295</span>
-<span class="normal">1296</span>
-<span class="normal">1297</span>
-<span class="normal">1298</span>
-<span class="normal">1299</span>
-<span class="normal">1300</span>
-<span class="normal">1301</span>
-<span class="normal">1302</span>
-<span class="normal">1303</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1303</span>
 <span class="normal">1304</span>
 <span class="normal">1305</span>
 <span class="normal">1306</span>
@@ -7571,7 +7585,18 @@ prefix; the actual files will be <code>&lt;path&gt;-chain.mc</code>,
 <span class="normal">1336</span>
 <span class="normal">1337</span>
 <span class="normal">1338</span>
-<span class="normal">1339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_posterior</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1339</span>
+<span class="normal">1340</span>
+<span class="normal">1341</span>
+<span class="normal">1342</span>
+<span class="normal">1343</span>
+<span class="normal">1344</span>
+<span class="normal">1345</span>
+<span class="normal">1346</span>
+<span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span>
+<span class="normal">1350</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_posterior</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Persist a sampling trace to disk using BUMPS&#39; native state files.</span>
 
 <span class="sd">    Writes ``&lt;path&gt;-*.mc`` (BUMPS ``save_state`` output) plus a sidecar</span>
@@ -7656,18 +7681,7 @@ to extend the chain.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/analysis/bayesian.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1342</span>
-<span class="normal">1343</span>
-<span class="normal">1344</span>
-<span class="normal">1345</span>
-<span class="normal">1346</span>
-<span class="normal">1347</span>
-<span class="normal">1348</span>
-<span class="normal">1349</span>
-<span class="normal">1350</span>
-<span class="normal">1351</span>
-<span class="normal">1352</span>
-<span class="normal">1353</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1353</span>
 <span class="normal">1354</span>
 <span class="normal">1355</span>
 <span class="normal">1356</span>
@@ -7702,7 +7716,18 @@ to extend the chain.</p>
 <span class="normal">1385</span>
 <span class="normal">1386</span>
 <span class="normal">1387</span>
-<span class="normal">1388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_posterior</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">:</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span>
+<span class="normal">1390</span>
+<span class="normal">1391</span>
+<span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span>
+<span class="normal">1398</span>
+<span class="normal">1399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_posterior</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reload a trace saved by :func:`save_posterior` into a</span>
 <span class="sd">    :class:`PosteriorResults`.</span>
 
