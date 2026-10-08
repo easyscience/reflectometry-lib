@@ -273,15 +273,16 @@ class TestProject:
     def test_set_minimizer(self):
         # When
         project = Project()
-        project._fitter = MagicMock()
-        project._fitter.easy_science_multi_fitter = MagicMock()
-        project._fitter.easy_science_multi_fitter.switch_minimizer = MagicMock()
+        project.default_model()
+        fitter = project.fitter
 
         # Then
-        project.minimizer = 'minimizer'
+        project.minimizer = AvailableMinimizers.Bumps_simplex
 
-        # Expect
-        project._fitter.easy_science_multi_fitter.switch_minimizer.assert_called_once_with('minimizer')
+        # Expect: the settings own it, and the fitter picks it up when handed out
+        assert project.fit_settings.minimizer is AvailableMinimizers.Bumps_simplex
+        assert project.fitter is fitter
+        assert fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
 
     def test_fitter_none(self):
         # When
@@ -443,6 +444,7 @@ class TestProject:
         assert keys == [
             'calculator',
             'file_format',
+            'fit_settings',
             'fitter_minimizer',
             'info',
             'models',
@@ -539,15 +541,15 @@ class TestProject:
     def test_as_dict_minimizer(self):
         # When
         project = Project()
-        project._fitter = MagicMock()
-        project._fitter.easy_science_multi_fitter = MagicMock()
-        project._fitter.easy_science_multi_fitter.minimizer = AvailableMinimizers.LMFit
+        project.minimizer = AvailableMinimizers.LMFit
 
         # Then
         project_dict = project.as_dict()
 
         # Expect
-        assert project_dict['fitter_minimizer'] == 'LMFit'
+        # The alias is saved as the member it stands for
+        assert project_dict['fitter_minimizer'] == 'LMFit_leastsq'
+        assert project_dict['fit_settings']['minimizer'] == 'LMFit_leastsq'
 
     def test_replace_collection(self):
         # When

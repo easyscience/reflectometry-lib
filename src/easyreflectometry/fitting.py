@@ -3,9 +3,11 @@
 
 
 import contextlib
+import copy
 import functools
 import warnings
 import weakref
+from dataclasses import dataclass
 from typing import Any
 from typing import Callable
 
@@ -21,6 +23,8 @@ from easyreflectometry._bumps_constraints import applied as _constraints_applied
 from easyreflectometry._bumps_constraints import is_applied as _constraints_active
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data import PolarizedDataSet
+from easyreflectometry.fit_settings import FitSettings
+from easyreflectometry.fit_settings import requires_finite_bounds
 from easyreflectometry.model import Model
 from easyreflectometry.model import Pointwise
 from easyreflectometry.model import ResolutionFunction
@@ -318,6 +322,118 @@ def _classical_metrics_for(original: dict, model_curve: np.ndarray, result: FitR
     }
 
 
+class FitPreconditionError(ValueError):
+    """A fit that cannot start: the minimizer needs finite bounds some free parameters lack.
+
+    Attributes
+    ----------
+    parameters : list
+        The offending parameters, each once.
+    """
+
+    def __init__(self, message: str, parameters: list):
+        super().__init__(message)
+        self.parameters = parameters
+
+
+@dataclass
+class _FitInput:
+    """One dataset (or spin channel) to fit, before zero-variance handling."""
+
+    x: np.ndarray
+    y: np.ndarray
+    variances: np.ndarray
+    model: Model
+    label: str
+    channel: Any = None
+    #: The dataset's own resolution; None smears with the model's.
+    resolution_function: ResolutionFunction | None = None
+    #: A stored fit function to use when neither a channel nor a resolution
+    #: of its own applies (the plain ``DataGroup`` and single-dataset fits).
+    fit_func: Callable | None = None
+
+
+@dataclass
+class PreparedFit:
+    """Everything one fit run needs, fixed when it is prepared.
+
+    Built by :meth:`MultiFitter.prepare`, the one place that applies the
+    zero-variance objective, decides which resolution each fit function is
+    bound to, and configures the core fitter. Settings edited afterwards do not
+    reach it.
+
+    Attributes
+    ----------
+    settings : FitSettings | None
+        Snapshot of the settings; None for a fitter without settings.
+    objective : str
+        The resolved zero-variance objective.
+    channels : list
+        Spin channel per dataset (None when unpolarized); keys polarized results.
+    original : list[dict]
+        ``x``, ``y``, ``variances`` as measured, all points; for the classical metrics.
+    fitted : list[dict]
+        ``x``, ``y``, ``weights`` handed to the engine.
+    stats : list[dict]
+        Zero-variance handling counts per dataset.
+    curve_funcs : list[Callable]
+        Full-resolution evaluators, for model curves and classical metrics.
+    fit_funcs : list[Callable]
+        Evaluators bound to the fitted points' resolution, as executed.
+    core_fitter : EasyScienceMultiFitter
+        The fitter that is executed.
+    fit_kwargs : dict
+        Method-specific option keyword arguments for the engine.
+    """
+
+    settings: FitSettings | None
+    objective: str
+    channels: list
+    original: list[dict]
+    fitted: list[dict]
+    stats: list[dict]
+    curve_funcs: list[Callable]
+    fit_funcs: list[Callable]
+    core_fitter: EasyScienceMultiFitter
+    fit_kwargs: dict
+
+    @property
+    def x(self) -> list[np.ndarray]:
+        return [arrays['x'] for arrays in self.fitted]
+
+    @property
+    def y(self) -> list[np.ndarray]:
+        return [arrays['y'] for arrays in self.fitted]
+
+    @property
+    def weights(self) -> list[np.ndarray]:
+        return [arrays['weights'] for arrays in self.fitted]
+
+    def call_kwargs(self, **kwargs) -> dict:
+        """The engine keyword arguments of this run merged with per-call ones (which win)."""
+        merged = copy.deepcopy(self.fit_kwargs)
+        explicit = kwargs.pop('minimizer_kwargs', None)
+        if explicit:
+            merged['minimizer_kwargs'] = {**merged.get('minimizer_kwargs', {}), **explicit}
+        merged.update(kwargs)
+        return merged
+
+    def execute(self, **kwargs) -> list[FitResults]:
+        """Run the fit synchronously; ``kwargs`` go to the core fitter's ``fit``."""
+        return self.core_fitter.fit(x=self.x, y=self.y, weights=self.weights, **self.call_kwargs(**kwargs))
+
+    def finalize(self, results: list[FitResults]) -> list[dict]:
+        """Objective and classical metrics of a finished run, one dict per dataset.
+
+        The classical metrics are computed from the measured arrays and the
+        full-resolution curves, not from the transformed fitted arrays.
+        """
+        return [
+            _classical_metrics_for(original, curve(original['x']), result, n_points=len(fitted['x']))
+            for original, fitted, curve, result in zip(self.original, self.fitted, self.curve_funcs, results)
+        ]
+
+
 class MultiFitter:
     def __init__(self, *args: Model, objective: str = 'hybrid'):
         r"""A convenience class for the :py:class:`easyscience.Fitting.Fitting`
@@ -353,8 +469,11 @@ class MultiFitter:
         # registered on the project are applied without passing them
         # explicitly; an explicit ``constraints_factory=`` argument wins.
         self.constraints_factory_provider: Callable[[], Callable | None] | None = None
+        # The settings runs are prepared from (a snapshot is taken per run).
+        # None: the stored core fitter's own minimizer, tolerance and budget.
+        self.settings: FitSettings | None = None
 
-    def _build_easy_science_fitter(self, models, fit_funcs) -> EasyScienceMultiFitter:
+    def _build_easy_science_fitter(self, models, fit_funcs, keep_owner: bool = False) -> EasyScienceMultiFitter:
         """Build the EasyScience fitter, with its raw ``fit`` honouring constraints.
 
         :meth:`for_experiments` documents that the caller drives
@@ -365,22 +484,13 @@ class MultiFitter:
         resolved at call time (and in the calling thread — the shim's context
         variable is thread-local), and non-BUMPS engines are rejected rather
         than silently dropping the constraints.
+
+        The stored fitter refers to its owner weakly (the owner holds it). A
+        prepared run's fitter (``keep_owner``) holds it strongly: the caller may
+        keep only the run, and the constraints need the owner at execution.
         """
         fitter = _ConstrainedEasyScienceMultiFitter(models, fit_funcs)
-        fitter._constraints_owner = weakref.ref(self)
-        return fitter
-
-    def _fitter_like_this(self, models: list, fit_funcs: list[Callable]) -> EasyScienceMultiFitter:
-        """A fresh core fitter over *fit_funcs* with this fitter's minimizer settings.
-
-        The minimizer selection and its generic settings (tolerance,
-        max_evaluations) are carried over. Engine-specific settings applied
-        directly to the minimizer instance of this fitter are not.
-        """
-        fitter = EasyScienceMultiFitter(models, fit_funcs)
-        fitter.switch_minimizer(self.easy_science_multi_fitter.minimizer.enum)
-        fitter.tolerance = self.easy_science_multi_fitter.tolerance
-        fitter.max_evaluations = self.easy_science_multi_fitter.max_evaluations
+        fitter._constraints_owner = (lambda: self) if keep_owner else weakref.ref(self)
         return fitter
 
     def _resolve_constraints_factory(self, explicit: Callable | None) -> Callable | None:
@@ -454,30 +564,16 @@ class MultiFitter:
         (and several models) can be fitted together, which is what an
         application's "fit everything that is loaded" action needs.
 
-        The resulting fitter is *not* run: the caller supplies the data arrays
-        to ``easy_science_multi_fitter.fit(...)`` in the order given by
-        :attr:`fit_datasets`, which lets a GUI drive it from a worker thread.
-        Each fit function is bound to its dataset's resolution as a whole, so
-        the caller should pass every point of the dataset: a dataset merged
-        from overlapping measurements can hold the same q twice with
-        different widths, and a subset loses which width belongs to which
-        point (use ``objective='hybrid'``/``'mighell'`` rather than dropping
-        zero-variance points). That call resolves :attr:`constraints_factory_provider` at call time,
-        so inequality constraints are applied on this path too — pass
-        ``constraints_factory_provider`` (e.g.
-        ``project.build_constraints_factory``) or set the attribute before
-        fitting; with none set, no inequality constraints are enforced.
+        The resulting fitter is *not* run. :meth:`prepare` (with no inputs)
+        prepares a run over :attr:`fit_datasets`, which a GUI can then execute
+        from a worker thread. Each fit function is bound to its dataset's own
+        resolution. Inequality constraints are resolved at execution through
+        :attr:`constraints_factory_provider` — pass ``constraints_factory_provider``
+        (e.g. ``project.build_constraints_factory``) or set the attribute
+        before fitting; with none set, no inequality constraints are enforced.
 
-        Note
-        ----
-        Built via ``cls(*models, objective=objective)`` and then overwrites
-        ``_fit_func`` / ``easy_science_multi_fitter`` with the per-channel
-        versions — the ``__init__``-built pair is briefly constructed and
-        discarded. Unlike :meth:`fit_polarized`, the minimizer selection and
-        its ``tolerance`` / ``max_evaluations`` are *not* carried over: the
-        returned fitter starts from ``easy_science_multi_fitter``'s defaults,
-        so a caller that needs a specific minimizer must set it explicitly
-        before calling ``.fit(...)``.
+        The fitter starts from the core defaults (minimizer, tolerance, budget)
+        unless :attr:`settings` is set, as :meth:`Project.prepare_fit` does.
 
         Parameters
         ----------
@@ -521,24 +617,224 @@ class MultiFitter:
                 channels.append(channel)
 
         fitter = cls(*models, objective=objective)
-
-        fit_funcs = []
-        for dataset, channel in zip(datasets, channels):
-            model = dataset.model
-            # Each dataset is smeared with the resolution it was measured with
-            # (its own `Pointwise` when it carries one), not with whatever the
-            # last-loaded dataset left on the shared model.
-            func = model.interface.fit_func_for(
-                channel=channel, resolution_function=getattr(dataset, 'resolution_function', None)
-            )
-            fit_funcs.append(_bind_fit_func(func, model.unique_name))
-
-        fitter._fit_func = fit_funcs
-        fitter.easy_science_multi_fitter = fitter._build_easy_science_fitter(models, fit_funcs)
         fitter.fit_datasets = datasets
         fitter.fit_channels = channels
+        # Bound with every point's resolution; `prepare` rebinds for a subset.
+        fitter._fit_func = [fitter._bind(item, item.resolution_function) for item in fitter._experiment_inputs()]
+        fitter.easy_science_multi_fitter = fitter._build_easy_science_fitter(models, fitter._fit_func)
         fitter.constraints_factory_provider = constraints_factory_provider
         return fitter
+
+    def _experiment_inputs(self) -> list[_FitInput]:
+        """One input per entry of :attr:`fit_datasets`."""
+        inputs = []
+        for dataset, channel in zip(self.fit_datasets, self.fit_channels):
+            name = getattr(dataset, 'name', None) or 'dataset'
+            inputs.append(
+                _FitInput(
+                    x=np.asarray(dataset.x),
+                    y=np.asarray(dataset.y),
+                    variances=np.asarray(dataset.ye),
+                    model=dataset.model,
+                    label=name if channel is None else f'{name} channel {channel.value}',
+                    channel=channel,
+                    resolution_function=getattr(dataset, 'resolution_function', None),
+                )
+            )
+        return inputs
+
+    def _datagroup_inputs(self, data: sc.DataGroup) -> tuple[list[str], list[_FitInput]]:
+        """Inputs for the reflectivity curves of a ``DataGroup``; curve *k* belongs to model *k*."""
+        refl_nums = [k[3:] for k in data['coords'].keys() if k.startswith('Qz_')]
+        inputs = [
+            _FitInput(
+                x=data['coords'][f'Qz_{i}'].values,
+                y=data['data'][f'R_{i}'].values,
+                variances=data['data'][f'R_{i}'].variances,
+                model=self._models[index],
+                label=f'reflectivity {i}',
+                fit_func=self._fit_func[index],
+            )
+            for index, i in enumerate(refl_nums)
+        ]
+        return refl_nums, inputs
+
+    @staticmethod
+    def _bind(item: _FitInput, resolution_function: ResolutionFunction | None = None) -> Callable:
+        """The fit function of one input, bound to ``resolution_function``.
+
+        With neither a channel nor a resolution of its own, an input carrying a
+        stored fit function uses it, so a plain fit reuses the stored core fitter.
+        """
+        if item.fit_func is not None and item.channel is None and resolution_function is None:
+            return item.fit_func
+        func = item.model.interface.fit_func_for(channel=item.channel, resolution_function=resolution_function)
+        return _bind_fit_func(func, item.model.unique_name)
+
+    def _resolve_objective(self, objective: str | None, settings: FitSettings | None) -> str:
+        if objective is not None:
+            return _validate_objective(objective)
+        if settings is not None:
+            return _validate_objective(settings.objective)
+        return self._objective
+
+    def prepare(
+        self,
+        inputs: list[_FitInput] | None = None,
+        *,
+        objective: str | None = None,
+        action: str = 'fitting',
+        extra_warning: str = '',
+    ) -> PreparedFit:
+        """Prepare one fit run: zero-variance handling, bindings, configured core fitter.
+
+        This is the only place those rules are applied; :meth:`fit`,
+        :meth:`fit_single_data_set_1d`, :meth:`fit_polarized`,
+        :meth:`mcmc_sample` and an application's worker all run what it returns.
+        Preparing never changes this fitter, so preparing again (with another
+        objective, say) starts from the measured data each time.
+
+        Parameters
+        ----------
+        inputs : list[_FitInput] | None, optional
+            Datasets to fit. By default the :attr:`fit_datasets` set by
+            :meth:`for_experiments`.
+        objective : str | None, optional
+            Zero-variance objective; by default the settings' or this fitter's.
+        action : str, optional
+            Verb for the zero-variance warnings. By default, 'fitting'.
+        extra_warning : str, optional
+            Sentence appended to the Mighell warnings. By default, ''.
+
+        Returns
+        -------
+        PreparedFit
+            The run, ready to execute.
+
+        Raises
+        ------
+        ValueError
+            If ``legacy_mask`` leaves a dataset without points.
+        FitPreconditionError
+            If a free parameter's bounds are unusable for the minimizer.
+        """
+        if inputs is None:
+            inputs = self._experiment_inputs()
+        if not inputs:
+            raise ValueError('Nothing to fit: no datasets were given.')
+        settings = copy.deepcopy(self.settings)
+        obj = self._resolve_objective(objective, settings)
+
+        original, fitted, stats, fit_funcs, curve_funcs, models = [], [], [], [], [], []
+        for item in inputs:
+            x_vals, y_vals, variances = np.asarray(item.x), np.asarray(item.y), np.asarray(item.variances)
+            x_out, y_eff, weights, item_stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
+            _emit_array_prep_warnings(item_stats, y_vals, item.label, action=action, extra=extra_warning)
+            if obj == 'legacy_mask' and len(x_out) == 0:
+                raise ValueError(f'Cannot fit {item.label}: all points have zero variance.')
+            original.append({'x': x_vals, 'y': y_vals, 'variances': variances})
+            fitted.append({'x': x_out, 'y': y_eff, 'weights': weights})
+            stats.append(item_stats)
+            # `legacy_mask` drops points: a per-point resolution must drop the
+            # same ones, so the fitted function is bound to the subset while
+            # the curve function keeps every point.
+            fitted_resolution = _resolution_for_fitted_points(item.resolution_function, x_vals, y_vals, variances, obj)
+            fit_funcs.append(self._bind(item, fitted_resolution))
+            curve_funcs.append(
+                fit_funcs[-1] if fitted_resolution is item.resolution_function else self._bind(item, item.resolution_function)
+            )
+            if not any(item.model is known for known in models):
+                models.append(item.model)
+
+        core_fitter = self._core_fitter_for(models, fit_funcs, settings)
+        self._check_fit_preconditions(core_fitter)
+        self._warn_on_bound_starts(core_fitter)
+        return PreparedFit(
+            settings=settings,
+            objective=obj,
+            channels=[item.channel for item in inputs],
+            original=original,
+            fitted=fitted,
+            stats=stats,
+            curve_funcs=curve_funcs,
+            fit_funcs=fit_funcs,
+            core_fitter=core_fitter,
+            fit_kwargs=settings.engine_kwargs() if settings is not None else {},
+        )
+
+    def _core_fitter_for(self, models: list, fit_funcs: list[Callable], settings: FitSettings | None):
+        """The core fitter a prepared run executes.
+
+        Without settings, a run over exactly the stored fit functions uses the
+        stored core fitter, as direct configuration of it (notebooks, tests)
+        expects; any other run gets a fresh one carrying the stored minimizer,
+        tolerance and budget. With settings, a fresh one configured from them.
+        """
+        if (
+            settings is None
+            and len(fit_funcs) == len(self._fit_func)
+            and all(a is b for a, b in zip(fit_funcs, self._fit_func))
+        ):
+            return self.easy_science_multi_fitter
+        core_fitter = self._build_easy_science_fitter(models, fit_funcs, keep_owner=True)
+        if settings is not None:
+            settings.configure(core_fitter)
+        else:
+            stored = self.easy_science_multi_fitter
+            core_fitter.switch_minimizer(stored.minimizer.enum)
+            core_fitter.tolerance = stored.tolerance
+            core_fitter.max_evaluations = stored.max_evaluations
+        return core_fitter
+
+    @staticmethod
+    def _check_fit_preconditions(core_fitter) -> None:
+        """Refuse a run whose minimizer needs finite bounds that some free parameter lacks.
+
+        Checked before any engine call, over the unique free independent
+        parameters. Ordered bounds and a value inside them need no check here:
+        ``Parameter`` refuses anything else.
+        """
+        minimizer = getattr(core_fitter, 'minimizer', None)
+        enum = getattr(minimizer, 'enum', None)
+        if not isinstance(enum, AvailableMinimizers) or not requires_finite_bounds(enum):
+            return  # also: a stand-in fitter (tests) has nothing to check
+        unbounded, seen = [], set()
+        for parameter in core_fitter.fit_object.get_fit_parameters():
+            if id(parameter) not in seen and not (np.isfinite(parameter.min) and np.isfinite(parameter.max)):
+                unbounded.append(parameter)
+            seen.add(id(parameter))
+        if unbounded:
+            names = ', '.join(f"'{parameter.name}'" for parameter in unbounded)
+            raise FitPreconditionError(
+                f'{enum.name} requires finite bounds on all free parameters; {names} have none.', unbounded
+            )
+
+    @staticmethod
+    def _warn_on_bound_starts(core_fitter) -> None:
+        """Warn when lmfit's ``leastsq`` would start a free parameter on one of its bounds.
+
+        ``leastsq`` maps bounded parameters through a sine transform whose
+        derivative vanishes at the bound, so such a parameter can stay where it
+        started and the fit stall (``MD/LMFIT_CONVERGENCE.md``). A previous
+        fit that ended on a bound leaves exactly this state behind.
+        """
+        enum = getattr(getattr(core_fitter, 'minimizer', None), 'enum', None)
+        if not isinstance(enum, AvailableMinimizers) or (enum.package, enum.method) != ('lm', 'leastsq'):
+            return
+        on_bound = []
+        for parameter in {id(p): p for p in core_fitter.fit_object.get_fit_parameters()}.values():
+            span = parameter.max - parameter.min
+            tolerance = 1e-6 * span if np.isfinite(span) else 0.0
+            if any(
+                np.isfinite(bound) and abs(parameter.value - bound) <= tolerance for bound in (parameter.min, parameter.max)
+            ):
+                on_bound.append(f"'{parameter.name}'")
+        if on_bound:
+            warnings.warn(
+                f'{", ".join(on_bound)} start on a bound. LMFit leastsq may not move such a parameter; '
+                'move it inside its range or use LMFit_scipy_least_squares or a BUMPS minimizer.',
+                UserWarning,
+            )
 
     def fit(
         self,
@@ -568,36 +864,15 @@ class MultiFitter:
         sc.DataGroup
             A new DataGroup with fitted model curves, SLD profiles, and fit statistics.
         """
-        obj = _validate_objective(objective) if objective is not None else self._objective
-
-        refl_nums = [k[3:] for k in data['coords'].keys() if 'Qz' == k[:2]]
-        x = []
-        y = []
-        dy = []
-        original_arrays = []
-
-        # Process each reflectivity dataset
-        for i in refl_nums:
-            x_vals = data['coords'][f'Qz_{i}'].values
-            y_vals = data['data'][f'R_{i}'].values
-            variances = data['data'][f'R_{i}'].variances
-
-            x_out, y_eff, weights, stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
-            _emit_array_prep_warnings(stats, y_vals, f'reflectivity {i}')
-
-            x.append(x_out)
-            y.append(y_eff)
-            dy.append(weights)
-            original_arrays.append({'x': x_vals, 'y': y_vals, 'variances': variances})
-
-        with self._constraints(constraints_factory):
-            result = self.easy_science_multi_fitter.fit(x, y, weights=dy)
-        self._fit_results = result
-        self._classical_fit_metrics = []
+        refl_nums, inputs = self._datagroup_inputs(data)
+        prepared = self.prepare(inputs, objective=objective)
+        with self._constraints(constraints_factory, fitter=prepared.core_fitter):
+            result = prepared.execute()
+        self.record_fit_results(result, prepared.finalize(result))
         new_data = data.copy()
         for i, _ in enumerate(result):
             id = refl_nums[i]
-            model_curve = self._fit_func[i](data['coords'][f'Qz_{id}'].values)
+            model_curve = prepared.curve_funcs[i](data['coords'][f'Qz_{id}'].values)
             new_data[f'R_{id}_model'] = sc.array(dims=[f'Qz_{id}'], values=model_curve)
             sld_profile = self.easy_science_multi_fitter._fit_objects[i].interface.sld_profile(self._models[i].unique_name)
             new_data[f'SLD_{id}'] = sc.array(dims=[f'z_{id}'], values=sld_profile[1] * 1e-6, unit=sc.Unit('1/angstrom') ** 2)
@@ -608,9 +883,7 @@ class MultiFitter:
                 values=sld_profile[0],
                 unit=(1 / new_data['coords'][f'Qz_{id}'].unit).unit,
             )
-            metrics = _classical_metrics_for(original_arrays[i], model_curve, result[i])
-            self._classical_fit_metrics.append(metrics)
-
+            metrics = self._classical_fit_metrics[i]
             new_data['objective_chi2'] = metrics['objective_chi2']
             new_data['objective_reduced_chi'] = metrics['objective_reduced_chi']
             new_data['classical_chi2'] = metrics['classical_chi2']
@@ -646,50 +919,22 @@ class MultiFitter:
 
         Note
         ----
-        When ``data`` carries its own ``resolution_function`` the fit runs on
-        a temporary core fitter bound to that resolution. It carries over the
-        minimizer selection, ``tolerance`` and ``max_evaluations``, but not
-        engine-specific settings applied directly to this fitter's minimizer
-        instance.
+        When ``data`` carries its own ``resolution_function`` the fit is
+        smeared with it rather than with the model's.
         """
-        obj = _validate_objective(objective) if objective is not None else self._objective
-
-        x_vals = np.asarray(data.x)
-        y_vals = np.asarray(data.y)
-        variances = np.asarray(data.ye)
-
-        x_out, y_eff, weights, stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
-        _emit_array_prep_warnings(stats, y_vals, 'single-dataset fit')
-
-        if obj == 'legacy_mask' and len(x_out) == 0:
-            raise ValueError('Cannot fit single dataset: all points have zero variance.')
-
-        fitter = self.easy_science_multi_fitter
-        fit_func = self._fit_func[0]
-        curve_func = fit_func
-        resolution_function = getattr(data, 'resolution_function', None)
-        if resolution_function is not None:
-            # The dataset was measured with its own q-resolution: smear with it
-            # rather than with the model's, through a fitter bound to that
-            # resolution (the stored one is bound to the model's).
-            model = self._models[0]
-            fitted_resolution = _resolution_for_fitted_points(resolution_function, x_vals, y_vals, variances, obj)
-            fit_func = _bind_fit_func(model.interface.fit_func_for(resolution_function=fitted_resolution), model.unique_name)
-            curve_func = fit_func
-            if fitted_resolution is not resolution_function:
-                # The classical metrics below evaluate every point, not the fitted subset.
-                curve_func = _bind_fit_func(
-                    model.interface.fit_func_for(resolution_function=resolution_function), model.unique_name
-                )
-            fitter = self._fitter_like_this([model], [fit_func])
-
-        with self._constraints(constraints_factory, fitter=fitter):
-            result = fitter.fit(x=[x_out], y=[y_eff], weights=[weights])[0]
-        self._fit_results = [result]
-        model_curve = curve_func(x_vals)
-        self._classical_fit_metrics = [
-            _classical_metrics_for({'y': y_vals, 'variances': variances}, model_curve, result, n_points=len(x_out))
-        ]
+        item = _FitInput(
+            x=np.asarray(data.x),
+            y=np.asarray(data.y),
+            variances=np.asarray(data.ye),
+            model=self._models[0],
+            label='single-dataset fit',
+            resolution_function=getattr(data, 'resolution_function', None),
+            fit_func=self._fit_func[0],
+        )
+        prepared = self.prepare([item], objective=objective)
+        with self._constraints(constraints_factory, fitter=prepared.core_fitter):
+            result = prepared.execute()[0]
+        self.record_fit_results([result], prepared.finalize([result]))
         return result
 
     def fit_polarized(
@@ -735,75 +980,35 @@ class MultiFitter:
         :attr:`fit_datasets` / :attr:`fit_channels` — those are set only by the
         caller-driven, `for_experiments`-built flow.
         """
-        obj = _validate_objective(objective) if objective is not None else self._objective
         if len(self._models) != 1:
             raise ValueError('Polarized fitting requires a MultiFitter constructed with exactly one model.')
         model = self._models[0]
         if data.model is not model:
             raise ValueError('PolarizedDataSet.model must be the model this fitter was constructed with.')
-        channels = data.available_channels
-        for channel in channels:
-            if data[channel].model is not model:
-                raise ValueError(f"The '{channel.value}' channel dataset is bound to a different model than the fitter's.")
-
-        x = []
-        y = []
-        dy = []
-        original_arrays = []
-        # One fit function per channel, all bound to the single model, each
-        # smeared with its channel's own measured resolution (falling back to
-        # the model's). Constructed per call because the channel set comes
-        # from the data. `channel_curve_funcs` evaluate every point of the
-        # channel, for the classical metrics.
-        channel_fit_funcs = []
-        channel_curve_funcs = []
-        for channel in channels:
+        inputs = []
+        for channel in data.available_channels:
             dataset = data[channel]
-            x_vals = np.asarray(dataset.x)
-            y_vals = np.asarray(dataset.y)
-            variances = np.asarray(dataset.ye)
-
-            x_out, y_eff, weights, stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
-            _emit_array_prep_warnings(stats, y_vals, f'channel {channel.value}')
-            if obj == 'legacy_mask' and len(x_out) == 0:
-                raise ValueError(f'Cannot fit channel {channel.value}: all points have zero variance.')
-
-            x.append(x_out)
-            y.append(y_eff)
-            dy.append(weights)
-            original_arrays.append({'x': x_vals, 'y': y_vals, 'variances': variances})
-
-            resolution_function = getattr(dataset, 'resolution_function', None)
-            fitted_resolution = _resolution_for_fitted_points(resolution_function, x_vals, y_vals, variances, obj)
-            fit_func = _bind_fit_func(
-                model.interface.fit_func_for(channel=channel, resolution_function=fitted_resolution), model.unique_name
-            )
-            channel_fit_funcs.append(fit_func)
-            if fitted_resolution is resolution_function:
-                channel_curve_funcs.append(fit_func)
-            else:
-                channel_curve_funcs.append(
-                    _bind_fit_func(
-                        model.interface.fit_func_for(channel=channel, resolution_function=resolution_function),
-                        model.unique_name,
-                    )
+            if dataset.model is not model:
+                raise ValueError(f"The '{channel.value}' channel dataset is bound to a different model than the fitter's.")
+            inputs.append(
+                _FitInput(
+                    x=np.asarray(dataset.x),
+                    y=np.asarray(dataset.y),
+                    variances=np.asarray(dataset.ye),
+                    model=model,
+                    label=f'channel {channel.value}',
+                    channel=channel,
+                    resolution_function=getattr(dataset, 'resolution_function', None),
                 )
-        polarized_fitter = self._fitter_like_this([model], channel_fit_funcs)
-
-        with self._constraints(constraints_factory, fitter=polarized_fitter):
-            results = polarized_fitter.fit(x, y, weights=dy)
+            )
+        prepared = self.prepare(inputs, objective=objective)
+        with self._constraints(constraints_factory, fitter=prepared.core_fitter):
+            results = prepared.execute()
         # All channels are fitted against one parameter vector (the shared model),
         # so `result.n_pars` is identical across `results`; `reduced_chi` and
-        # `classical_reduced_chi` below rely on that invariant.
-        self._fit_results = list(results)
-
-        self._classical_fit_metrics = []
-        for index, (channel, result) in enumerate(zip(channels, results)):
-            original = original_arrays[index]
-            model_curve = channel_curve_funcs[index](original['x'])
-            self._classical_fit_metrics.append(_classical_metrics_for(original, model_curve, result))
-
-        return {channel.value: result for channel, result in zip(channels, results)}
+        # `classical_reduced_chi` rely on that invariant.
+        self.record_fit_results(results, prepared.finalize(results))
+        return {channel.value: result for channel, result in zip(prepared.channels, results)}
 
     def mcmc_sample(
         self,
@@ -843,6 +1048,9 @@ class MultiFitter:
             and ``'logp'``.
         :raises RuntimeError: If the current minimizer is not a BUMPS instance.
 
+        The sampler reads none of the generic settings (tolerance, budget):
+        only the minimizer, which must be a BUMPS one.
+
         The underlying :class:`~easyscience.fitting.Sampler` is retained on
         :attr:`sampler`, so the chain can be continued without re-running the
         burn-in::
@@ -850,54 +1058,35 @@ class MultiFitter:
             fitter.mcmc_sample(data, samples=2000, burn=500, thin=10)
             extended = fitter.sampler.extend(additional_samples=8000, thin=10)
         """
-        minimizer = self.easy_science_multi_fitter.minimizer
-        if not (hasattr(minimizer, 'package') and minimizer.package == 'bumps'):
-            raise RuntimeError(
-                'Bayesian sampling requires a BUMPS minimizer. '
-                'Use ``fitter.switch_minimizer(AvailableMinimizers.Bumps)`` first.'
-            )
-
-        obj = _validate_objective(objective) if objective is not None else self._objective
-
-        refl_nums = [k[3:] for k in data['coords'].keys() if k.startswith('Qz_')]
-        x = []
-        y = []
-        dy = []
-
-        # Process each reflectivity dataset
-        for i in refl_nums:
-            x_vals = data['coords'][f'Qz_{i}'].values
-            y_vals = data['data'][f'R_{i}'].values
-            variances = data['data'][f'R_{i}'].variances
-
-            if obj != 'mighell' and np.all(np.asarray(variances) <= 0.0):
+        obj = self._resolve_objective(objective, self.settings)
+        refl_nums, inputs = self._datagroup_inputs(data)
+        for i, item in zip(refl_nums, inputs):
+            if obj != 'mighell' and np.all(np.asarray(item.variances) <= 0.0):
                 raise ValueError(
                     f'Cannot run Bayesian sampling on reflectivity {i}: all points have zero variance. '
                     'The likelihood is undefined without measurement uncertainties. Supply uncertainties, '
                     "or explicitly opt in to the Mighell transform with objective='mighell' "
                     '(a chi-square bias correction, not a true likelihood).'
                 )
-
-            x_out, y_eff, weights, stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
-            _emit_array_prep_warnings(
-                stats,
-                y_vals,
-                f'reflectivity {i}',
-                action='sampling',
-                extra=(
-                    ' The Mighell transform is a chi-square bias correction, not a true likelihood; '
-                    'posterior widths may be unreliable.'
-                ),
+        prepared = self.prepare(
+            inputs,
+            objective=obj,
+            action='sampling',
+            extra_warning=(
+                ' The Mighell transform is a chi-square bias correction, not a true likelihood; '
+                'posterior widths may be unreliable.'
+            ),
+        )
+        core_fitter = prepared.core_fitter
+        minimizer = core_fitter.minimizer
+        if not (hasattr(minimizer, 'package') and minimizer.package == 'bumps'):
+            raise RuntimeError(
+                'Bayesian sampling requires a BUMPS minimizer. '
+                'Use ``fitter.switch_minimizer(AvailableMinimizers.Bumps)`` first.'
             )
-            x.append(x_out)
-            y.append(y_eff)
-            dy.append(weights)
 
-        # Delegate the actual BUMPS/DREAM sampling to the core ``Sampler``.
-        # The core API moved from ``MultiFitter.mcmc_sample()`` to a dedicated
-        # ``Sampler`` class: construct it with the configured fitter and the
-        # bound data, then call ``sample()``. ``Sampler`` handles the
-        # multi-dataset reshaping internally.
+        # Delegate the actual BUMPS/DREAM sampling to the core ``Sampler``,
+        # which handles the multi-dataset reshaping internally.
         sampler_kwargs = {}
         if initializer is not None:
             sampler_kwargs['init'] = initializer
@@ -905,10 +1094,10 @@ class MultiFitter:
         # Resolved once and passed on as the explicit factory, so building it
         # (which resolves every constraint's parameter paths) happens once.
         factory = self._resolve_constraints_factory(constraints_factory)
-        with self._constraints(factory):
+        with self._constraints(factory, fitter=core_fitter):
             # The factory is current only while the problem is being built, so
             # `_keep_constraints_on_extend` covers a later continuation.
-            sampler = Sampler(self.easy_science_multi_fitter, x=x, y=y, weights=dy)
+            sampler = Sampler(core_fitter, x=prepared.x, y=prepared.y, weights=prepared.weights)
             self._keep_constraints_on_extend(sampler, factory)
             # Retained so the chain can be continued afterwards via ``self.sampler.extend()``.
             self._sampler = sampler
@@ -987,26 +1176,24 @@ class MultiFitter:
         """Objective-space reduced chi-squared returned by the minimizer."""
         return self.reduced_chi
 
-    def record_fit_results(self, results: list[FitResults] | None) -> None:
+    def record_fit_results(self, results: list[FitResults] | None, metrics: list[dict] | None = None) -> None:
         """Adopt fit results produced elsewhere, so this fitter reports on them.
 
-        An application that drives ``easy_science_multi_fitter.fit(...)`` itself
-        — to run it in a worker thread, for instance — leaves the ``MultiFitter``
-        that owns the goodness-of-fit properties none the wiser. Handing the
-        results back here makes :attr:`chi2` / :attr:`reduced_chi` describe that
-        fit instead of reporting "no fit performed".
-
-        Only the minimizer-reported metrics are restored: the classical ones
-        need the original data arrays, which are not part of ``FitResults``, so
-        :attr:`classical_chi2` and :attr:`classical_reduced_chi` stay None.
+        An application that executes a :class:`PreparedFit` itself — in a
+        worker thread, for instance — leaves the ``MultiFitter`` that owns the
+        goodness-of-fit properties none the wiser. Handing the results back
+        here makes :attr:`chi2` / :attr:`reduced_chi` describe that fit.
 
         Parameters
         ----------
         results : list[FitResults] | None
             Results of the fit, one per fitted dataset. None clears them.
+        metrics : list[dict] | None, optional
+            :meth:`PreparedFit.finalize` of the same run; without it the
+            classical metrics stay None, as they need the measured arrays.
         """
         self._fit_results = list(results) if results else None
-        self._classical_fit_metrics = None
+        self._classical_fit_metrics = list(metrics) if (results and metrics) else None
 
     def switch_minimizer(self, minimizer: AvailableMinimizers) -> None:
         """Switch the minimizer for the fitting.

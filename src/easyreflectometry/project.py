@@ -42,7 +42,10 @@ from easyreflectometry.data.measurement import dataset_from_datagroup
 from easyreflectometry.data.measurement import extract_orso_title
 from easyreflectometry.data.measurement import load as load_measurement_file
 from easyreflectometry.data.measurement import load_data_from_orso_file
+from easyreflectometry.fit_settings import DEFAULT_MINIMIZER  # noqa: F401 (re-exported)
+from easyreflectometry.fit_settings import FitSettings
 from easyreflectometry.fitting import MultiFitter
+from easyreflectometry.fitting import PreparedFit
 from easyreflectometry.inequality_constraints import InequalityEvaluation
 from easyreflectometry.inequality_constraints import InequalitySpec
 from easyreflectometry.inequality_constraints import build_constraints_factory
@@ -96,8 +99,6 @@ SPIN_ASYMMETRY_CANCELLATION_FRACTION = 1e-3
 # roughness leaves a small erf tail everywhere.
 MAGNETIC_MOMENT_FLOOR_FRACTION = 0.01
 
-DEFAULT_MINIMIZER = AvailableMinimizers.LMFit_leastsq
-
 #: Properties not descended into when *generating* structural parameter
 #: paths: non-structural objects and convenience aliases of ``layers[i]``
 #: (so a layer parameter is always addressed as ``.../layers/<i>/...``).
@@ -125,7 +126,9 @@ class Project:
         self._calculator = CalculatorFactory()
         self._experiments: Dict[DataGroup] = {}
         self._fitter: MultiFitter = None
-        self._minimizer_selection: AvailableMinimizers = DEFAULT_MINIMIZER
+        self._fit_settings = FitSettings()
+        #: Warnings from the last :meth:`from_dict`, for the user; cleared by each load.
+        self.load_report: list[str] = []
         self._colors: list[str] = None
         self._report = None
         self._q_min: float = None
@@ -350,6 +353,7 @@ class Project:
     def models(self, models: ModelCollection) -> None:
         """Models function."""
         self._replace_collection(models, self._models)
+        self._invalidate_fitter()
         # Use setter to update indicies for current model, assembly and layer
         self.current_model_index = 0
         # Only track materials not already in the project's material collection
@@ -363,18 +367,72 @@ class Project:
 
     @property
     def fitter(self) -> MultiFitter:
-        """Fitter function."""
+        """The fitter of the current model, configured from :attr:`fit_settings`.
+
+        Every hand-out writes the project's settings onto it, so configure the
+        fit through :attr:`fit_settings` (or :attr:`minimizer`), not through
+        the returned fitter's core fitter.
+        """
         if len(self._models):
             if (self._fitter is None) or (self._fitter_model_index != self._current_model_index):
                 self._fitter = MultiFitter(self._models[self._current_model_index])
-                self._fitter.easy_science_multi_fitter.switch_minimizer(self._minimizer_selection)
+                self._fitter.settings = self._fit_settings
                 self._fitter_model_index = self._current_model_index
                 # Fits run through this fitter pick up the project's inequality
                 # constraints automatically (resolved at fit time). A weak
                 # reference avoids a project -> fitter -> project cycle that
                 # would keep a discarded project (and its unique names) alive.
                 self._fitter.constraints_factory_provider = _weak_constraints_provider(self)
+            self._fit_settings.configure(self._fitter.easy_science_multi_fitter)
         return self._fitter
+
+    def _invalidate_fitter(self) -> None:
+        """Drop the cached fitter; the next :attr:`fitter` access builds a new one."""
+        self._fitter = None
+        self._fitter_model_index = None
+
+    @property
+    def fit_settings(self) -> FitSettings:
+        """The project's fit configuration; edits apply to the next fit prepared."""
+        return self._fit_settings
+
+    @fit_settings.setter
+    def fit_settings(self, settings: FitSettings) -> None:
+        settings.validate()
+        self._fit_settings = settings
+        if self._fitter is not None:
+            self._fitter.settings = settings
+
+    def prepare_fit(self, experiments: Optional[list] = None, *, objective: Optional[str] = None) -> PreparedFit:
+        """Prepare a fit of the experiments with a snapshot of :attr:`fit_settings`.
+
+        The run is not executed: call :meth:`PreparedFit.execute`, or run its
+        ``core_fitter`` in a worker thread, then hand the results to
+        ``project.fitter.record_fit_results(results, prepared.finalize(results))``.
+        Inequality constraints are resolved when it executes.
+
+        Parameters
+        ----------
+        experiments : list, optional
+            The experiments to fit, in order. By default, all loaded ones.
+        objective : str, optional
+            Zero-variance objective overriding the settings' one.
+
+        Returns
+        -------
+        PreparedFit
+            The prepared run.
+
+        Raises
+        ------
+        FitPreconditionError
+            If a free parameter's bounds are unusable for the minimizer.
+        """
+        if experiments is None:
+            experiments = [self._experiments[key] for key in sorted(self._experiments)]
+        fitter = MultiFitter.for_experiments(experiments, constraints_factory_provider=_weak_constraints_provider(self))
+        fitter.settings = self._fit_settings
+        return fitter.prepare(objective=objective)
 
     # ----- structural parameter paths -----
 
@@ -685,8 +743,7 @@ class Project:
             model.generate_bindings()
 
         # The cached fitter holds fit functions bound to the previous backend.
-        self._fitter = None
-        self._fitter_model_index = None
+        self._invalidate_fitter()
 
     @property
     def calculator_supports_magnetism(self) -> bool:
@@ -726,25 +783,14 @@ class Project:
 
     @property
     def minimizer(self) -> AvailableMinimizers:
-        """Minimizer function."""
-        if self._fitter is not None:
-            return self._fitter.easy_science_multi_fitter.minimizer.enum
-        return self._minimizer_selection
+        """The selected minimizer; an alias for ``fit_settings.minimizer``."""
+        return self._fit_settings.minimizer
 
     @minimizer.setter
     def minimizer(self, minimizer: AvailableMinimizers) -> None:
-        """Minimizer function."""
-        old_name = getattr(self._minimizer_selection, 'name', str(self._minimizer_selection))
-        new_name = getattr(minimizer, 'name', str(minimizer))
-        logger.info(
-            'Minimizer changed from %s to %s (fitter active: %s)',
-            old_name,
-            new_name,
-            self._fitter is not None,
-        )
-        self._minimizer_selection = minimizer
-        if self._fitter is not None:
-            self._fitter.easy_science_multi_fitter.switch_minimizer(minimizer)
+        """Select the minimizer; it applies to the next fit."""
+        logger.info('Minimizer changed from %s to %s', self._fit_settings.minimizer.name, minimizer.name)
+        self._fit_settings.minimizer = minimizer
 
     @property
     def experiments(self) -> Dict[int, Union[DataSet1D, PolarizedDataSet]]:
@@ -1968,6 +2014,7 @@ class Project:
 
         # Remove the model from the collection
         self._models.pop(index)
+        self._invalidate_fitter()
 
         # Remove experiment mapped to the removed model index.
         if index in self._experiments:
@@ -2149,10 +2196,9 @@ class Project:
             self._as_dict_add_materials_not_in_model_dict(project_dict)
         if self._with_experiments:
             self._as_dict_add_experiments(project_dict)
-        if self.fitter is not None:
-            project_dict['fitter_minimizer'] = self.fitter.easy_science_multi_fitter.minimizer.name
-        elif self._minimizer_selection is not None:
-            project_dict['fitter_minimizer'] = self._minimizer_selection.name
+        project_dict['fit_settings'] = self._fit_settings.to_dict()
+        # Kept for readers that predate `fit_settings`.
+        project_dict['fitter_minimizer'] = project_dict['fit_settings']['minimizer']
         if self._calculator is not None:
             project_dict['calculator'] = self._calculator.current_interface_name
         if self._colors is not None:
@@ -2283,10 +2329,12 @@ class Project:
         self._replace_collection(self._get_materials_in_models(), self._materials)
         if 'materials_not_in_model' in keys:
             self._materials.extend(MaterialCollection.from_dict(project_dict['materials_not_in_model']))
-        if 'fitter_minimizer' in keys:
-            self.minimizer = AvailableMinimizers[project_dict['fitter_minimizer']]
+        # Settings are replaced wholesale, never merged with the previous project's.
+        if 'fit_settings' in keys:
+            self._fit_settings, self.load_report = FitSettings.from_dict(project_dict['fit_settings'])
         else:
-            self._fitter = None
+            self._fit_settings, self.load_report = FitSettings.from_legacy(project_dict.get('fitter_minimizer'))
+        self._invalidate_fitter()
         if 'experiments' in keys:
             self._experiments = self._from_dict_extract_experiments(project_dict)
         else:
