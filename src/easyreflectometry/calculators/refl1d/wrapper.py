@@ -47,6 +47,23 @@ class Refl1dWrapper(WrapperBase):
         self._layer_magnetism = {}
         self._polarized_cache = {}
 
+    def remove_layer(self, name: str) -> None:
+        """Forget a layer together with its stored magnetic values.
+
+        The magnetic values are the state a recycled layer name must not
+        inherit: they are only ever pushed for a magnetic layer, so a
+        non-magnetic layer given this name would otherwise keep them. Dropping
+        them goes through `remove_layer_magnetism`, which also switches
+        magnetism off when this was the last magnetic layer.
+        """
+        self.remove_layer_magnetism(name)
+        super().remove_layer(name)
+
+    def remove_model(self, name: str) -> None:
+        """Forget a model together with its cached cross-sections."""
+        super().remove_model(name)
+        self._polarized_cache.pop(name, None)
+
     def create_material(self, name: str):
         """Create a material using SLD.
 
