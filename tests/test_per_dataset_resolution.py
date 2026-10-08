@@ -448,9 +448,9 @@ class TestMaskedFitKeepsPointWidths:
         # Dropping any one point leaves the other repeated-q pairs to be fitted
         # with their own widths, not with q-interpolated ones.
         merged.ye[0] = 0.0
-        # The truth model is returned to keep it alive: its unique name must not be
-        # reused by the model fitted on the same calculator.
-        return interface, merged, truth
+        # `truth` is released here; the model fitted next may be given its name
+        # (tests/calculators/test_recycled_names.py pins that this is harmless).
+        return interface, merged
 
     def test_resolution_for_fitted_points_keeps_identities(self):
         from easyreflectometry.fitting import _resolution_for_fitted_points
@@ -469,7 +469,7 @@ class TestMaskedFitKeepsPointWidths:
 
     @pytest.mark.slow
     def test_single_dataset_masked_fit_recovers_scale(self):
-        interface, merged, _truth = self._merged_truth()
+        interface, merged = self._merged_truth()
         model = _film_model('model', interface=interface)
         model.scale.value = 0.5
         model.scale.fixed = False
@@ -486,7 +486,7 @@ class TestMaskedFitKeepsPointWidths:
     @pytest.mark.slow
     def test_polarized_masked_fit_recovers_scale(self):
         magnetism = LayerMagnetism(rho_m=1.5, theta_m=270.0)
-        interface, merged, _truth = self._merged_truth(channel='pp', magnetism=magnetism, engine='refl1d')
+        interface, merged = self._merged_truth(channel='pp', magnetism=magnetism, engine='refl1d')
         model = _film_model('model', magnetism=LayerMagnetism(rho_m=1.5, theta_m=270.0), interface=interface)
         model.scale.value = 0.5
         model.scale.fixed = False

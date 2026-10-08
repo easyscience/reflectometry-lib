@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import weakref
 from abc import ABCMeta
 
 import numpy as np
@@ -49,10 +50,38 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         """Init function."""
         self._namespace = {}
         self._wrapper: WrapperBase
+        # Which easyscience object each backend entry was created for, keyed
+        # like the wrapper storage (``(kind, unique_name)``). Weak so the
+        # calculator keeps nothing alive. See `_claim`.
+        self._owners: dict[tuple[str, str], weakref.ReferenceType] = {}
 
     def reset_storage(self) -> None:
         r"""Reset the storage area of the calculator."""
         self._wrapper.reset_storage()
+        self._owners = {}
+
+    def _claim(self, kind: str, model: Material | Layer | Multilayer | Model) -> None:
+        """Make *model* the owner of its backend entry, discarding a stale one first.
+
+        Backend entries are keyed by ``unique_name``, and easyscience hands the
+        name of a dead object out again (the next ``Prefix_N`` above the live
+        ones), while nothing tells the calculator that the object died. A new
+        object can thus be bound to the entry its dead namesake left behind:
+        ``create`` must not recreate the entry for an object that is merely
+        re-bound (the entry is referenced from its item's stack), so without
+        this it would keep the old one. Parameter values are pushed again on
+        binding, but state that is only pushed when present is not -- a
+        non-magnetic layer landing on a dead magnetic layer's name became
+        magnetic (GitHub issue #426). Anything not owned by *model* itself is
+        removed from the backend here, so ``create`` starts from a blank entry.
+        """
+        key = model.unique_name
+        owner = self._owners.get((kind, key))
+        if owner is not None and owner() is model:
+            return
+        if owner is not None or key in self._wrapper.storage[kind]:
+            getattr(self._wrapper, f'remove_{kind}')(key)
+        self._owners[(kind, key)] = weakref.ref(model)
 
     def create(self, model: Material | Layer | Multilayer | Model) -> list[ItemContainer]:
         """Creation function.
@@ -66,6 +95,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         t_ = type(model)
         if issubclass(t_, Material):
             key = model.unique_name
+            self._claim('material', model)
             if key not in self._wrapper.storage['material'].keys():
                 self._wrapper.create_material(key)
             r_list.append(
@@ -78,6 +108,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             )
         elif issubclass(t_, MaterialMixture):
             key = model.unique_name
+            self._claim('material', model)
             if key not in self._wrapper.storage['material'].keys():
                 self._wrapper.create_material(key)
             r_list.append(
@@ -90,6 +121,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             )
         elif issubclass(t_, Layer):
             key = model.unique_name
+            self._claim('layer', model)
             if key not in self._wrapper.storage['layer'].keys():
                 self._wrapper.create_layer(key)
             r_list.append(
@@ -116,6 +148,9 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
                 self.add_layer_to_item(i.unique_name, model.unique_name)
         elif issubclass(t_, Model):
             key = model.unique_name
+            # `create_model` starts blank anyway; claiming drops what else is
+            # kept under the name (resolution function, cached cross-sections).
+            self._claim('model', model)
             self._wrapper.create_model(key)
             r_list.append(
                 ItemContainer(

@@ -41,6 +41,45 @@ class WrapperBase:
             'item': {},
             'model': {},
         }
+        self._model_resolution_functions = {}
+
+    def remove_material(self, name: str) -> None:
+        """Forget a material, with everything the backend keeps under its name.
+
+        Called when the easyscience object the entry was created for is gone
+        and its name is being given to a new one; the new object's values are
+        pushed after it is created afresh.
+
+        Parameters
+        ----------
+        name : str
+            The material name.
+        """
+        self.storage['material'].pop(name, None)
+
+    def remove_layer(self, name: str) -> None:
+        """Forget a layer, with everything the backend keeps under its name.
+
+        Backends that keep per-layer state outside the layer object (e.g.
+        magnetism) extend this.
+
+        Parameters
+        ----------
+        name : str
+            The layer name.
+        """
+        self.storage['layer'].pop(name, None)
+
+    def remove_model(self, name: str) -> None:
+        """Forget a model, with everything the backend keeps under its name.
+
+        Parameters
+        ----------
+        name : str
+            The model name.
+        """
+        self.storage['model'].pop(name, None)
+        self._model_resolution_functions.pop(name, None)
 
     @abstractmethod
     def create_material(self, name: str):
