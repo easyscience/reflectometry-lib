@@ -145,14 +145,12 @@ class TestModelData:
 
 
 class TestAsDictMinimizer:
-    def test_as_dict_uses_selection_when_no_fitter_exists(self, project: Project):
-        # No models -> the lazy fitter property stays None -> fall back to selection
+    def test_as_dict_writes_the_settings_minimizer(self, project: Project):
         project_dict = project.as_dict()
-        assert project._fitter is None
-        assert project_dict['fitter_minimizer'] == project._minimizer_selection.name
+        assert project_dict['fitter_minimizer'] == project.fit_settings.minimizer.name
+        assert project_dict['fit_settings'] == project.fit_settings.to_dict()
 
-    def test_as_dict_reads_minimizer_from_fitter_when_models_exist(self, project: Project):
+    def test_as_dict_does_not_create_a_fitter(self, project: Project):
         project.default_model()
-        project_dict = project.as_dict()
-        assert project._fitter is not None
-        assert project_dict['fitter_minimizer'] == project._fitter.easy_science_multi_fitter.minimizer.name
+        project.as_dict()
+        assert project._fitter is None
