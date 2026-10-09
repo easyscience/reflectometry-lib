@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """The project-owned fit configuration: lifetime, serialization and what reaches the engine."""
 
+import contextlib
 import os
 
 import lmfit
@@ -9,6 +10,7 @@ import numpy as np
 import pytest
 from easyscience import global_object
 from easyscience.fitting import AvailableMinimizers
+from easyscience.fitting.minimizers.utils import FitError
 
 from easyreflectometry import fit_settings as fit_settings_module
 from easyreflectometry.data import DataSet1D
@@ -29,6 +31,14 @@ def _clean_map():
 
 class _Stop(Exception):
     pass
+
+
+@contextlib.contextmanager
+def _stops_at_the_engine():
+    """The block ends in a spy's ``_Stop``, as the easyscience adapter wraps it."""
+    with pytest.raises(FitError) as error:
+        yield
+    assert isinstance(error.value.e, _Stop)
 
 
 @pytest.fixture
@@ -70,6 +80,38 @@ class TestValidation:
         with pytest.raises(ValueError, match='BUMPS'):
             FitSettings(mode='sample').validate()
         FitSettings(minimizer=AvailableMinimizers.Bumps_simplex, mode='sample').validate()
+
+    def test_auto_objective_is_valid(self):
+        FitSettings(objective='auto').validate()
+        with pytest.raises(ValueError, match='Unknown objective'):
+            FitSettings(objective='nonsense').validate()
+
+    @pytest.mark.parametrize(
+        ('name', 'value'),
+        [('tolerance', -1), ('max_evaluations', 0), ('mode', 'invalid'), ('mode', 'sample'), ('objective', 'nonsense')],
+    )
+    def test_in_place_edits_are_refused_when_a_fit_is_prepared(self, name, value):
+        project = Project()
+        project.default_model()
+        dataset = _dataset()
+        dataset.model = project.models[0]
+        setattr(project.fit_settings, name, value)
+        with pytest.raises(ValueError):
+            project.prepare_fit([dataset])
+
+    def test_an_engine_switch_can_invalidate_the_settings(self, engine_kwargs):
+        project = Project()
+        project.default_model()
+        project.fit_settings.tolerance = 0.5  # fine for LMFit
+        project.minimizer = AvailableMinimizers.DFO_leastsq
+        with pytest.raises(ValueError, match='0.1'):
+            project.fitter.fit_single_data_set_1d(_dataset())
+
+    def test_minimizer_must_be_a_member(self):
+        project = Project()
+        with pytest.raises(ValueError, match='AvailableMinimizers'):
+            project.minimizer = 'LMFit_leastsq'
+        assert project.minimizer is fit_settings_module.DEFAULT_MINIMIZER
 
     def test_finite_bounds_only_for_differential_evolution(self):
         assert requires_finite_bounds(AvailableMinimizers.LMFit_differential_evolution)
@@ -135,9 +177,57 @@ class TestSerialization:
         ('alias', 'member'), [('LMFit', 'LMFit_leastsq'), ('Bumps', 'Bumps_simplex'), ('DFO', 'DFO_leastsq')]
     )
     def test_aliases_resolve_without_warning(self, alias, member):
-        settings, report = FitSettings.from_legacy(alias)
+        settings, report = FitSettings.from_dict({'minimizer': alias})
         assert settings.minimizer is AvailableMinimizers[member]
         assert report == []
+        assert FitSettings(minimizer=AvailableMinimizers[alias]).minimizer is AvailableMinimizers[member]
+
+    @pytest.mark.parametrize(('alias', 'option', 'value'), [('LMFit', 'epsfcn', 1e-5), ('DFO', 'rhobeg', 0.5)])
+    def test_options_set_on_an_alias_survive_a_round_trip(self, alias, option, value):
+        settings = FitSettings(minimizer=AvailableMinimizers[alias])
+        settings.set_option(option, value)
+        restored, report = FitSettings.from_dict(settings.to_dict())
+        assert restored.engine_kwargs() == settings.engine_kwargs() != {}
+        assert report == []
+
+    def test_option_keys_saved_under_an_alias_are_normalised(self):
+        settings, report = FitSettings.from_dict({
+            'engine_options': {
+                'LMFit_leastsq': {'epsfcn': 1e-6},
+                'LMFit': {'epsfcn': 1e-5},
+                'DFO': {'rhobeg': 0.5},
+            },
+        })
+        # The member's own key wins over its alias's.
+        assert settings.engine_options == {'LMFit_leastsq': {'epsfcn': 1e-6}, 'DFO_leastsq': {'rhobeg': 0.5}}
+        assert report == []
+
+    @pytest.mark.parametrize(
+        'data',
+        [
+            None,
+            [],
+            {'minimizer': []},
+            {'objective': []},
+            {'mode': {}},
+            {'engine_options': []},
+            {'engine_options': {'LMFit_leastsq': []}},
+        ],
+    )
+    def test_malformed_content_is_reported_not_raised(self, data):
+        settings, report = FitSettings.from_dict(data)
+        assert settings == FitSettings()
+        assert len(report) == 1
+
+    def test_a_trust_region_conflict_drops_rhobeg(self):
+        settings, report = FitSettings.from_dict({
+            'minimizer': 'DFO_leastsq',
+            'tolerance': 1e-3,
+            'engine_options': {'DFO_leastsq': {'rhobeg': 1e-3}},
+        })
+        assert settings.tolerance == 1e-3
+        assert settings.engine_options == {}
+        assert 'rhobeg' in report[0]
 
     def test_auto_objective_is_hybrid(self):
         settings, report = FitSettings.from_dict({'objective': 'auto'})
@@ -145,7 +235,7 @@ class TestSerialization:
         assert report == []
 
     def test_unknown_minimizer_falls_back_with_a_warning(self):
-        settings, report = FitSettings.from_legacy('NoSuchEngine')
+        settings, report = FitSettings.from_dict({'minimizer': 'NoSuchEngine'})
         assert settings.minimizer is fit_settings_module.DEFAULT_MINIMIZER
         assert 'NoSuchEngine' in report[0]
 
@@ -180,9 +270,11 @@ class TestOptions:
             {'popsize': 2.5},
             {'popsize': True},
             {'mutation': 3.0},
+            {'mutation': 2.0},
             {'mutation': float('inf')},
             {'strategy': 'nonsense'},
             {'seed': -1},
+            {'seed': 2**32},
             {'epsfcn': 1e-6},
         ],
     )
@@ -192,6 +284,30 @@ class TestOptions:
             for name, value in options.items():
                 settings.set_option(name, value)
         assert settings.engine_options == {}
+
+    @pytest.mark.parametrize(
+        ('minimizer', 'name', 'value'),
+        [
+            ('LMFit_differential_evolution', 'mutation', 0.0),
+            ('LMFit_differential_evolution', 'mutation', 1.999),
+            ('LMFit_differential_evolution', 'seed', 2**32 - 1),
+            ('DFO_leastsq', 'rhobeg', 1e-9),
+        ],
+    )
+    def test_values_next_to_an_excluded_bound_are_accepted(self, minimizer, name, value):
+        FitSettings(minimizer=AvailableMinimizers[minimizer]).set_option(name, value)
+
+    def test_rhobeg_must_be_positive(self):
+        with pytest.raises(ValueError, match=r'\(0.0, None\]'):
+            FitSettings(minimizer=AvailableMinimizers.DFO_leastsq).set_option('rhobeg', 0.0)
+
+    def test_rhobeg_must_exceed_the_dfo_tolerance(self):
+        settings = FitSettings(minimizer=AvailableMinimizers.DFO_leastsq, tolerance=1e-3)
+        settings.set_option('rhobeg', 1e-3)
+        with pytest.raises(ValueError, match='rhobeg'):
+            settings.validate()
+        settings.set_option('rhobeg', 2e-3)
+        settings.validate()
 
     def test_bumps_has_no_options(self):
         assert fit_settings_module.option_schema(AvailableMinimizers.Bumps_simplex) == []
@@ -214,7 +330,7 @@ class TestOptions:
         project = Project()
         project.default_model()
         project.fit_settings.set_option('epsfcn', 1e-6)
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert engine_kwargs['fit_kws'] == {'epsfcn': 1e-6}
 
@@ -226,7 +342,7 @@ class TestProjectLifetime:
         # Edited before any fitter exists
         project.fit_settings.tolerance = 1e-4
         project.fit_settings.max_evaluations = 99
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert engine_kwargs == {'fit_kws': {'ftol': 1e-4}, 'max_nfev': 99}
 
@@ -235,20 +351,20 @@ class TestProjectLifetime:
         second.interface = project.models[0].interface
         project.models.append(second)
         project.current_model_index = 1
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert engine_kwargs == {'fit_kws': {'ftol': 1e-4}, 'max_nfev': 99}
 
         # The calculator is switched: the fitter is dropped, the settings are not
         project.calculator = 'refl1d'
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert engine_kwargs == {'fit_kws': {'ftol': 1e-4}, 'max_nfev': 99}
 
         # Reset to the engine default: nothing is sent
         project.fit_settings.tolerance = None
         project.fit_settings.max_evaluations = None
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert engine_kwargs == {'fit_kws': {}, 'max_nfev': None}
 
@@ -267,6 +383,30 @@ class TestProjectLifetime:
         assert project.fit_settings == FitSettings(minimizer=AvailableMinimizers.Bumps_simplex)
         assert project.fitter.easy_science_multi_fitter is not core
         assert project.fitter.easy_science_multi_fitter.tolerance is None
+
+    def test_switch_minimizer_on_the_project_fitter_switches_the_settings(self):
+        project = Project()
+        project.default_model()
+        dataset = _dataset()
+        dataset.model = project.models[0]
+        fitter = project.fitter
+        fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        assert project.minimizer is AvailableMinimizers.Bumps_simplex
+        assert fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+        # A new hand-out of the fitter keeps it, and so do the runs.
+        assert project.fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+        assert project.prepare_fit([dataset]).core_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+
+    def test_malformed_settings_in_a_project_file_fall_back(self):
+        project = Project()
+        project.default_model()
+        project_dict = project.as_dict()
+        project_dict['fit_settings'] = {'minimizer': [], 'objective': [], 'engine_options': []}
+        global_object.map._clear()
+        project.from_dict(project_dict)
+        assert project.fit_settings == FitSettings()
+        assert len(project.load_report) == 3
+        assert len(project.models) == 1
 
     def test_load_report_is_cleared_by_each_load(self):
         project = Project()
@@ -341,13 +481,26 @@ class TestNativeBoundary:
         project.minimizer = minimizer
         return project
 
-    @pytest.mark.parametrize('minimizer', [AvailableMinimizers.LMFit_powell, AvailableMinimizers.LMFit_cobyla])
+    @pytest.mark.parametrize(
+        'minimizer',
+        [AvailableMinimizers.LMFit_powell, pytest.param(AvailableMinimizers.LMFit_cobyla, marks=pytest.mark.slow)],
+    )
     def test_lmfit_scalar_methods_run_with_a_tolerance(self, minimizer):
         # Regression: on easyscience 2.5 a core-side tolerance crashes these.
         project = self._project(minimizer)
         project.fit_settings.tolerance = 1e-6
         result = project.fitter.fit_single_data_set_1d(_dataset())
         assert result.n_evaluations > 0
+
+    def test_a_switch_on_the_project_fitter_is_the_engine_that_runs(self):
+        from easyscience.fitting.minimizers.minimizer_bumps import Bumps
+
+        project = self._project(AvailableMinimizers.LMFit_leastsq)
+        project.fit_settings.max_evaluations = 5
+        fitter = project.fitter
+        fitter.switch_minimizer(AvailableMinimizers.Bumps_simplex)
+        result = fitter.fit_single_data_set_1d(_dataset())
+        assert result.minimizer_engine is Bumps
 
     def test_dfo_trust_region_reaches_dfols(self, monkeypatch):
         from easyscience.fitting.minimizers import minimizer_dfo
@@ -362,7 +515,7 @@ class TestNativeBoundary:
         project = self._project(AvailableMinimizers.DFO_leastsq)
         project.fit_settings.tolerance = 1e-3
         project.fit_settings.set_option('rhobeg', 0.25)
-        with pytest.raises(Exception):
+        with _stops_at_the_engine():
             project.fitter.fit_single_data_set_1d(_dataset())
         assert (seen['rhobeg'], seen['rhoend']) == (0.25, 1e-3)
 

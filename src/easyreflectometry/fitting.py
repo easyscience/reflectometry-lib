@@ -24,12 +24,12 @@ from easyreflectometry._bumps_constraints import is_applied as _constraints_acti
 from easyreflectometry.data import DataSet1D
 from easyreflectometry.data import PolarizedDataSet
 from easyreflectometry.fit_settings import FitSettings
+from easyreflectometry.fit_settings import normalize_objective as _validate_objective
 from easyreflectometry.fit_settings import requires_finite_bounds
 from easyreflectometry.model import Model
 from easyreflectometry.model import Pointwise
 from easyreflectometry.model import ResolutionFunction
 
-_VALID_OBJECTIVES = ('legacy_mask', 'mighell', 'hybrid', 'auto')
 _EPS = 1e-30
 
 
@@ -67,31 +67,6 @@ class _ConstrainedEasyScienceMultiFitter(EasyScienceMultiFitter):
                 return original(*args, **kwargs)
 
         return fit_with_constraints
-
-
-def _validate_objective(objective: str) -> str:
-    """Validate and resolve the objective string.
-
-    Parameters
-    ----------
-    objective : str
-        The objective mode string.
-
-    Raises
-    ------
-    ValueError :
-        If the objective is not one of the valid options.
-
-    Returns
-    -------
-    str
-        Resolved objective string ('auto' becomes 'hybrid').
-    """
-    if objective not in _VALID_OBJECTIVES:
-        raise ValueError(f'Unknown objective {objective!r}. Valid options: {_VALID_OBJECTIVES}')
-    if objective == 'auto':
-        return 'hybrid'
-    return objective
 
 
 def _prepare_fit_arrays(
@@ -714,20 +689,29 @@ class MultiFitter:
         Raises
         ------
         ValueError
-            If ``legacy_mask`` leaves a dataset without points.
+            If the settings are invalid (however they were edited), or
+            ``legacy_mask`` leaves a dataset without points.
         FitPreconditionError
             If a free parameter's bounds are unusable for the minimizer.
+
+        Note
+        ----
+        The run owns copies of the measured arrays, so editing a dataset
+        afterwards changes neither what it fits nor its metrics. Model
+        parameters and constraints stay live: they are what the fit changes.
         """
         if inputs is None:
             inputs = self._experiment_inputs()
         if not inputs:
             raise ValueError('Nothing to fit: no datasets were given.')
         settings = copy.deepcopy(self.settings)
+        if settings is not None:
+            settings.validate()
         obj = self._resolve_objective(objective, settings)
 
         original, fitted, stats, fit_funcs, curve_funcs, models = [], [], [], [], [], []
         for item in inputs:
-            x_vals, y_vals, variances = np.asarray(item.x), np.asarray(item.y), np.asarray(item.variances)
+            x_vals, y_vals, variances = np.array(item.x), np.array(item.y), np.array(item.variances)
             x_out, y_eff, weights, item_stats = _prepare_fit_arrays(x_vals, y_vals, variances, obj)
             _emit_array_prep_warnings(item_stats, y_vals, item.label, action=action, extra=extra_warning)
             if obj == 'legacy_mask' and len(x_out) == 0:
@@ -815,8 +799,8 @@ class MultiFitter:
 
         ``leastsq`` maps bounded parameters through a sine transform whose
         derivative vanishes at the bound, so such a parameter can stay where it
-        started and the fit stall (``MD/LMFIT_CONVERGENCE.md``). A previous
-        fit that ended on a bound leaves exactly this state behind.
+        started and the fit stall. A previous fit that ended on a bound leaves
+        exactly this state behind.
         """
         enum = getattr(getattr(core_fitter, 'minimizer', None), 'enum', None)
         if not isinstance(enum, AvailableMinimizers) or (enum.package, enum.method) != ('lm', 'leastsq'):
@@ -1058,6 +1042,14 @@ class MultiFitter:
             fitter.mcmc_sample(data, samples=2000, burn=500, thin=10)
             extended = fitter.sampler.extend(additional_samples=8000, thin=10)
         """
+        # Checked before preparing, so a wrong engine is reported before any data warnings.
+        minimizer = self.settings.minimizer if self.settings is not None else self.easy_science_multi_fitter.minimizer
+        if getattr(minimizer, 'package', None) != 'bumps':
+            raise RuntimeError(
+                'Bayesian sampling requires a BUMPS minimizer. Select one first, e.g. '
+                '``project.minimizer = AvailableMinimizers.Bumps_simplex`` or '
+                '``fitter.switch_minimizer(AvailableMinimizers.Bumps_simplex)``.'
+            )
         obj = self._resolve_objective(objective, self.settings)
         refl_nums, inputs = self._datagroup_inputs(data)
         for i, item in zip(refl_nums, inputs):
@@ -1078,12 +1070,6 @@ class MultiFitter:
             ),
         )
         core_fitter = prepared.core_fitter
-        minimizer = core_fitter.minimizer
-        if not (hasattr(minimizer, 'package') and minimizer.package == 'bumps'):
-            raise RuntimeError(
-                'Bayesian sampling requires a BUMPS minimizer. '
-                'Use ``fitter.switch_minimizer(AvailableMinimizers.Bumps)`` first.'
-            )
 
         # Delegate the actual BUMPS/DREAM sampling to the core ``Sampler``,
         # which handles the multi-dataset reshaping internally.
@@ -1198,12 +1184,20 @@ class MultiFitter:
     def switch_minimizer(self, minimizer: AvailableMinimizers) -> None:
         """Switch the minimizer for the fitting.
 
+        A fitter with :attr:`settings` (one a project hands out) switches the
+        settings' minimizer, as its runs are configured from them; for a
+        project's fitter that is ``project.minimizer``.
+
         Parameters
         ----------
         minimizer : AvailableMinimizers
             Minimizer to be switched to.
         """
-        self.easy_science_multi_fitter.switch_minimizer(minimizer)
+        if self.settings is None:
+            self.easy_science_multi_fitter.switch_minimizer(minimizer)
+            return
+        self.settings.minimizer = minimizer
+        self.settings.configure(self.easy_science_multi_fitter)
 
 
 def _flatten_list(this_list: list) -> list:

@@ -18,6 +18,7 @@ from easyscience import global_object
 from easyscience.fitting.minimizers.factory import AvailableMinimizers
 
 from easyreflectometry.calculators import CalculatorFactory
+from easyreflectometry.fit_settings import FitSettings
 from easyreflectometry.fitting import MultiFitter
 from easyreflectometry.fitting import _fit_result_reduced_chi
 from easyreflectometry.fitting import _flatten_list
@@ -90,6 +91,22 @@ class TestMCMCSampleGuards:
 
         with pytest.raises(RuntimeError, match='Bayesian sampling requires a BUMPS minimizer'):
             fitter.mcmc_sample(data)
+
+    def test_engine_is_checked_before_the_data_is_prepared(self, monkeypatch):
+        fitter = _make_fitter()
+        fitter.settings = FitSettings()  # LMFit, as a project's fitter carries
+        monkeypatch.setattr(MultiFitter, 'prepare', MagicMock(side_effect=AssertionError('prepared')))
+        with pytest.raises(RuntimeError, match='project.minimizer'):
+            fitter.mcmc_sample(_make_data(np.zeros(10)), objective='mighell')
+
+    def test_a_switch_through_the_settings_passes_the_engine_check(self):
+        fitter = _make_fitter()
+        fitter.settings = FitSettings()
+        fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        capture = {}
+        with _patch_sampler(capture):
+            fitter.mcmc_sample(_make_data(np.ones(10) * 0.01), samples=10, burn=2, thin=1)
+        assert capture['instance'].sample.called
 
     def test_all_zero_variance_raises_value_error(self):
         """Sampling without any uncertainties has no defined likelihood."""

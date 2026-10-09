@@ -194,6 +194,57 @@ class TestPreconditions:
         assert reached == []
 
 
+class TestBoundStarts:
+    @staticmethod
+    def _project(value: float) -> tuple[Project, DataSet1D]:
+        project = Project()
+        project.default_model()
+        scale = project.models[0].scale
+        scale.fixed = False
+        scale.min, scale.max = 0.5, 1.5
+        scale.value = value
+        dataset = _data()
+        dataset.model = project.models[0]
+        return project, dataset
+
+    def test_leastsq_warns_on_a_parameter_starting_on_a_bound(self):
+        project, dataset = self._project(0.5)
+        with pytest.warns(UserWarning, match='start on a bound'):
+            project.prepare_fit([dataset])
+
+    @pytest.mark.parametrize(
+        ('value', 'minimizer'),
+        [(1.0, AvailableMinimizers.LMFit_leastsq), (0.5, AvailableMinimizers.LMFit_scipy_least_squares)],
+    )
+    def test_no_warning_inside_the_range_or_for_other_methods(self, value, minimizer):
+        project, dataset = self._project(value)
+        project.minimizer = minimizer
+        with warnings.catch_warnings():
+            warnings.filterwarnings('error', message='.*start on a bound')
+            project.prepare_fit([dataset])
+
+
+class TestArrayOwnership:
+    @pytest.mark.parametrize('objective', ['hybrid', 'legacy_mask'])
+    def test_editing_the_dataset_does_not_reach_a_prepared_run(self, objective):
+        variances = np.full(Q.size, 1e-4)
+        variances[0] = 0.0
+        dataset = _data(variances)
+        dataset.model = _model()
+        prepared = MultiFitter.for_experiments([dataset]).prepare(objective=objective)
+        original = {key: value.copy() for key, value in prepared.original[0].items()}
+        fitted = {'x': prepared.x[0].copy(), 'y': prepared.y[0].copy(), 'weights': prepared.weights[0].copy()}
+
+        for array in (dataset.x, dataset.y, dataset.ye):
+            np.asarray(array)[:] = 123.0
+
+        for key, value in original.items():
+            np.testing.assert_array_equal(prepared.original[0][key], value)
+        np.testing.assert_array_equal(prepared.x[0], fitted['x'])
+        np.testing.assert_array_equal(prepared.y[0], fitted['y'])
+        np.testing.assert_array_equal(prepared.weights[0], fitted['weights'])
+
+
 class TestFinalize:
     def test_classical_metrics_come_from_the_measured_points(self):
         variances = np.full(Q.size, 1e-4)

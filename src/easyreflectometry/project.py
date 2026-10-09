@@ -789,8 +789,11 @@ class Project:
     @minimizer.setter
     def minimizer(self, minimizer: AvailableMinimizers) -> None:
         """Select the minimizer; it applies to the next fit."""
-        logger.info('Minimizer changed from %s to %s', self._fit_settings.minimizer.name, minimizer.name)
+        if not isinstance(minimizer, AvailableMinimizers):
+            raise ValueError(f'minimizer must be an AvailableMinimizers member, got {minimizer!r}.')
+        previous = self._fit_settings.minimizer
         self._fit_settings.minimizer = minimizer
+        logger.info('Minimizer changed from %s to %s', previous.name, self._fit_settings.minimizer.name)
 
     @property
     def experiments(self) -> Dict[int, Union[DataSet1D, PolarizedDataSet]]:
@@ -2330,10 +2333,9 @@ class Project:
         if 'materials_not_in_model' in keys:
             self._materials.extend(MaterialCollection.from_dict(project_dict['materials_not_in_model']))
         # Settings are replaced wholesale, never merged with the previous project's.
-        if 'fit_settings' in keys:
-            self._fit_settings, self.load_report = FitSettings.from_dict(project_dict['fit_settings'])
-        else:
-            self._fit_settings, self.load_report = FitSettings.from_legacy(project_dict.get('fitter_minimizer'))
+        # A file predating `fit_settings` only stored `fitter_minimizer`.
+        legacy = {'minimizer': project_dict.get('fitter_minimizer')}
+        self._fit_settings, self.load_report = FitSettings.from_dict(project_dict.get('fit_settings', legacy))
         self._invalidate_fitter()
         if 'experiments' in keys:
             self._experiments = self._from_dict_extract_experiments(project_dict)
