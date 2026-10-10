@@ -8,6 +8,7 @@ import warnings
 import numpy as np
 import pytest
 from easyscience import global_object
+from easyscience.fitting import AvailableMinimizers
 from numpy.testing import assert_allclose
 
 from easyreflectometry.constraints import constrain_equal
@@ -127,6 +128,17 @@ class TestDeriveSolventContrast:
         for formula in ('', 'C10H((', 'Xx2'):
             with pytest.raises(UnsupportedSubstitution):
                 derive_contrast(project.models[0], name='x', substitutions=[ReplaceFormula(surfactant.tail_layer, formula)])
+
+    def test_a_material_a_layer_builds_from_its_formula_is_refused(self):
+        # It is rebuilt from the formula: replacing it would do nothing. The rule is the one
+        # substitution_candidates applies.
+        surfactant = SurfactantLayer()
+        reference = Model(sample=Sample(surfactant))
+        replacement = Material(sld=1.0, isld=0, name='Replacement')
+        for internal in (surfactant.tail_layer.molecule, surfactant.tail_layer.material):
+            assert all(candidate is not internal for candidate in substitution_candidates(reference)[0])
+            with pytest.raises(UnsupportedSubstitution, match='ReplaceFormula'):
+                derive_contrast(reference, name='x', substitutions=[ReplaceMaterial(internal, replacement)])
 
 
 class TestDeriveIsotopicContrast:
@@ -256,6 +268,43 @@ class TestLinks:
         row = next(row for row in project.plan_link(1, 0, materials='skip').rows if row.path == 'sample/1/layers/0/thickness')
         assert (row.action, row.shared_with) == ('skip', [2])
 
+    def test_one_follower_parameter_for_two_reference_parameters_is_a_conflict(self):
+        project = _two_layouts()
+        follower = project.models[1]
+        follower.sample[2].layers[0].material = follower.sample[1].layers[0].material  # one material in two layers
+        rows = {row.path: row for row in project.plan_link(1, 0, materials='tie').rows}
+        assert rows['sample/1/layers/0/material/sld'].action == 'conflict'
+        assert rows['sample/2/layers/0/material/sld'].action == 'conflict'
+        # With the chemistry left alone there is nothing to decide
+        rows = {row.path: row for row in project.plan_link(1, 0, materials='skip').rows}
+        assert rows['sample/2/layers/0/material/sld'].action == 'skip'
+
+    def test_an_outdated_plan_is_refused(self):
+        project = _two_layouts()
+        plan = project.plan_link(1, 0, materials='skip')
+        project.models.append(Model(sample=Sample(project.models[1].sample[1]), name='third'))
+        with pytest.raises(ValueError, match='out of date'):
+            project.apply_link(plan)
+        assert project.links == []
+        assert project.models[1].sample[1].layers[0].thickness.independent
+
+    def test_a_plan_is_applied_once(self):
+        project = _two_layouts()
+        plan = project.plan_link(1, 0, materials='skip')
+        project.apply_link(plan)
+        with pytest.raises(ValueError, match='out of date'):
+            project.apply_link(plan)
+        assert len(project.links) == 1
+
+    def test_unlink_restores_the_uncertainty(self):
+        project = _two_layouts()
+        thickness = project.models[1].sample[1].layers[0].thickness
+        thickness.variance = 144.0
+        project.models[0].sample[1].layers[0].thickness.variance = 9.0
+        project.apply_link(project.plan_link(1, 0, materials='skip'))
+        project.unlink(project.links[0])
+        assert thickness.variance == pytest.approx(144.0)
+
     def test_a_cycle_is_refused(self):
         project = _two_layouts()
         constrain_equal(project.models[0].sample[1].layers[0].thickness, project.models[1].sample[1].layers[0].thickness)
@@ -342,6 +391,34 @@ class TestDetach:
         copy.layers[0].thickness.value = 15.0
         assert not np.allclose(project.model_data_for_model_at_index(1, q_range=Q).y, before)
 
+    def _shared_and_tied(self):
+        project = _two_layouts()
+        project.apply_link(project.plan_link(1, 0, materials='skip'))
+        project.models.append(Model(sample=Sample(project.models[1].sample[1]), name='third'))
+        return project, project.models[1].sample[1].layers[0].thickness
+
+    def test_a_shared_tie_is_not_removed_in_one_model(self):
+        project, thickness = self._shared_and_tied()
+        with pytest.raises(ValueError, match='without a model'):
+            project.detach(thickness, 2)
+        assert not thickness.independent
+        assert project.models[1].sample[1] is project.models[2].sample[0]
+        assert len(project.links) == 1
+
+    def test_a_shared_tie_is_removed_for_every_owner_without_a_model(self):
+        project, thickness = self._shared_and_tied()
+        project.detach(thickness)
+        assert thickness.independent
+        assert project.parameter_models(thickness) == [1, 2]
+
+    def test_a_model_without_the_parameter_is_refused_before_untying(self):
+        project, thickness = self._shared_and_tied()
+        with pytest.raises(ValueError, match='not part of'):
+            project.detach(thickness, 0)
+        with pytest.raises(ValueError, match='not part of'):
+            project.detach(thickness, 7)
+        assert not thickness.independent
+
     def test_a_derived_parameter_cannot_be_detached(self):
         project = Project()
         oxide = MaterialDensity(chemical_structure='SiO2', density=2.2, name='SiO2')
@@ -388,7 +465,7 @@ class TestFitScope:
         assert prepared.added_roots == [root]
         assert any(parameter is root for parameter in prepared.core_fitter.fit_object.get_fit_parameters())
         assert len(prepared.fitted) == 1  # the excluded data is not in the objective
-        assert prepared.labels == [(1, follower_data.name, None)]
+        assert prepared.experiments == [follower_data]
 
     def test_an_experiment_without_a_model_is_an_error_unless_skipped(self):
         project = _two_layouts()
@@ -450,6 +527,23 @@ class TestRunRecord:
         project.experiments = {0: _synthetic(project, 0)}
         run = project.record_fit(project.prepare_fit(), None, status='failed')
         assert run.pooled == {} and run.per_dataset == ()
+
+    def test_the_record_names_the_minimizer_of_the_run(self):
+        project = _two_layouts()
+        project.experiments = {0: _synthetic(project, 0)}
+        project.minimizer = AvailableMinimizers.LMFit_leastsq
+        prepared = project.prepare_fit()
+        project.minimizer = AvailableMinimizers.Bumps_simplex
+        assert project.record_fit(prepared, None, status='failed').minimizer == 'LMFit_leastsq'
+
+    def test_an_experiment_removed_before_recording_leaves_the_record_its_current_keys(self):
+        project = _two_layouts()
+        project.experiments = {0: _synthetic(project, 0), 1: _synthetic(project, 1)}
+        prepared = project.prepare_fit()
+        project.remove_experiment(0)
+        run = project.record_fit(prepared, None, status='failed')
+        assert [entry[0] for entry in run.inputs] == [None, 0]
+        assert [entry[1] for entry in run.inputs] == [project.models[0].name, project.models[1].name]
 
 
 @pytest.mark.slow

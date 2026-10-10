@@ -3,6 +3,7 @@
 """Objects shared between layers and models keep being shared after save/load."""
 
 import json
+import warnings
 
 import numpy as np
 import pytest
@@ -181,6 +182,42 @@ class TestFileFormat:
     def test_sharing_raises_the_format(self):
         assert _contrasts().as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
 
+    def _with_experiments(self, same_names: bool) -> Project:
+        project = Project()
+        project.default_model()
+        project.models.duplicate_model(0)
+        if same_names:
+            project.models[1].name = project.models[0].name
+        dataset = DataSet1D(name='data', x=Q, y=np.exp(-Q), ye=np.full(Q.size, 1e-4), model=project.models[1])
+        project.experiments = {0: dataset}
+        project._with_experiments = True
+        return project
+
+    def test_an_experiment_an_older_reader_would_fit_or_pair_differently_raises_the_format(self):
+        # An older reader fits every experiment and finds its model by name.
+        project = self._with_experiments(same_names=False)
+        assert project.as_dict()['file_format'] == Project.FILE_FORMAT
+        project.experiments[0].include_in_fit = False
+        assert project.as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
+        global_object.map._clear()
+        assert self._with_experiments(same_names=True).as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
+
+    def test_a_shared_object_of_another_class_is_reported_not_used(self):
+        data = json.loads(json.dumps(_contrasts().as_dict()))
+        # The second model's bulk layer refers to the shared film assembly
+        node = data['models']['data'][1]['sample']['data'][2]['layers']['data'][0]
+        shared = data['models']['data'][0]['sample']['data'][1]
+        data['models']['data'][1]['sample']['data'][2]['layers']['data'][0] = {
+            '@ref': shared['@ref_id'],
+            '@module': node['@module'],
+            '@class': node['@class'],
+        }
+        global_object.map._clear()
+        loaded = Project()
+        loaded.from_dict(data)
+        assert any('is a Multilayer in the file' in line for line in loaded.load_report)
+        assert isinstance(loaded.models[1].sample[2].layers[0], Layer)
+
     def test_a_missing_shared_object_is_reported_not_raised(self):
         data = json.loads(json.dumps(_contrasts().as_dict()))
         data['models']['data'][1]['sample']['data'][1]['@ref'] = 'no-such-id'
@@ -190,6 +227,25 @@ class TestFileFormat:
         loaded.from_dict(data)
         assert any('missing from the file' in line for line in loaded.load_report)
         assert any('NoSuchEngine' in line for line in loaded.load_report)
+
+
+def test_loading_into_a_fitted_project_drops_its_run():
+    project = _contrasts()
+    project.experiments = {0: DataSet1D(name='data', x=Q, y=np.exp(-Q), ye=np.full(Q.size, 1e-4), model=project.models[0])}
+    project.record_fit(project.prepare_fit(), None, status='failed')
+    assert project.last_fit is not None
+    project.from_dict(json.loads(json.dumps(project.as_dict())))
+    assert project.last_fit is None
+
+
+def test_a_material_in_two_layers_is_collected_once_without_a_warning():
+    project = Project()
+    project.default_model()
+    project.models[0].sample[1].layers[0].material = project.models[0].sample[2].layers[0].material
+    with warnings.catch_warnings():
+        warnings.simplefilter('error', UserWarning)
+        materials = project._get_materials_in_models()
+    assert len(materials) == 2
 
 
 class TestExperimentModels:

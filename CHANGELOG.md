@@ -34,9 +34,12 @@
   layers, an assembly in two models, a solvent inside mixtures) are
   saved once and are one object again after loading; previously each
   place came back as an independent copy, so edits no longer reached the
-  other places and the materials list filled with duplicates. Files
-  whose models share objects are written as `file_format=3`, which older
-  releases refuse; files without sharing keep `file_format=2`.
+  other places and the materials list filled with duplicates. A file an
+  older release would read as another project is written as
+  `file_format=3`, which it refuses: the models share objects, an
+  experiment is left out of the fit, or an experiment's model has a name
+  several models have (older releases pair by name). Other files keep
+  `file_format=2`.
 - The materials list is saved in order, unused materials included
   (`materials`), whatever `include_materials_not_in_model` says.
 - An experiment's model is saved by index (`experiments_model_indices`)
@@ -48,6 +51,8 @@
   keep only the fit settings' ones.
 - Contrast provenance, links and each experiment's `include_in_fit` are
   saved.
+- A shared object of the wrong class in a file is reported in
+  `Project.load_report` and replaced by a default, like a missing one.
 
 ## Experiments and models
 

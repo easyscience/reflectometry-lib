@@ -102,13 +102,24 @@ def derive_contrast(
     swaps = {id(item.old): item.new for item in substitutions if isinstance(item, ReplaceMaterial)}
     formulas = {id(item.target): item for item in substitutions if isinstance(item, ReplaceFormula)}
     targets = set(swaps) | set(formulas)
+    # What may be substituted is decided once, in substitution_candidates: a material a
+    # LayerAreaPerMolecule builds for itself is rebuilt from the formula, so replacing it
+    # would do nothing.
+    materials, formula_targets = substitution_candidates(reference)
+    replaceable = {id(material) for material in materials}
+    reformulable = {id(target) for target in formula_targets}
     in_reference = {id(obj) for obj in _objects(reference.sample)}
     for item in substitutions:
         target = item.old if isinstance(item, ReplaceMaterial) else item.target
         if id(target) not in in_reference:
             raise UnsupportedSubstitution(f"'{getattr(target, 'name', target)}' is not part of '{reference.name}'.")
-        if isinstance(item, ReplaceFormula):
-            if not isinstance(target, (LayerAreaPerMolecule, MaterialDensity)):
+        if isinstance(item, ReplaceMaterial):
+            if id(target) not in replaceable:
+                raise UnsupportedSubstitution(
+                    f"'{target.name}' is built by a layer from its chemical formula; use ReplaceFormula on that layer."
+                )
+        else:
+            if id(target) not in reformulable:
                 raise UnsupportedSubstitution(f"'{target.name}' has no chemical formula to replace.")
             _check_formula(item.formula)
 
@@ -220,6 +231,21 @@ class LinkPlan:
     reference: Model
     rows: list[LinkRow]
 
+    def outdated(self, current: 'LinkPlan') -> list[str]:
+        """Paths of the rows to tie that `current` (the same link, planned now) no longer allows:
+        the parameters changed, or the row is already tied, shared with another model, ..."""
+        rows = {row.path: row for row in current.rows}
+        return [row.path for row in self.rows if row.action == 'tie' and not _tieable_now(row, rows.get(row.path))]
+
+
+def _tieable_now(row: LinkRow, current: Optional[LinkRow]) -> bool:
+    return (
+        current is not None
+        and current.follower is row.follower
+        and current.reference is row.reference
+        and current.action in ('tie', 'undecided')
+    )
+
 
 @dataclass
 class LinkRecord:
@@ -227,13 +253,19 @@ class LinkRecord:
 
     follower: Model
     reference: Model
-    #: (follower parameter, reference parameter, its value/min/max/fixed before the tie)
+    #: (follower parameter, reference parameter, its :func:`snapshot` from before the tie)
     pairs: list[tuple[Parameter, Parameter, dict]]
 
 
 def snapshot(parameter: Parameter) -> dict:
-    """The state :func:`restore` gives back to `parameter` (a tie replaces its value and bounds)."""
-    return {'value': parameter.value, 'min': parameter.min, 'max': parameter.max, 'fixed': parameter.fixed}
+    """The state :func:`restore` gives back to `parameter` (a tie replaces its value, bounds and uncertainty)."""
+    return {
+        'value': parameter.value,
+        'min': parameter.min,
+        'max': parameter.max,
+        'fixed': parameter.fixed,
+        'variance': parameter.variance,
+    }
 
 
 def restore(parameter: Parameter, state: dict) -> None:
@@ -241,6 +273,8 @@ def restore(parameter: Parameter, state: dict) -> None:
     parameter.value = state['value']
     parameter.min, parameter.max = state['min'], state['max']
     parameter.fixed = state['fixed']
+    if 'variance' in state:  # links saved before the uncertainty was kept have none
+        parameter.variance = state['variance']
 
 
 def plan_link(
@@ -277,14 +311,19 @@ def plan_link(
         LinkRow(name, getattr(follower, name), getattr(reference, name), 'skip', 'per contrast')
         for name in ('scale', 'background')
     ]
-    planned: dict[int, str] = {}
+    planned: dict[int, LinkRow] = {}
     for path, parameter in follower_parameters.items():
         row = LinkRow(path, parameter, reference_parameters[path], 'tie')
-        if id(parameter) in planned:
-            row.action, row.reason = 'skip', f'the same parameter as {planned[id(parameter)]}'
-        else:
-            planned[id(parameter)] = path
+        first = planned.get(id(parameter))
+        if first is None:
+            planned[id(parameter)] = row
             _classify(row, follower_index, owners, materials)
+        elif first.reference is row.reference or first.action not in ('tie', 'undecided'):
+            row.action, row.reason = 'skip', f'the same parameter as {first.path}'
+        else:
+            # The follower uses one parameter where the reference uses two: no silent choice.
+            row.action = first.action = 'conflict'
+            row.reason = first.reason = f'one parameter at {first.path} and {path}, two different reference parameters'
         rows.append(row)
     return LinkPlan(follower, reference, rows)
 

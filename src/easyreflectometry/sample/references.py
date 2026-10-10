@@ -14,6 +14,10 @@ object is constructed once and its owners refer to that one object.
 The same tables let a caller build a copy that keeps chosen children: seed the
 writer with the objects to keep (or to swap) and the reader with what each id
 should resolve to (:func:`rebuild`).
+
+``@ref_id`` and ``@ref`` are part of the project file format (a tag stays on an
+object that is referred to; :func:`prune` drops the others). Anything that
+rewrites a file must keep them, or the sharing is lost.
 """
 
 from __future__ import annotations
@@ -113,6 +117,11 @@ def resolve(value: Any) -> Any:
     obj = reader.objects.get(value[REF])
     if obj is None:
         reader.report.append(f'Shared {value["@class"]} {value[REF]!r} is missing from the file; a default one is used.')
+        return value
+    if type(obj).__name__ != value.get('@class', type(obj).__name__):
+        reader.report.append(
+            f'Shared {value["@class"]} {value[REF]!r} is a {type(obj).__name__} in the file; a default one is used.'
+        )
         return value
     return obj
 

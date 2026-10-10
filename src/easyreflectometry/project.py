@@ -484,11 +484,8 @@ class Project:
         fitter.settings = self._fit_settings
         prepared = fitter.prepare(objective=objective)
         prepared.skipped = [experiment.name for experiment in invalid]
-        keys = {id(experiment): key for key, experiment in self._experiments.items()}
-        prepared.labels = [
-            (keys.get(id(experiment)), experiment.name, None if channel is None else channel.value)
-            for experiment in experiments
-            for channel in (getattr(experiment, 'available_channels', None) or [None])
+        prepared.experiments = [
+            experiment for experiment in experiments for _ in (getattr(experiment, 'available_channels', None) or [None])
         ]
         return prepared
 
@@ -500,7 +497,15 @@ class Project:
         """
         completed = status == 'completed' and bool(results)
         metrics = prepared.finalize(results) if completed else None
-        self._last_fit = FitRun.from_results(prepared, results, status, self._fit_settings.minimizer.name, metrics)
+        # The run's own settings; the project's may have changed since it was prepared.
+        settings = prepared.settings or self._fit_settings
+        # Experiments may have been removed since too: the keys are those of now.
+        keys = {id(experiment): key for key, experiment in self._experiments.items()}
+        inputs = [
+            (keys.get(id(experiment)), experiment.name, None if channel is None else channel.value)
+            for experiment, channel in zip(prepared.experiments, prepared.channels)
+        ]
+        self._last_fit = FitRun.from_results(prepared, results, status, settings.minimizer.name, metrics, inputs)
         if completed:
             self.fitter.record_fit_results(results, metrics)
         return self._last_fit
@@ -942,11 +947,21 @@ class Project:
         Raises
         ------
         ValueError
-            A row is still ``'undecided'``. Nothing is tied then.
+            A row is still ``'undecided'``, or the project changed since the plan
+            was made so that a row can no longer be tied as planned (it was applied
+            already, a model now shares the parameter, ...). Nothing is tied then.
         """
         undecided = [row.path for row in plan.rows if row.action == 'undecided']
         if undecided:
             raise ValueError(f'Decide whether to tie {", ".join(undecided)} before linking.')
+        # The project may have changed since the plan was made (a model now shares a
+        # parameter, the plan was applied already): plan again and compare.
+        follower_index, reference_index = self._model_index(plan.follower), self._model_index(plan.reference)
+        if follower_index is None or reference_index is None:
+            raise ValueError('The plan refers to a model that is no longer in the project; plan the link again.')
+        outdated = plan.outdated(self.plan_link(follower_index, reference_index))
+        if outdated:
+            raise ValueError(f'The plan is out of date at {", ".join(outdated)}; plan the link again.')
         pairs = []
         try:
             for row in plan.rows:
@@ -986,34 +1001,48 @@ class Project:
         assembly in the model at `model_index`, with every other parameter tied
         to the shared one, so only `parameter`'s counterpart is free.
 
+        A tie on a shared parameter is one tie: removing it frees the parameter
+        in every model sharing it, so that is done without a `model_index`.
+
         Raises
         ------
         ValueError
-            The parameter is derived; or it is shared and `model_index` is not
-            given or not one of its models; or it belongs to a material the
-            model shares (assign the layer another material instead).
+            The parameter is derived; `model_index` is not one of its models; it
+            is shared and `model_index` is not given; it is shared and tied and
+            `model_index` is given; or it belongs to a material the model shares
+            (assign the layer another material instead).
         """
+        owners = self.parameter_models(parameter)
+        if model_index is not None and model_index not in owners:
+            name = self._models[model_index].name if 0 <= model_index < len(self._models) else model_index
+            raise ValueError(f"'{parameter.name}' is not part of '{name}'.")
         if not parameter.independent:
             if not getattr(parameter, USER_CONSTRAINT_FLAG, False):
                 raise ValueError(f"'{parameter.name}' is derived from other parameters; it cannot be detached.")
+            if len(owners) > 1 and model_index is not None:
+                raise ValueError(
+                    f"'{parameter.name}' is one parameter of {len(owners)} models and follows another one; "
+                    'removing the tie frees it in all of them, so detach it without a model.'
+                )
             self._untie(parameter)
             return
-        if len(self.parameter_models(parameter)) < 2:
+        if len(owners) < 2:
             return
         if model_index is None:
             raise ValueError(f"'{parameter.name}' is shared by several models; say which one to detach it in.")
         model = self._models[model_index]
-        found = next(
-            (
-                (position, assembly)
-                for position, assembly in enumerate(model.sample)
-                if any(p is parameter for p in assembly.get_all_parameters())
-            ),
-            None,
-        )
-        if found is None:
-            raise ValueError(f"'{parameter.name}' is not part of '{model.name}'.")
-        position, assembly = found
+        positions = [
+            position
+            for position, assembly in enumerate(model.sample)
+            if any(p is parameter for p in assembly.get_all_parameters())
+        ]
+        if len(positions) != 1:
+            raise ValueError(
+                f"'{parameter.name}' is part of '{model.name}' at several positions ({positions}); "
+                'give them their own assemblies first.'
+            )
+        position = positions[0]
+        assembly = model.sample[position]
         kept = kept_children(assembly, {}, set())
         if any(parameter is p for material in kept.values() for p in material.get_all_parameters()):
             raise ValueError(f"'{parameter.name}' belongs to a shared material; give the layer its own material instead.")
@@ -2517,9 +2546,11 @@ class Project:
     #: Material, MaterialMixture, MaterialSolvated, LayerAreaPerMolecule, etc.)
     #: changed in a way that is not backward-compatible with v1 files.
     FILE_FORMAT = 2
-    #: Written instead of :attr:`FILE_FORMAT` when the models share objects
-    #: (reference nodes, see :mod:`easyreflectometry.sample.references`).
-    #: Readers that predate it cannot represent the sharing and refuse the file.
+    #: Written instead of :attr:`FILE_FORMAT` when an older reader would load another
+    #: project: the models share objects (reference nodes, see
+    #: :mod:`easyreflectometry.sample.references`), an experiment is left out of the fit,
+    #: or an experiment's model is found by a name several models have. Readers that
+    #: predate it refuse the file rather than misread it.
     FILE_FORMAT_SHARED = 3
 
     def as_dict(self, include_materials_not_in_model=False):
@@ -2541,13 +2572,12 @@ class Project:
                 project_dict['models']['unique_name'] = self._models.unique_name + '_to_prevent_collisions_on_load'
             project_dict['materials'] = [material.as_dict() for material in self._materials]
         references.prune(project_dict)
-        # Older readers ignore `materials`, so only references inside the models change the format.
-        if references.contains_references(project_dict.get('models')):
-            project_dict['file_format'] = self.FILE_FORMAT_SHARED
         if include_materials_not_in_model:
             self._as_dict_add_materials_not_in_model_dict(project_dict)
         if self._with_experiments:
             self._as_dict_add_experiments(project_dict)
+        if self._needs_new_format(project_dict):
+            project_dict['file_format'] = self.FILE_FORMAT_SHARED
         project_dict['fit_settings'] = self._fit_settings.to_dict()
         # Kept for readers that predate `fit_settings`.
         project_dict['fitter_minimizer'] = project_dict['fit_settings']['minimizer']
@@ -2619,6 +2649,20 @@ class Project:
                 materials_not_in_model.append(material)
         if len(materials_not_in_model) > 0:
             project_dict['materials_not_in_model'] = MaterialCollection(materials_not_in_model).as_dict(skip=['interface'])
+
+    def _needs_new_format(self, project_dict: dict) -> bool:
+        """Whether a reader of :attr:`FILE_FORMAT` would load another project from `project_dict`.
+
+        Such a reader keeps no shared objects (older readers ignore ``materials``, so
+        only references inside the models count), fits every experiment, and finds an
+        experiment's model by name.
+        """
+        if references.contains_references(project_dict.get('models')):
+            return True
+        if any(included is False for included in project_dict.get('experiments_fit_scope', {}).values()):
+            return True
+        names = [model.name for model in self._models] if self._models is not None else []
+        return any(names.count(name) > 1 for name in project_dict.get('experiments_models', {}).values())
 
     def _as_dict_add_experiments(self, project_dict: dict):
         """As dict add experiments."""
@@ -2747,6 +2791,7 @@ class Project:
         self._fit_settings, settings_report = FitSettings.from_dict(project_dict.get('fit_settings', legacy))
         report.extend(settings_report)
         self._invalidate_fitter()
+        self._last_fit = None  # the previous contents' run, not this project's
         if 'experiments' in keys:
             self._experiments = self._from_dict_extract_experiments(project_dict, report)
         else:
@@ -2861,10 +2906,13 @@ class Project:
     def _get_materials_in_models(self) -> MaterialCollection:
         """Get materials in models."""
         materials_in_model = MaterialCollection(populate_if_none=False)
+        seen: set[int] = set()
         for model in self._models:
             for assembly in model.sample:
                 for layer in assembly.layers:
-                    materials_in_model.append(layer.material)
+                    if id(layer.material) not in seen:  # one material in two layers, once
+                        seen.add(id(layer.material))
+                        materials_in_model.append(layer.material)
         return materials_in_model
 
     def _replace_collection(self, src_collection: BaseCollection, dst_collection: BaseCollection) -> None:

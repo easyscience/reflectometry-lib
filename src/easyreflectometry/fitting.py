@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 from typing import Callable
+from typing import Sequence
 
 import numpy as np
 import scipp as sc
@@ -316,6 +317,7 @@ def _free_roots(models: list) -> list[Parameter]:
             if not leader.independent:
                 pending.append(leader)
             elif not leader.fixed and id(leader) not in owned:
+                # A fixed root is held fixed on purpose; only a free one would be held by the tie.
                 roots[id(leader)] = leader
     return list(roots.values())
 
@@ -389,9 +391,9 @@ class PreparedFit:
     added_roots : list[Parameter]
         Free parameters the fitted models follow but do not own (a tie to a
         model left out of the fit), varied so the tie does not hold them fixed.
-    labels : list[tuple]
-        ``(experiment key, experiment name, channel)`` per dataset, set by
-        :meth:`Project.prepare_fit`; empty otherwise.
+    experiments : list
+        The project experiment behind each dataset (one entry per spin channel
+        of a polarized one), set by :meth:`Project.prepare_fit`; empty otherwise.
     skipped : list[str]
         Experiments left out because they have no model (``skip_invalid``).
     """
@@ -407,7 +409,7 @@ class PreparedFit:
     core_fitter: EasyScienceMultiFitter
     fit_kwargs: dict
     added_roots: list = field(default_factory=list)
-    labels: list = field(default_factory=list)
+    experiments: list = field(default_factory=list)
     skipped: list = field(default_factory=list)
 
     @property
@@ -472,6 +474,8 @@ class FitRun:
       points) and ``share_of_objective`` (None when the pooled chi-square is
       zero). The per-dataset objective values add up to the pooled one: the
       engine's per-dataset results are disjoint slices of the pooled residuals.
+
+    A record is history: read it, do not write to its dictionaries.
     """
 
     status: str
@@ -493,9 +497,11 @@ class FitRun:
         status: str,
         minimizer: str,
         metrics: list[dict] | None = None,
+        inputs: Sequence[tuple] | None = None,
     ) -> 'FitRun':
-        """The record of a run; `metrics` is ``prepared.finalize(results)`` when already computed."""
-        inputs = tuple(prepared.labels) or tuple((None, f'dataset {index}', None) for index in range(len(prepared.fitted)))
+        """The record of a run; `metrics` is ``prepared.finalize(results)`` when already
+        computed, `inputs` the ``(key, name, channel)`` of each dataset (unnamed otherwise)."""
+        inputs = tuple(inputs) if inputs else tuple((None, f'dataset {index}', None) for index in range(len(prepared.fitted)))
         completed_at = datetime.datetime.now().isoformat(timespec='seconds')
         if status != 'completed' or not results:
             return cls(status, completed_at, minimizer, prepared.objective, inputs)
@@ -1239,7 +1245,12 @@ class MultiFitter:
 
     @property
     def chi2(self) -> float | None:
-        """Total chi-squared across all fitted datasets, or None if no fit has been performed."""
+        """Total chi-squared across all fitted datasets, or None if no fit has been performed.
+
+        These properties describe this fitter's latest fit; a run prepared through
+        :meth:`Project.prepare_fit` is recorded in :attr:`Project.last_fit`, which
+        outlives a change of the current model.
+        """
         if self._fit_results is None:
             return None
         return sum(r.chi2 for r in self._fit_results)

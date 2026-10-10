@@ -205,10 +205,10 @@ class TestSummary:
         # Expect
         assert 'refnx' in html
         assert 'LMFit_leastsq' in html
-        assert 'No. of parameters:' in html
-        assert 'No. of fixed parameters:' in html
+        assert 'No. of parameters (all models):' in html
+        assert 'No. of fixed parameters (all models):' in html
         assert '14' in html
-        assert 'No. of free parameters:' in html
+        assert 'No. of free parameters (all models):' in html
         assert '0' in html
         assert 'No. of constraints' in html
 

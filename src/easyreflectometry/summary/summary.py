@@ -11,6 +11,7 @@ from urllib.parse import quote
 
 import matplotlib.pyplot as plt
 import numpy as np
+from easyscience.fitting import AvailableMinimizers
 from easyscience.variable import DescriptorNumber
 from easyscience.variable import Parameter
 from xhtml2pdf import pisa
@@ -354,8 +355,18 @@ class Summary:
         return html_experiment
 
     def _refinement_section(self) -> str:
-        """Refinement section."""
+        """Refinement section: the last recorded fit, then the project's parameter inventory."""
         html_refinement = HTML_REFINEMENT_TEMPLATE
+
+        # The fit's own facts come from its record, not from the project as it is now.
+        run = self._project.last_fit
+        if run is None:
+            minimizer_name, minimizer_package = self._project.minimizer.name, self._project.minimizer.package
+            fit_free_params = 'N/A'
+        else:
+            member = AvailableMinimizers.__members__.get(run.minimizer)
+            minimizer_name, minimizer_package = run.minimizer, member.package if member else None
+            fit_free_params = f'{run.n_free_parameters}' if run.status == 'completed' else 'N/A'
 
         parameters = self._project.parameters
 
@@ -372,11 +383,9 @@ class Summary:
             'calculation_engine',
             _engine_link(self._project._calculator.current_interface_name),
         )
-        html_refinement = html_refinement.replace(
-            'minimization_engine',
-            _engine_link(self._project.minimizer.name, self._project.minimizer.package),
-        )
+        html_refinement = html_refinement.replace('minimization_engine', _engine_link(minimizer_name, minimizer_package))
         html_refinement = html_refinement.replace('goodness_of_fit', goodness_of_fit)
+        html_refinement = html_refinement.replace('num_fit_free_params', fit_free_params)
         html_refinement = html_refinement.replace('num_total_params', f'{num_params}')
         html_refinement = html_refinement.replace('num_free_params', f'{num_free_params}')
         html_refinement = html_refinement.replace('num_fixed_params', f'{num_fixed_params}')

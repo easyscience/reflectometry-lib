@@ -531,11 +531,11 @@ class Bilayer(BaseAssembly):
         }
 
     def to_dict(self, skip: list[str] | None = None) -> dict:
-        """Serialize, dropping derived fields.
+        """Serialize, dropping the derived `layers` collection.
 
-        The `back_tail_layer` and the underlying `layers` collection are
-        derived in ``__init__`` from the front head / front tail / back head
-        constructor arguments, so they are not part of the persisted state.
+        ``__init__`` rebuilds `layers` from the four layer arguments. The
+        `back_tail_layer` is kept: it is a constructor argument and may hold
+        state of its own (a formula, or a parameter made independent).
         """
         this_dict = super().to_dict(skip=skip)
         this_dict.pop('layers', None)

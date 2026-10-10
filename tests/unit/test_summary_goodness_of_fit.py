@@ -6,6 +6,7 @@ import dataclasses
 
 import pytest
 from easyscience import global_object
+from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry import Project
 from easyreflectometry.fitting import FitRun
@@ -68,6 +69,21 @@ class TestRefinementSection:
             'goodness_of_fit',
         ):
             assert placeholder not in html
+
+    def test_the_fit_rows_come_from_the_run_not_the_project(self, project: Project):
+        project.models.duplicate_model(0)
+        for model in project.models:
+            model.sample[1].layers[0].thickness.fixed = False
+        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project._last_fit = _run(1.5)  # LMFit_leastsq, two free parameters
+
+        html = Summary(project)._refinement_section()
+
+        assert 'LMFit_leastsq' in html and 'Bumps_simplex' not in html
+        assert '<td>No. of free parameters in the fit:</td>\n    <td>2</td>' in html
+        assert '<td>No. of free parameters (all models):</td>\n    <td>2</td>' in html
+        project._last_fit = None
+        assert '<td>No. of free parameters in the fit:</td>\n    <td>N/A</td>' in Summary(project)._refinement_section()
 
     def test_counts_cover_every_model(self, project: Project):
         single = Summary(project)._refinement_section()
