@@ -11,10 +11,12 @@ from urllib.parse import quote
 
 import matplotlib.pyplot as plt
 import numpy as np
-from easyscience import global_object
+from easyscience.variable import DescriptorNumber
+from easyscience.variable import Parameter
 from xhtml2pdf import pisa
 
 from easyreflectometry import Project
+from easyreflectometry.sample import paths
 
 from .html_templates import HTML_DATA_COLLECTION_TEMPLATE
 from .html_templates import HTML_FIGURES_TEMPLATE
@@ -96,6 +98,26 @@ def _format_value(value: float, sig_figs: int) -> str:
     if len(s) <= sig_figs + 4:
         return s
     return f'{value:.1e}'
+
+
+def _named_parameters(project: Project):
+    """``(display name, parameter)`` for every parameter of every model, each once:
+    the model's name, the name of the object holding the parameter, the parameter's."""
+    seen: set[int] = set()
+
+    def walk(obj, model_name: str, owner_name: str):
+        for _, child in paths.children(obj):
+            if isinstance(child, DescriptorNumber):
+                if isinstance(child, Parameter) and id(child) not in seen:
+                    seen.add(id(child))
+                    # A model's own parameter (scale) has the model as its owner: name it once.
+                    yield ' '.join(dict.fromkeys([model_name, owner_name, child.name])), child
+            elif id(child) not in seen:
+                seen.add(id(child))
+                yield from walk(child, model_name, getattr(child, 'name', owner_name))
+
+    for model in project.models:
+        yield from walk(model, model.name, model.name)
 
 
 def _truncate_name(name: str, max_len: int = _NAME_MAX_LEN) -> str:
@@ -272,16 +294,7 @@ class Summary:
         html_parameter = html_parameter.replace('parameter_error', 'Error')
         html_parameters.append(html_parameter)
 
-        # Get parameters directly from the model instead of using project.parameters
-        model = self._project._models[self._project.current_model_index]
-        parameters = model.get_all_parameters()
-
-        for parameter in parameters:
-            path = global_object.map.find_path(model.unique_name, parameter.unique_name)
-            if 0 < len(path):
-                name = f'{global_object.map.get_item_by_key(path[-2]).name} {global_object.map.get_item_by_key(path[-1]).name}'
-            else:
-                name = parameter.name
+        for name, parameter in _named_parameters(self._project):
             value = parameter.value
             unit = parameter.unit
             error = parameter.error
@@ -322,9 +335,11 @@ class Summary:
     def _experiment_row(self, experiment_name, dataset, model) -> str:
         """One row of the experiments table for a single measured dataset."""
         num_data_points = len(dataset.x)
-        resolution_function = model.resolution_function.as_dict()['smearing']
+        # The dataset's own resolution when it has one, else its model's.
+        resolution = getattr(dataset, 'resolution_function', None) or getattr(model, 'resolution_function', None)
+        resolution_function = 'n/a' if resolution is None else resolution.as_dict()['smearing']
         if resolution_function == 'PercentageFwhm':
-            precentage = model.resolution_function.as_dict()['constant']
+            precentage = resolution.as_dict()['constant']
             resolution_function = f'{resolution_function} {precentage}%'
         range_min = min(dataset.y)
         range_max = max(dataset.y)
@@ -342,9 +357,7 @@ class Summary:
         """Refinement section."""
         html_refinement = HTML_REFINEMENT_TEMPLATE
 
-        # Get parameters directly from the model
-        model = self._project._models[self._project.current_model_index]
-        parameters = model.get_all_parameters()
+        parameters = self._project.parameters
 
         # Dependent parameters (user constraints, derived values such as the
         # total thickness) are neither free nor fixed: they never enter a fit.
@@ -371,22 +384,10 @@ class Summary:
         return html_refinement
 
     def _compute_goodness_of_fit(self) -> str:
-        """Return reduced chi² as a formatted string, or 'N/A' if no fit has been run."""
-        last_fit_results = getattr(self._project, '_last_fit_results', None)
-        if not last_fit_results:
-            return 'N/A'
-        try:
-            if len(last_fit_results) == 1:
-                gof = float(last_fit_results[0].reduced_chi2)
-            else:
-                total_chi2 = sum(float(r.chi2) for r in last_fit_results)
-                total_points = sum(len(r.x) for r in last_fit_results)
-                n_pars = last_fit_results[0].n_pars
-                dof = total_points - n_pars
-                gof = total_chi2 / dof if dof > 0 else 0.0
-            return f'{gof:.4g}'
-        except (AttributeError, TypeError, ValueError, ZeroDivisionError):
-            return 'N/A'
+        """The pooled reduced chi² of the last recorded fit, or 'N/A'."""
+        run = self._project.last_fit
+        reduced = run.pooled.get('objective_reduced_chi2') if run is not None else None
+        return 'N/A' if reduced is None else f'{reduced:.4g}'
 
     def _figures_section(self, interactive: bool = True) -> str:
         """Figures section.

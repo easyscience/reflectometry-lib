@@ -9,6 +9,7 @@ from typing import Optional
 
 from easyscience.base_classes import ModelBase
 
+from easyreflectometry.sample import references
 from easyreflectometry.utils import yaml_dump
 
 
@@ -228,6 +229,21 @@ class BaseCore(ModelBase):
     def as_dict(self, skip: Optional[list[str]] = None) -> dict[str, Any]:
         """Compatibility alias for :meth:`to_dict`."""
         return self.to_dict(skip=skip)
+
+    def _convert_to_dict(self, d: dict, encoder=None, skip: Optional[list[str]] = None, **kwargs) -> dict:
+        """Serializer hook, called for this object at any depth: tag it, or refer
+        to its first occurrence (see :mod:`easyreflectometry.sample.references`)."""
+        return references.tag(self, d)
+
+    @classmethod
+    def from_dict(cls, obj_dict: dict) -> BaseCore:
+        """Rebuild, resolving shared children; see :mod:`easyreflectometry.sample.references`."""
+        if references.is_reference(obj_dict):
+            # Unresolvable reference (reported by `references.resolve`): a default object.
+            obj_dict = {'@module': obj_dict['@module'], '@class': obj_dict['@class']}
+        instance = super().from_dict(references.build_children(obj_dict))
+        references.register(obj_dict, instance)
+        return instance
 
     # ----- repr -----
 

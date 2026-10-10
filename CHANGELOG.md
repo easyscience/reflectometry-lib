@@ -1,5 +1,91 @@
 # Unreleased
 
+## Multiple contrasts
+
+- New `easyreflectometry.contrasts`: a contrast is an ordinary model whose
+  structure is shared with another model, by identity (one assembly or
+  material object in both) or by equality (`constrain_equal`).
+  `Project.add_contrast(reference_index, name, substitutions)` builds one:
+  `ReplaceMaterial(old, new)` swaps a material or a mixture's component
+  (e.g. the solvent of every hydrated layer and the bulk at once),
+  `ReplaceFormula(target, formula)` re-formulates a `LayerAreaPerMolecule`
+  or `MaterialDensity` (isotopic substitution). Untouched assemblies are
+  shared; a touched one is copied with its other materials shared and its
+  parameters tied to the reference's. `substitution_candidates(model)`
+  lists what can be substituted; `Project.contrast_reference` gives the
+  model a contrast was derived from.
+- `Project.plan_link(follower, reference)` lays out the equalities tying
+  two models of one layout, row by row with a reason (scale and background
+  stay per contrast, material chemistry is left to the caller);
+  `apply_link` ties all of them or none and `unlink` removes them again,
+  restoring each parameter's value, bounds and fixed state.
+  `Project.detach(model_index, parameter)` frees one parameter for one
+  model, copying a shared assembly for that model when needed.
+  `Project.parameter_models(parameter)` lists the models a parameter
+  belongs to.
+- `SurfactantLayer`/`Bilayer.constrain_multiple_contrast` ties are now user
+  constraints, so they are saved with the project.
+
+## Project persistence
+
+- Behaviour change: objects used in several places (a material in two
+  layers, an assembly in two models, a solvent inside mixtures) are
+  saved once and are one object again after loading; previously each
+  place came back as an independent copy, so edits no longer reached the
+  other places and the materials list filled with duplicates. Files whose
+  models share objects are written as `file_format=3`, which older
+  releases refuse; files without sharing keep `file_format=2`.
+- The materials list is saved in order, unused materials included
+  (`materials`), whatever `include_materials_not_in_model` says.
+- An experiment's model is saved by index (`experiments_model_indices`)
+  as well as by name, so models with equal names keep their experiments.
+  Older files, an ambiguous name or an experiment without a model are
+  reported in `Project.load_report` instead of raising or binding silently.
+- `Project.load_report` now collects every warning of a load; it used to
+  keep only the fit settings' ones.
+- Contrast provenance, links and each experiment's `include_in_fit` are
+  saved.
+
+## Experiments and models
+
+- Behaviour change: a loaded dataset gives its model a background and a
+  resolution only when no other experiment uses that model; loading a
+  second contrast or angle onto a model no longer overwrites what the
+  first set. Each dataset keeps its own measured resolution as before.
+  Loading several datasets from one file adds all of them or none.
+- `Project.remove_experiment(index)` removes an experiment, keeps the
+  keys contiguous and returns the old-to-new key table;
+  `set_model_for_experiment`, `model_index_for_experiment` and
+  `experiments_for_model` replace reaching into `experiments`.
+- Behaviour change: `Project.remove_model_at_index` no longer removes the
+  experiment at the same index. Experiments bound to the model are removed
+  or rebound only on request (`experiments='remove'` or a model index; a
+  `ValueError` without it); parameters of other models tied to it become
+  independent, inequality constraints on it are removed and the others are
+  re-pathed. `plan_model_removal` reports all of that beforehand, and
+  `move_model` re-paths inequality constraints too.
+- Fixed: a model with conformal roughness or thickness can be assigned to
+  `Project.models` (default limits were applied to the dependent layers).
+
+## Fitting
+
+- `DataSet1D.include_in_fit` / `PolarizedDataSet.include_in_fit`:
+  `Project.prepare_fit()` fits the included experiments. A parameter of a
+  fitted model that follows a free parameter of a model left out of the
+  fit keeps it free (`prepared.added_roots`); the left-out data does not
+  enter the fit. An experiment without a model raises `FitScopeError`
+  unless `skip_invalid=True`.
+- `Project.record_fit(prepared, results, status)` keeps a `FitRun` record
+  (`Project.last_fit`) of the last run: its datasets by experiment key,
+  pooled objective and classical chi-square, degrees of freedom and
+  reduced chi-square, and per-dataset chi-square, chi-square per point and
+  share of the objective. It no longer depends on the current model.
+- Behaviour change: `PreparedFit.finalize` no longer gives per-dataset
+  reduced chi-square values (their degrees of freedom belong to the pooled
+  fit); `MultiFitter.fit` writes the pooled statistics to the `DataGroup`.
+- The summary counts the parameters of every model, lists them all with
+  their model's name and reports the goodness of fit of `last_fit`.
+
 ## Resolution functions
 
 - The resolution function now follows the model and the dataset, not the

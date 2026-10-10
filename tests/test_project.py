@@ -32,6 +32,12 @@ PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 class TestProject:
+    @pytest.fixture(autouse=True)
+    def _clean_map(self):
+        # A Project registers fixed unique names; one still alive from an earlier
+        # test on the same worker would collide with the next one's.
+        global_object.map._clear()
+
     def test_constructor(self):
         # When Then
         project = Project()
@@ -447,6 +453,7 @@ class TestProject:
             'fit_settings',
             'fitter_minimizer',
             'info',
+            'materials',
             'models',
             'with_experiments',
         ]
@@ -470,20 +477,21 @@ class TestProject:
         project_dict = project.as_dict()
 
         # Expect
-        def remove_interface(d):
+        # `@ref_id` tags the materials the palette refers to.
+        def remove_keys(d):
             if isinstance(d, dict):
-                if 'interface' in d:
-                    del d['interface']
+                for key in ('interface', '@ref_id'):
+                    d.pop(key, None)
                 for v in d.values():
-                    remove_interface(v)
+                    remove_keys(v)
             elif isinstance(d, list):
                 for item in d:
-                    remove_interface(item)
+                    remove_keys(item)
 
         models_dict = models.as_dict()
         models_dict['unique_name'] = 'project_models_to_prevent_collisions_on_load'
-        remove_interface(models_dict)
-        remove_interface(project_dict['models'])
+        remove_keys(models_dict)
+        remove_keys(project_dict['models'])
         assert project_dict['models'] == models_dict
 
     def test_from_dict_missing_file_format_raises(self):
@@ -1392,7 +1400,7 @@ class TestProject:
         assert project._current_assembly_index == 0
         assert project._current_layer_index == 0
 
-    def test_remove_model_at_index_removes_experiment_at_same_index(self):
+    def test_remove_model_at_index_removes_its_experiments_on_request(self):
         # When
         global_object.map._clear()
         project = Project()
@@ -1414,13 +1422,16 @@ class TestProject:
         )
         project._experiments[0] = experiment
 
-        # Then
-        project.remove_model_at_index(0)
+        # Then - without a decision nothing changes
+        with pytest.raises(ValueError, match='use the model'):
+            project.remove_model_at_index(0)
+        assert len(project._models) == 2
+        project.remove_model_at_index(0, experiments='remove')
 
-        # Expect - experiment mapped to the removed model index is removed
-        assert 0 not in project._experiments
+        # Expect - the experiment bound to the removed model is removed
+        assert project._experiments == {}
 
-    def test_remove_model_at_index_reindexes_experiments_above_removed_index(self):
+    def test_remove_model_at_index_rekeys_the_remaining_experiments(self):
         # When
         global_object.map._clear()
         project = Project()
@@ -1443,12 +1454,13 @@ class TestProject:
         project._experiments[2] = DataSet1D(name='exp2', x=[0.03], y=[0.8], ye=[0.1], xe=[0.001], model=project._models[2])
 
         # Then - remove middle model
-        project.remove_model_at_index(1)
+        project.remove_model_at_index(1, experiments='remove')
 
-        # Expect - middle experiment removed and upper one shifted down
+        # Expect - its experiment removed, the others keep their models and move down a key
         assert set(project._experiments.keys()) == {0, 1}
         assert project._experiments[0].name == 'exp0'
         assert project._experiments[1].name == 'exp2'
+        assert project._experiments[1].model is model_2
 
     def test_remove_model_at_index_raises_for_last_model(self):
         # When

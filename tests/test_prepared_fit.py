@@ -270,7 +270,9 @@ class TestFinalize:
             warnings.simplefilter('ignore')
             run = MultiFitter.for_experiments([dataset], objective='hybrid').prepare()
         result = type('R', (), {'chi2': 1.0, 'reduced_chi': 0.5, 'n_pars': 1, 'x': run.fitted[0]['x']})()
-        assert run.finalize([result])[0]['classical_reduced_chi'] is None
+        metrics = run.finalize([result])[0]
+        assert metrics['n_classical_points'] == 0
+        assert 'classical_reduced_chi' not in metrics  # a per-dataset value has no dof of its own
 
     def test_recorded_metrics_reach_the_fitter(self):
         project = Project()

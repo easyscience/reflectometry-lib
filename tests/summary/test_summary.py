@@ -145,7 +145,10 @@ class TestSummary:
         project.models[0].resolution_function = PercentageFwhm(5)
         summary = Summary(project)
 
-        # Then
+        # Then - the dataset is fitted with the resolution it was measured with
+        assert 'Pointwise' in summary._experiments_section()
+        # ...or, without one, with its model's
+        project.experiments[0].resolution_function = None
         html = summary._experiments_section()
 
         # Expect

@@ -41,6 +41,8 @@ class DataSet1D(SerializerComponent):
         """
         self._model = model
         self.resolution_function = resolution_function
+        #: Whether :meth:`Project.prepare_fit` fits this experiment by default.
+        self.include_in_fit = True
         if y is not None and model is not None and auto_background:
             self._model.background = max(np.min(y), 1e-10)
 

@@ -8,6 +8,8 @@ from typing import Optional
 from easyscience import global_object
 from easyscience.variable import Parameter
 
+from easyreflectometry.constraints import constrain_equal
+
 from ..collections.layer_collection import LayerCollection
 from ..elements.layers.layer_area_per_molecule import LayerAreaPerMolecule
 from ..elements.materials.material import Material
@@ -230,40 +232,22 @@ class SurfactantLayer(BaseAssembly):
             The surfactant layer to constrain.
         """
         if head_layer_thickness:
-            self.head_layer.thickness.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.head_layer.thickness},
-            )
+            constrain_equal(self.head_layer.thickness, another_contrast.head_layer.thickness)
 
         if tail_layer_thickness:
-            self.tail_layer.thickness.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.tail_layer.thickness},
-            )
+            constrain_equal(self.tail_layer.thickness, another_contrast.tail_layer.thickness)
 
         if head_layer_area_per_molecule:
-            self.head_layer._area_per_molecule.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.head_layer._area_per_molecule},
-            )
+            constrain_equal(self.head_layer._area_per_molecule, another_contrast.head_layer._area_per_molecule)
 
         if tail_layer_area_per_molecule:
-            self.tail_layer._area_per_molecule.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.tail_layer._area_per_molecule},
-            )
+            constrain_equal(self.tail_layer._area_per_molecule, another_contrast.tail_layer._area_per_molecule)
 
         if head_layer_fraction:
-            self.head_layer.material._fraction.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.head_layer.material._fraction},
-            )
+            constrain_equal(self.head_layer.material._fraction, another_contrast.head_layer.material._fraction)
 
         if tail_layer_fraction:
-            self.tail_layer.material._fraction.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.tail_layer.material._fraction},
-            )
+            constrain_equal(self.tail_layer.material._fraction, another_contrast.tail_layer.material._fraction)
 
     @property
     def _dict_repr(self) -> dict:
