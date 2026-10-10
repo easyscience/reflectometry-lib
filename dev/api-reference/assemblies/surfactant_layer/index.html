@@ -2139,6 +2139,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#easyreflectometry.sample.assemblies.surfactant_layer.constrain_equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        constrain_equal
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3110,6 +3121,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#easyreflectometry.sample.assemblies.surfactant_layer.constrain_equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        constrain_equal
+      
+    </span>
+  </a>
   
 </li>
       
@@ -5874,9 +5896,7 @@ or area per molecule more straight forward.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
@@ -6130,23 +6150,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">270</span>
 <span class="normal">271</span>
 <span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A surfactant layer constructs a series of layers representing the</span>
 <span class="sd">    head and tail groups of a surfactant.</span>
 <span class="sd">    This assembly allows the definition of a surfactant or lipid using the chemistry</span>
@@ -6362,40 +6366,22 @@ or area per molecule more straight forward.</p>
 <span class="sd">            The surfactant layer to constrain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">head_layer_thickness</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_thickness</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">head_layer_area_per_molecule</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_area_per_molecule</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">head_layer_fraction</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_fraction</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -6705,9 +6691,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
@@ -6796,7 +6780,9 @@ or area per molecule more straight forward.</p>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">tail_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerAreaPerMolecule</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">head_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerAreaPerMolecule</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6947,9 +6933,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -6958,7 +6942,9 @@ or area per molecule more straight forward.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the constraint to the solvent roughness.</span>
 
 <span class="sd">    Parameters</span>
@@ -7143,9 +7129,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -7190,23 +7174,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">another_contrast</span><span class="p">:</span> <span class="n">SurfactantLayer</span><span class="p">,</span>
     <span class="n">head_layer_thickness</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -7236,40 +7204,22 @@ or area per molecule more straight forward.</p>
 <span class="sd">        The surfactant layer to constrain.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">head_layer_thickness</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_thickness</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">head_layer_area_per_molecule</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_area_per_molecule</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">head_layer_fraction</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_fraction</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7296,13 +7246,13 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, dropping the derived ``layers`` field (it is rebuilt</span>
 <span class="sd">    from ``tail_layer`` and ``head_layer`` in ``__init__``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7323,6 +7273,122 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 
 </div>
 
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="easyreflectometry.sample.assemblies.surfactant_layer.constrain_equal" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">constrain_equal</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Tie <code>parameter</code> to always equal <code>to</code>.</p>
+<p><code>parameter</code> becomes dependent: it is removed from the free fit
+parameters, immediately takes the value of <code>to</code>, and follows it from
+then on. Its value, unit, variance, min and max are replaced by
+<code>to</code>'s, and its <code>fixed</code> flag is cleared. While constrained, the
+parameter's value and bounds cannot be set directly.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>parameter</code>
+            </td>
+            <td>
+                  <code><span title="easyscience.variable.Parameter">Parameter</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameter to make dependent (the follower).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>to</code>
+            </td>
+            <td>
+                  <code><span title="easyscience.variable.DescriptorNumber">DescriptorNumber</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameter (or descriptor) to follow.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easyreflectometry/constraints.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_equal</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="n">DescriptorNumber</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tie `parameter` to always equal `to`.</span>
+
+<span class="sd">    `parameter` becomes dependent: it is removed from the free fit</span>
+<span class="sd">    parameters, immediately takes the value of `to`, and follows it from</span>
+<span class="sd">    then on. Its value, unit, variance, min and max are replaced by</span>
+<span class="sd">    `to`&#39;s, and its `fixed` flag is cleared. While constrained, the</span>
+<span class="sd">    parameter&#39;s value and bounds cannot be set directly.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameter : Parameter</span>
+<span class="sd">        Parameter to make dependent (the follower).</span>
+<span class="sd">    to : DescriptorNumber</span>
+<span class="sd">        Parameter (or descriptor) to follow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">constrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">to</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 

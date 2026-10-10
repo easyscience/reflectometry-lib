@@ -5837,9 +5837,7 @@ or area per molecule more straight forward.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
@@ -6093,23 +6091,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">270</span>
 <span class="normal">271</span>
 <span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A surfactant layer constructs a series of layers representing the</span>
 <span class="sd">    head and tail groups of a surfactant.</span>
 <span class="sd">    This assembly allows the definition of a surfactant or lipid using the chemistry</span>
@@ -6325,40 +6307,22 @@ or area per molecule more straight forward.</p>
 <span class="sd">            The surfactant layer to constrain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">head_layer_thickness</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_thickness</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">head_layer_area_per_molecule</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_area_per_molecule</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">head_layer_fraction</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">tail_layer_fraction</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-                <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-                <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-            <span class="p">)</span>
+            <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -6668,9 +6632,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
@@ -6759,7 +6721,9 @@ or area per molecule more straight forward.</p>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">tail_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerAreaPerMolecule</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">head_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerAreaPerMolecule</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6910,9 +6874,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
@@ -6921,7 +6883,9 @@ or area per molecule more straight forward.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the constraint to the solvent roughness.</span>
 
 <span class="sd">    Parameters</span>
@@ -7106,9 +7070,7 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -7153,23 +7115,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
+<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">another_contrast</span><span class="p">:</span> <span class="n">SurfactantLayer</span><span class="p">,</span>
     <span class="n">head_layer_thickness</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -7199,40 +7145,22 @@ or area per molecule more straight forward.</p>
 <span class="sd">        The surfactant layer to constrain.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">head_layer_thickness</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_thickness</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">head_layer_area_per_molecule</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_area_per_molecule</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">_area_per_molecule</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">head_layer_fraction</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">head_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tail_layer_fraction</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-            <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">},</span>
-        <span class="p">)</span>
+        <span class="n">constrain_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span> <span class="n">another_contrast</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_fraction</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7259,13 +7187,13 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, dropping the derived ``layers`` field (it is rebuilt</span>
 <span class="sd">    from ``tail_layer`` and ``head_layer`` in ``__init__``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -8711,8 +8639,7 @@ additional configuration as kwargs.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
-<span class="normal"> 20</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
 <span class="normal"> 23</span>
@@ -9060,7 +8987,9 @@ additional configuration as kwargs.</p>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCollection</span><span class="p">(</span><span class="n">EasyList</span><span class="p">):</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCollection</span><span class="p">(</span><span class="n">EasyList</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local base for sample-tree collections (Material/Layer/Assembly/Model collections).</span>
 
 <span class="sd">    Built on top of `easyscience.base_classes.EasyList` (the replacement for</span>
@@ -9348,7 +9277,10 @@ additional configuration as kwargs.</p>
         <span class="c1"># counter restarts during reconstruction.</span>
         <span class="k">if</span> <span class="s1">&#39;unique_name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
             <span class="n">skip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;unique_name&#39;</span><span class="p">)</span>
-        <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
+        <span class="c1"># The items this encodes (through `_convert_to_dict`) are replaced</span>
+        <span class="c1"># below, so they must not be registered as shared-object occurrences.</span>
+        <span class="k">with</span> <span class="n">references</span><span class="o">.</span><span class="n">suspended</span><span class="p">():</span>
+            <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">NewBase</span><span class="p">]:</span>
             <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;protected_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span><span class="p">]</span>
         <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -9396,9 +9328,7 @@ additional configuration as kwargs.</p>
                 <span class="n">protected_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">type_dict</span><span class="p">[</span><span class="s1">&#39;@class&#39;</span><span class="p">]))</span>
         <span class="n">raw_items</span> <span class="o">=</span> <span class="n">temp_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">)</span>
-        <span class="c1"># A single-key dict routes the item through the serializer&#39;s per-value path, which uses</span>
-        <span class="c1"># the item class&#39;s own `from_dict`.</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">({</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">})[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">references</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
@@ -9506,8 +9436,7 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
-<span class="normal">129</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -9531,7 +9460,8 @@ guaranteed and forces an extra coupling we don't need.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert and (if an interface is set) propagate it to the new item.</span>
 
 <span class="sd">    Legacy `CollectionBase.insert` did `value.interface = self.interface`</span>
@@ -9582,11 +9512,11 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
-<span class="normal">172</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">175</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Move the element at the given index up in the collection.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
@@ -9616,11 +9546,11 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
-<span class="normal">178</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">181</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Move the element at the given index down in the collection.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span>
@@ -9654,15 +9584,15 @@ standard <code>remove(value)</code> is still available with its usual semantics.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
-<span class="normal">184</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
-<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">191</span>
+<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove the item at *index* from the collection.</span>
 
 <span class="sd">    Renamed from the legacy `BaseCollection.remove(index)` which shadowed</span>
@@ -9696,9 +9626,9 @@ standard <code>remove(value)</code> is still available with its usual semantics.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for legacy callers; prefer `get_all_parameters`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -9730,8 +9660,7 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
-<span class="normal">200</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -9752,7 +9681,8 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 <span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flat list of every Parameter/Descriptor across all items.</span>
 
 <span class="sd">    Walks each item in the collection and unions whatever each item</span>
@@ -9800,9 +9730,9 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_fit_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_fit_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias kept for the minimizer; matches `ModelBase.get_fit_parameters`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_free_parameters</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -9840,8 +9770,7 @@ from_dict round-trip.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
-<span class="normal">284</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
@@ -9878,7 +9807,11 @@ from_dict round-trip.</p>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
-<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize with `skip` support; `interface` excluded by default.</span>
 
 <span class="sd">    `EasyList.to_dict` doesn&#39;t accept a `skip` argument and is hard-wired</span>
@@ -9902,7 +9835,10 @@ from_dict round-trip.</p>
     <span class="c1"># counter restarts during reconstruction.</span>
     <span class="k">if</span> <span class="s1">&#39;unique_name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
         <span class="n">skip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;unique_name&#39;</span><span class="p">)</span>
-    <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
+    <span class="c1"># The items this encodes (through `_convert_to_dict`) are replaced</span>
+    <span class="c1"># below, so they must not be registered as shared-object occurrences.</span>
+    <span class="k">with</span> <span class="n">references</span><span class="o">.</span><span class="n">suspended</span><span class="p">():</span>
+        <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">NewBase</span><span class="p">]:</span>
         <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;protected_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span><span class="p">]</span>
     <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -9942,9 +9878,9 @@ from_dict round-trip.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9982,11 +9918,7 @@ this mirrors <code>EasyList.from_dict</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
@@ -10013,7 +9945,9 @@ this mirrors <code>EasyList.from_dict</code>.</p>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
-<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCollection</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rebuild the collection, each item through its own class&#39;s ``from_dict``.</span>
 
@@ -10041,9 +9975,7 @@ this mirrors <code>EasyList.from_dict</code>.</p>
             <span class="n">protected_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">type_dict</span><span class="p">[</span><span class="s1">&#39;@class&#39;</span><span class="p">]))</span>
     <span class="n">raw_items</span> <span class="o">=</span> <span class="n">temp_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">kwargs</span> <span class="o">=</span> <span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">)</span>
-    <span class="c1"># A single-key dict routes the item through the serializer&#39;s per-value path, which uses</span>
-    <span class="c1"># the item class&#39;s own `from_dict`.</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">({</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">})[</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">references</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -10074,15 +10006,15 @@ get a clone built from <code>from_dict(as_dict(skip=['unique_name']))</code>.</p
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Round-trip via dict-skip-unique to get a fresh copy.</span>
 
 <span class="sd">    `NewBase.__copy__` already does this; the override is kept (rather</span>

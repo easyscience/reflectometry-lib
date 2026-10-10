@@ -2043,6 +2043,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_dict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.__repr__" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2707,6 +2718,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_dict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.__repr__" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2963,8 +2985,7 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 15</span>
-<span class="normal"> 16</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 16</span>
 <span class="normal"> 17</span>
 <span class="normal"> 18</span>
 <span class="normal"> 19</span>
@@ -3188,7 +3209,23 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCore</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCore</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local base class for sample-tree objects (Material, Layer, assemblies).</span>
 
 <span class="sd">    Built on top of `easyscience.base_classes.ModelBase` (the replacement for</span>
@@ -3405,6 +3442,21 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializer hook, called for this object at any depth: tag it, or refer</span>
+<span class="sd">        to its first occurrence (see :mod:`easyreflectometry.sample.references`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">references</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCore</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebuild, resolving shared children; see :mod:`easyreflectometry.sample.references`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">references</span><span class="o">.</span><span class="n">is_reference</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">):</span>
+            <span class="c1"># Unresolvable reference (reported by `references.resolve`): a default object.</span>
+            <span class="n">obj_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">obj_dict</span><span class="p">[</span><span class="s1">&#39;@module&#39;</span><span class="p">],</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">obj_dict</span><span class="p">[</span><span class="s1">&#39;@class&#39;</span><span class="p">]}</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">references</span><span class="o">.</span><span class="n">build_children</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">))</span>
+        <span class="n">references</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
     <span class="c1"># ----- repr -----</span>
 
     <span class="nd">@property</span>
@@ -3505,8 +3557,7 @@ not <code>NewBase</code>).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
-<span class="normal"> 92</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -3518,7 +3569,8 @@ not <code>NewBase</code>).</p>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagate the interface to child objects, then bind via the calculator.</span>
 
 <span class="sd">    We propagate to any child whose class advertises an ``interface`` property</span>
@@ -3557,9 +3609,9 @@ not <code>NewBase</code>).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility shim for legacy callers; prefer :meth:`get_all_parameters`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -3593,8 +3645,7 @@ ModelBase objects whose own <code>get_all_variables</code> we recurse into.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
-<span class="normal">177</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
@@ -3617,7 +3668,8 @@ ModelBase objects whose own <code>get_all_variables</code> we recurse into.</p>
 <span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
-<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">200</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Discover Parameters/Descriptors across both class-level and instance-level attrs.</span>
 
 <span class="sd">    `ModelBase.get_all_variables` walks `dir(self)`, which `NewBase` restricts</span>
@@ -3680,8 +3732,7 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
-<span class="normal">203</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
@@ -3704,7 +3755,8 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="normal">226</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, skipping the calculator interface and unique_name by default.</span>
 
 <span class="sd">    The calculator (`CalculatorFactory`) is not serializable and is not part</span>
@@ -3754,11 +3806,57 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="easyreflectometry.sample.elements.layers.layer.BaseCore.from_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Rebuild, resolving shared children; see :mod:<code>easyreflectometry.sample.references</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rebuild, resolving shared children; see :mod:`easyreflectometry.sample.references`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">references</span><span class="o">.</span><span class="n">is_reference</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">):</span>
+        <span class="c1"># Unresolvable reference (reported by `references.resolve`): a default object.</span>
+        <span class="n">obj_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">obj_dict</span><span class="p">[</span><span class="s1">&#39;@module&#39;</span><span class="p">],</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">obj_dict</span><span class="p">[</span><span class="s1">&#39;@class&#39;</span><span class="p">]}</span>
+    <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">references</span><span class="o">.</span><span class="n">build_children</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">))</span>
+    <span class="n">references</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">instance</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3784,9 +3882,9 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Yaml-formatted multi-line string built from :attr:`_dict_repr`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

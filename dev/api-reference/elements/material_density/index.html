@@ -3811,7 +3811,7 @@ enters the derived SLD).</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sld_coupled</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="s1">&#39;sld&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span>
             <span class="n">d</span><span class="p">[</span><span class="s1">&#39;isld&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="n">d</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_convert_to_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">serializer</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialDensity&#39;</span><span class="p">:</span>
