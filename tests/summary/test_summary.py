@@ -145,7 +145,10 @@ class TestSummary:
         project.models[0].resolution_function = PercentageFwhm(5)
         summary = Summary(project)
 
-        # Then
+        # Then - the dataset is fitted with the resolution it was measured with
+        assert 'Pointwise' in summary._experiments_section()
+        # ...or, without one, with its model's
+        project.experiments[0].resolution_function = None
         html = summary._experiments_section()
 
         # Expect
@@ -202,10 +205,10 @@ class TestSummary:
         # Expect
         assert 'refnx' in html
         assert 'LMFit_leastsq' in html
-        assert 'No. of parameters:' in html
-        assert 'No. of fixed parameters:' in html
+        assert 'No. of parameters (all models):' in html
+        assert 'No. of fixed parameters (all models):' in html
         assert '14' in html
-        assert 'No. of free parameters:' in html
+        assert 'No. of free parameters (all models):' in html
         assert '0' in html
         assert 'No. of constraints' in html
 

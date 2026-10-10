@@ -1,12 +1,21 @@
 # SPDX-FileCopyrightText: 2024 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import pytest
+from easyscience import global_object
+
 from easyreflectometry import Project
 from easyreflectometry.constraints import constrain
 from easyreflectometry.constraints import unconstrain
 from easyreflectometry.utils import count_fixed_parameters
 from easyreflectometry.utils import count_free_parameters
 from easyreflectometry.utils import count_parameter_user_constraints
+
+
+@pytest.fixture(autouse=True)
+def _clean_map():
+    # See tests/test_project.py: a Project still alive from an earlier test would collide.
+    global_object.map._clear()
 
 
 def test_count_free_parameters():

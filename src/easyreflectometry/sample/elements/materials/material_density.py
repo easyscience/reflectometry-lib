@@ -291,7 +291,7 @@ class MaterialDensity(Material):
         if not self.sld_coupled:
             d['sld'] = self._sld.value
             d['isld'] = self._isld.value
-        return d
+        return super()._convert_to_dict(d, serializer, skip=skip, **kwargs)
 
     @classmethod
     def from_dict(cls, obj_dict: dict) -> 'MaterialDensity':

@@ -128,19 +128,23 @@ HTML_REFINEMENT_TEMPLATE = """
     <td>goodness_of_fit</td>
 </tr>
 <tr>
-    <td>No. of parameters:</td>
+    <td>No. of free parameters in the fit:</td>
+    <td>num_fit_free_params</td>
+</tr>
+<tr>
+    <td>No. of parameters (all models):</td>
     <td>num_total_params</td>
 </tr>
 <tr>
-    <td>No. of free parameters:</td>
+    <td>No. of free parameters (all models):</td>
     <td>num_free_params</td>
 </tr>
 <tr>
-    <td>No. of fixed parameters:</td>
+    <td>No. of fixed parameters (all models):</td>
     <td>num_fixed_params</td>
 </tr>
 <tr>
-    <td>No. of constraints</td>
+    <td>No. of constraints (all models):</td>
     <td>num_constriants</td>
 </tr>
 """

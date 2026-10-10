@@ -2,12 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Unit tests for the summary goodness-of-fit computation and refinement section."""
 
-from unittest.mock import MagicMock
+import dataclasses
 
 import pytest
 from easyscience import global_object
+from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry import Project
+from easyreflectometry.fitting import FitRun
 from easyreflectometry.summary import Summary
 
 
@@ -19,13 +21,16 @@ def project() -> Project:
     return project
 
 
-def _fit_result(chi2=None, reduced_chi2=None, n_points=0, n_pars=0):
-    result = MagicMock()
-    result.chi2 = chi2
-    result.reduced_chi2 = reduced_chi2
-    result.x = list(range(n_points))
-    result.n_pars = n_pars
-    return result
+def _run(reduced_chi2) -> FitRun:
+    return FitRun(
+        status='completed',
+        completed_at='2026-10-10T12:00:00',
+        minimizer='LMFit_leastsq',
+        objective='hybrid',
+        inputs=((0, 'd', None),),
+        n_free_parameters=2,
+        pooled={'objective_reduced_chi2': reduced_chi2},
+    )
 
 
 class TestComputeGoodnessOfFit:
@@ -33,42 +38,22 @@ class TestComputeGoodnessOfFit:
         summary = Summary(project)
         assert summary._compute_goodness_of_fit() == 'N/A'
 
-    def test_returns_na_when_last_fit_results_is_empty(self, project: Project):
-        project._last_fit_results = []
-        summary = Summary(project)
-        assert summary._compute_goodness_of_fit() == 'N/A'
+    def test_uses_the_pooled_reduced_chi2_of_the_last_fit(self, project: Project):
+        project._last_fit = _run(1.2345)
+        assert Summary(project)._compute_goodness_of_fit() == '1.234'
 
-    def test_single_result_uses_its_reduced_chi2(self, project: Project):
-        project._last_fit_results = [_fit_result(reduced_chi2=1.2345)]
-        summary = Summary(project)
-        assert summary._compute_goodness_of_fit() == '1.234'
+    def test_returns_na_without_degrees_of_freedom(self, project: Project):
+        project._last_fit = _run(None)
+        assert Summary(project)._compute_goodness_of_fit() == 'N/A'
 
-    def test_multiple_results_aggregate_over_global_dof(self, project: Project):
-        # total chi2 = 30, total points = 16, n_pars = 6 -> dof = 10 -> gof = 3
-        project._last_fit_results = [
-            _fit_result(chi2=10.0, n_points=8, n_pars=6),
-            _fit_result(chi2=20.0, n_points=8, n_pars=6),
-        ]
-        summary = Summary(project)
-        assert summary._compute_goodness_of_fit() == '3'
-
-    def test_multiple_results_with_nonpositive_dof_return_zero(self, project: Project):
-        project._last_fit_results = [
-            _fit_result(chi2=10.0, n_points=2, n_pars=6),
-            _fit_result(chi2=20.0, n_points=2, n_pars=6),
-        ]
-        summary = Summary(project)
-        assert summary._compute_goodness_of_fit() == '0'
-
-    def test_returns_na_when_result_values_are_invalid(self, project: Project):
-        project._last_fit_results = [_fit_result(reduced_chi2='not-a-number')]
-        summary = Summary(project)
-        assert summary._compute_goodness_of_fit() == 'N/A'
+    def test_returns_na_for_a_failed_run(self, project: Project):
+        project._last_fit = dataclasses.replace(_run(2.0), status='failed', pooled={})
+        assert Summary(project)._compute_goodness_of_fit() == 'N/A'
 
 
 class TestRefinementSection:
     def test_refinement_section_renders_counts_and_gof(self, project: Project):
-        project._last_fit_results = [_fit_result(reduced_chi2=2.5)]
+        project._last_fit = _run(2.5)
         summary = Summary(project)
 
         html = summary._refinement_section()
@@ -84,3 +69,24 @@ class TestRefinementSection:
             'goodness_of_fit',
         ):
             assert placeholder not in html
+
+    def test_the_fit_rows_come_from_the_run_not_the_project(self, project: Project):
+        project.models.duplicate_model(0)
+        for model in project.models:
+            model.sample[1].layers[0].thickness.fixed = False
+        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project._last_fit = _run(1.5)  # LMFit_leastsq, two free parameters
+
+        html = Summary(project)._refinement_section()
+
+        assert 'LMFit_leastsq' in html and 'Bumps_simplex' not in html
+        assert '<td>No. of free parameters in the fit:</td>\n    <td>2</td>' in html
+        assert '<td>No. of free parameters (all models):</td>\n    <td>2</td>' in html
+        project._last_fit = None
+        assert '<td>No. of free parameters in the fit:</td>\n    <td>N/A</td>' in Summary(project)._refinement_section()
+
+    def test_counts_cover_every_model(self, project: Project):
+        single = Summary(project)._refinement_section()
+        project.models.duplicate_model(0)
+        both = Summary(project)._refinement_section()
+        assert single != both

@@ -13,6 +13,7 @@ from easyscience.base_classes.new_base import NewBase
 from easyscience.io import SerializerBase
 from easyscience.variable import Parameter
 
+from easyreflectometry.sample import references
 from easyreflectometry.utils import yaml_dump
 
 
@@ -304,7 +305,10 @@ class BaseCollection(EasyList):
         # counter restarts during reconstruction.
         if 'unique_name' not in skip:
             skip.append('unique_name')
-        dict_repr = NewBase.to_dict(self, skip=list(skip))
+        # The items this encodes (through `_convert_to_dict`) are replaced
+        # below, so they must not be registered as shared-object occurrences.
+        with references.suspended():
+            dict_repr = NewBase.to_dict(self, skip=list(skip))
         if self._protected_types != [NewBase]:
             dict_repr['protected_types'] = [{'@module': c.__module__, '@class': c.__name__} for c in self._protected_types]
         dict_repr['data'] = []
@@ -352,9 +356,7 @@ class BaseCollection(EasyList):
                 protected_types.append(getattr(module, type_dict['@class']))
         raw_items = temp_dict.pop('data', [])
         kwargs = SerializerBase.deserialize_dict(temp_dict)
-        # A single-key dict routes the item through the serializer's per-value path, which uses
-        # the item class's own `from_dict`.
-        data = [SerializerBase.deserialize_dict({'item': item})['item'] for item in raw_items]
+        data = [references.deserialize(item) for item in raw_items]
         return cls(data, protected_types=protected_types, **kwargs)
 
     def __deepcopy__(self, memo):

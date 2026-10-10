@@ -117,6 +117,8 @@ class PolarizedDataSet:
         self._channels = self._in_canonical_order(normalized)
         self.name = name
         self.model = model
+        #: Whether :meth:`Project.prepare_fit` fits this experiment (all its channels) by default.
+        self.include_in_fit = True
 
     @staticmethod
     def _validated_dataset(channel: PolarizationChannel, dataset: DataSet1D) -> DataSet1D:

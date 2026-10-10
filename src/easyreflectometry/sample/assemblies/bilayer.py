@@ -8,6 +8,8 @@ from typing import Any
 from easyscience import global_object
 from easyscience.variable import Parameter
 
+from easyreflectometry.constraints import constrain_equal
+
 from ..collections.layer_collection import LayerCollection
 from ..elements.layers.layer_area_per_molecule import LayerAreaPerMolecule
 from ..elements.materials.material import Material
@@ -476,57 +478,42 @@ class Bilayer(BaseAssembly):
             Constrain tail solvent fraction. By default, True.
         """
         if front_head_thickness:
-            self.front_head_layer.thickness.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_head_layer.thickness},
-            )
+            constrain_equal(self.front_head_layer.thickness, another_contrast.front_head_layer.thickness)
 
         if back_head_thickness:
-            self.back_head_layer.thickness.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.back_head_layer.thickness},
-            )
+            constrain_equal(self.back_head_layer.thickness, another_contrast.back_head_layer.thickness)
 
         if tail_thickness:
-            self.front_tail_layer.thickness.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_tail_layer.thickness},
-            )
+            constrain_equal(self.front_tail_layer.thickness, another_contrast.front_tail_layer.thickness)
 
         if front_head_area_per_molecule:
-            self.front_head_layer.area_per_molecule_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_head_layer.area_per_molecule_parameter},
+            constrain_equal(
+                self.front_head_layer.area_per_molecule_parameter, another_contrast.front_head_layer.area_per_molecule_parameter
             )
 
         if back_head_area_per_molecule:
-            self.back_head_layer.area_per_molecule_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.back_head_layer.area_per_molecule_parameter},
+            constrain_equal(
+                self.back_head_layer.area_per_molecule_parameter, another_contrast.back_head_layer.area_per_molecule_parameter
             )
 
         if tail_area_per_molecule:
-            self.front_tail_layer.area_per_molecule_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_tail_layer.area_per_molecule_parameter},
+            constrain_equal(
+                self.front_tail_layer.area_per_molecule_parameter, another_contrast.front_tail_layer.area_per_molecule_parameter
             )
 
         if front_head_fraction:
-            self.front_head_layer.solvent_fraction_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_head_layer.solvent_fraction_parameter},
+            constrain_equal(
+                self.front_head_layer.solvent_fraction_parameter, another_contrast.front_head_layer.solvent_fraction_parameter
             )
 
         if back_head_fraction:
-            self.back_head_layer.solvent_fraction_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.back_head_layer.solvent_fraction_parameter},
+            constrain_equal(
+                self.back_head_layer.solvent_fraction_parameter, another_contrast.back_head_layer.solvent_fraction_parameter
             )
 
         if tail_fraction:
-            self.front_tail_layer.solvent_fraction_parameter.make_dependent_on(
-                dependency_expression='a',
-                dependency_map={'a': another_contrast.front_tail_layer.solvent_fraction_parameter},
+            constrain_equal(
+                self.front_tail_layer.solvent_fraction_parameter, another_contrast.front_tail_layer.solvent_fraction_parameter
             )
 
     @property
@@ -544,11 +531,11 @@ class Bilayer(BaseAssembly):
         }
 
     def to_dict(self, skip: list[str] | None = None) -> dict:
-        """Serialize, dropping derived fields.
+        """Serialize, dropping the derived `layers` collection.
 
-        The `back_tail_layer` and the underlying `layers` collection are
-        derived in ``__init__`` from the front head / front tail / back head
-        constructor arguments, so they are not part of the persisted state.
+        ``__init__`` rebuilds `layers` from the four layer arguments. The
+        `back_tail_layer` is kept: it is a constructor argument and may hold
+        state of its own (a formula, or a parameter made independent).
         """
         this_dict = super().to_dict(skip=skip)
         this_dict.pop('layers', None)

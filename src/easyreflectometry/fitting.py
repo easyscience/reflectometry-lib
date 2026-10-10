@@ -4,12 +4,16 @@
 
 import contextlib
 import copy
+import dataclasses
+import datetime
 import functools
 import warnings
 import weakref
 from dataclasses import dataclass
+from dataclasses import field
 from typing import Any
 from typing import Callable
+from typing import Sequence
 
 import numpy as np
 import scipp as sc
@@ -17,6 +21,7 @@ from easyscience.fitting import AvailableMinimizers
 from easyscience.fitting import FitResults
 from easyscience.fitting import Sampler
 from easyscience.fitting.multi_fitter import MultiFitter as EasyScienceMultiFitter
+from easyscience.variable import Parameter
 
 from easyreflectometry._bumps_constraints import NON_BUMPS_ERROR
 from easyreflectometry._bumps_constraints import applied as _constraints_applied
@@ -262,7 +267,10 @@ def _emit_array_prep_warnings(stats: dict, y_vals: np.ndarray, label: str, *, ac
 
 
 def _classical_metrics_for(original: dict, model_curve: np.ndarray, result: FitResults, n_points: int | None = None) -> dict:
-    """Assemble the classical (positive-variance-only) and objective-space fit metrics.
+    """The classical (positive-variance-only) and objective-space chi-square of one dataset.
+
+    Reduced values are not given per dataset: their degrees of freedom belong
+    to the pooled fit (see :class:`FitRun` and the ``MultiFitter`` properties).
 
     Parameters
     ----------
@@ -274,27 +282,48 @@ def _classical_metrics_for(original: dict, model_curve: np.ndarray, result: FitR
     result : FitResults
         The minimizer's result for this dataset/channel.
     n_points : int | None, optional
-        Number of points actually fitted, used as the ``reduced_chi``/``reduced_chi2``
-        fallback's point count. If ``None``, derived from ``result.x``. By default, None.
+        Number of points actually fitted. If ``None``, derived from ``result.x``.
 
     Returns
     -------
     dict
-        Keys ``'classical_chi2'``, ``'classical_reduced_chi'``,
-        ``'objective_chi2'``, ``'objective_reduced_chi'``, ``'n_classical_points'``.
+        Keys ``'classical_chi2'``, ``'n_classical_points'``, ``'objective_chi2'``
+        and ``'n_points'`` (the points fitted).
     """
     sigma_classical = np.sqrt(np.clip(original['variances'], 0.0, None))
-    n_classical_points = int(np.sum(original['variances'] > 0.0))
-    classical_chi2 = _compute_weighted_chi2(original['y'], model_curve, sigma_classical)
-    if n_points is None:
-        n_points = np.size(result.x)
     return {
-        'classical_chi2': classical_chi2,
-        'classical_reduced_chi': _compute_reduced_chi2(classical_chi2, n_classical_points, result.n_pars),
+        'classical_chi2': _compute_weighted_chi2(original['y'], model_curve, sigma_classical),
+        'n_classical_points': int(np.sum(original['variances'] > 0.0)),
         'objective_chi2': float(result.chi2),
-        'objective_reduced_chi': _fit_result_reduced_chi(result, n_points),
-        'n_classical_points': n_classical_points,
+        'n_points': int(np.size(result.x) if n_points is None else n_points),
     }
+
+
+def _free_roots(models: list) -> list[Parameter]:
+    """Free parameters that parameters of `models` follow, directly or through other
+    dependencies, but that no model in `models` owns: a tie to a model left out of
+    the fit. Leaving them out of the fit would hold them fixed."""
+    owned = {id(parameter) for model in models for parameter in model.get_all_parameters()}
+    pending = [parameter for model in models for parameter in model.get_all_parameters() if not parameter.independent]
+    roots, seen = {}, set()
+    while pending:
+        parameter = pending.pop()
+        if id(parameter) in seen:
+            continue
+        seen.add(id(parameter))
+        for leader in (parameter.dependency_map or {}).values():
+            if not isinstance(leader, Parameter):
+                continue
+            if not leader.independent:
+                pending.append(leader)
+            elif not leader.fixed and id(leader) not in owned:
+                # A fixed root is held fixed on purpose; only a free one would be held by the tie.
+                roots[id(leader)] = leader
+    return list(roots.values())
+
+
+class FitScopeError(ValueError):
+    """The experiments asked for cannot be fitted together (none selected, or one has no model)."""
 
 
 class FitPreconditionError(ValueError):
@@ -359,6 +388,14 @@ class PreparedFit:
         The fitter that is executed.
     fit_kwargs : dict
         Method-specific option keyword arguments for the engine.
+    added_roots : list[Parameter]
+        Free parameters the fitted models follow but do not own (a tie to a
+        model left out of the fit), varied so the tie does not hold them fixed.
+    experiments : list
+        The project experiment behind each dataset (one entry per spin channel
+        of a polarized one), set by :meth:`Project.prepare_fit`; empty otherwise.
+    skipped : list[str]
+        Experiments left out because they have no model (``skip_invalid``).
     """
 
     settings: FitSettings | None
@@ -371,6 +408,9 @@ class PreparedFit:
     fit_funcs: list[Callable]
     core_fitter: EasyScienceMultiFitter
     fit_kwargs: dict
+    added_roots: list = field(default_factory=list)
+    experiments: list = field(default_factory=list)
+    skipped: list = field(default_factory=list)
 
     @property
     def x(self) -> list[np.ndarray]:
@@ -407,6 +447,92 @@ class PreparedFit:
             _classical_metrics_for(original, curve(original['x']), result, n_points=len(fitted['x']))
             for original, fitted, curve, result in zip(self.original, self.fitted, self.curve_funcs, results)
         ]
+
+
+def _ratio(numerator: float, denominator: float) -> float | None:
+    return numerator / denominator if denominator > 0 else None
+
+
+@dataclass(frozen=True)
+class FitRun:
+    """The record of one completed (or failed, or cancelled) fit, kept by the project.
+
+    It belongs to the run, not to a fitter, so it outlives a change of the
+    current model; and it names its datasets, so it can be read after the
+    experiments were rearranged.
+
+    Statistics (only for a completed run):
+
+    - ``pooled``: ``objective_chi2`` (the engine's, on the transformed fitted
+      points), ``objective_n_points``, ``objective_dof`` (points minus
+      :attr:`n_free_parameters`), ``objective_reduced_chi2``; and the same
+      four ``classical_*`` values over the measured points with a positive
+      variance. A reduced value is None when its dof is not positive.
+    - ``per_dataset``, in :attr:`inputs` order: ``objective_chi2``,
+      ``objective_n_points``, ``objective_chi2_per_point``, ``classical_chi2``,
+      ``classical_n_points``, ``classical_chi2_per_point`` (None without
+      points) and ``share_of_objective`` (None when the pooled chi-square is
+      zero). The per-dataset objective values add up to the pooled one: the
+      engine's per-dataset results are disjoint slices of the pooled residuals.
+
+    A record is history: read it, do not write to its dictionaries.
+    """
+
+    status: str
+    completed_at: str
+    minimizer: str
+    objective: str
+    #: ``(experiment key, experiment name, channel)`` per fitted dataset; the key
+    #: is None for data that is not (or no longer) a project experiment.
+    inputs: tuple
+    n_free_parameters: int = 0
+    pooled: dict = field(default_factory=dict)
+    per_dataset: tuple = ()
+
+    @classmethod
+    def from_results(
+        cls,
+        prepared: PreparedFit,
+        results: list[FitResults] | None,
+        status: str,
+        minimizer: str,
+        metrics: list[dict] | None = None,
+        inputs: Sequence[tuple] | None = None,
+    ) -> 'FitRun':
+        """The record of a run; `metrics` is ``prepared.finalize(results)`` when already
+        computed, `inputs` the ``(key, name, channel)`` of each dataset (unnamed otherwise)."""
+        inputs = tuple(inputs) if inputs else tuple((None, f'dataset {index}', None) for index in range(len(prepared.fitted)))
+        completed_at = datetime.datetime.now().isoformat(timespec='seconds')
+        if status != 'completed' or not results:
+            return cls(status, completed_at, minimizer, prepared.objective, inputs)
+        n_free = int(results[0].n_pars)
+        per_dataset = [
+            {
+                'objective_chi2': metric['objective_chi2'],
+                'objective_n_points': metric['n_points'],
+                'objective_chi2_per_point': _ratio(metric['objective_chi2'], metric['n_points']),
+                'classical_chi2': metric['classical_chi2'],
+                'classical_n_points': metric['n_classical_points'],
+                'classical_chi2_per_point': _ratio(metric['classical_chi2'], metric['n_classical_points']),
+            }
+            for metric in (metrics if metrics is not None else prepared.finalize(results))
+        ]
+        pooled = {}
+        for kind, points in (('objective', 'objective_n_points'), ('classical', 'classical_n_points')):
+            chi2 = float(sum(entry[f'{kind}_chi2'] for entry in per_dataset))
+            n_points = int(sum(entry[points] for entry in per_dataset))
+            pooled[f'{kind}_chi2'] = chi2
+            pooled[f'{kind}_n_points'] = n_points
+            pooled[f'{kind}_dof'] = n_points - n_free
+            pooled[f'{kind}_reduced_chi2'] = _ratio(chi2, n_points - n_free)
+        for entry in per_dataset:
+            entry['share_of_objective'] = _ratio(entry['objective_chi2'], pooled['objective_chi2'])
+        return cls(status, completed_at, minimizer, prepared.objective, inputs, n_free, pooled, tuple(per_dataset))
+
+    def remapped(self, keys: dict[int, int]) -> 'FitRun':
+        """This record after experiments were re-keyed (old key -> new key; a removed one -> None)."""
+        inputs = tuple((None if key is None else keys.get(key), name, channel) for key, name, channel in self.inputs)
+        return dataclasses.replace(self, inputs=inputs)
 
 
 class MultiFitter:
@@ -730,7 +856,8 @@ class MultiFitter:
             if not any(item.model is known for known in models):
                 models.append(item.model)
 
-        core_fitter = self._core_fitter_for(models, fit_funcs, settings)
+        roots = _free_roots(models)
+        core_fitter = self._core_fitter_for(models, fit_funcs, settings, roots)
         self._check_fit_preconditions(core_fitter)
         self._warn_on_bound_starts(core_fitter)
         return PreparedFit(
@@ -744,23 +871,27 @@ class MultiFitter:
             fit_funcs=fit_funcs,
             core_fitter=core_fitter,
             fit_kwargs=settings.engine_kwargs() if settings is not None else {},
+            added_roots=roots,
         )
 
-    def _core_fitter_for(self, models: list, fit_funcs: list[Callable], settings: FitSettings | None):
+    def _core_fitter_for(self, models: list, fit_funcs: list[Callable], settings: FitSettings | None, roots: list = ()):
         """The core fitter a prepared run executes.
 
         Without settings, a run over exactly the stored fit functions uses the
         stored core fitter, as direct configuration of it (notebooks, tests)
         expects; any other run gets a fresh one carrying the stored minimizer,
         tolerance and budget. With settings, a fresh one configured from them.
+        `roots` (see :func:`_free_roots`) join the fit objects, so the core
+        varies them like any free parameter of the models.
         """
         if (
             settings is None
+            and not roots
             and len(fit_funcs) == len(self._fit_func)
             and all(a is b for a, b in zip(fit_funcs, self._fit_func))
         ):
             return self.easy_science_multi_fitter
-        core_fitter = self._build_easy_science_fitter(models, fit_funcs, keep_owner=True)
+        core_fitter = self._build_easy_science_fitter([*models, *roots], fit_funcs, keep_owner=True)
         if settings is not None:
             settings.configure(core_fitter)
         else:
@@ -867,13 +998,12 @@ class MultiFitter:
                 values=sld_profile[0],
                 unit=(1 / new_data['coords'][f'Qz_{id}'].unit).unit,
             )
-            metrics = self._classical_fit_metrics[i]
-            new_data['objective_chi2'] = metrics['objective_chi2']
-            new_data['objective_reduced_chi'] = metrics['objective_reduced_chi']
-            new_data['classical_chi2'] = metrics['classical_chi2']
-            new_data['classical_reduced_chi'] = metrics['classical_reduced_chi']
-            new_data['reduced_chi'] = metrics['objective_reduced_chi']
-            new_data['success'] = result[i].success
+        new_data['objective_chi2'] = self.objective_chi2
+        new_data['objective_reduced_chi'] = self.objective_reduced_chi
+        new_data['classical_chi2'] = self.classical_chi2
+        new_data['classical_reduced_chi'] = self.classical_reduced_chi
+        new_data['reduced_chi'] = self.objective_reduced_chi
+        new_data['success'] = all(item.success for item in result)
         return new_data
 
     def fit_single_data_set_1d(
@@ -1115,7 +1245,12 @@ class MultiFitter:
 
     @property
     def chi2(self) -> float | None:
-        """Total chi-squared across all fitted datasets, or None if no fit has been performed."""
+        """Total chi-squared across all fitted datasets, or None if no fit has been performed.
+
+        These properties describe this fitter's latest fit; a run prepared through
+        :meth:`Project.prepare_fit` is recorded in :attr:`Project.last_fit`, which
+        outlives a change of the current model.
+        """
         if self._fit_results is None:
             return None
         return sum(r.chi2 for r in self._fit_results)
