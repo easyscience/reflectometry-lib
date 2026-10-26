@@ -9,8 +9,11 @@ import pytest
 from easyscience import global_object
 
 from easyreflectometry import Project
+from easyreflectometry.contrasts import ReplaceMaterial
 from easyreflectometry.model.resolution_functions import PercentageFwhm
+from easyreflectometry.sample import Material
 from easyreflectometry.summary import Summary
+from easyreflectometry.summary.summary import _named_parameters
 
 PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static')
 
@@ -351,3 +354,58 @@ class TestSummaryPolarized:
         assert 'Experiment (pp)' in names
         assert 'Experiment (mm)' in names
         assert 'Model (pp)' in names
+
+
+class TestSummarySharedParameters:
+    @pytest.fixture
+    def contrast_project(self) -> Project:
+        """The default model plus an H2O contrast, which reuses the superphase and subphase assemblies."""
+        global_object.map._clear()
+        project = Project()
+        project.default_model()
+        d2o = project._materials[1]
+        project.add_contrast(0, 'H2O', [ReplaceMaterial(d2o, Material(sld=-0.56, isld=0, name='H2O'))])
+        return project
+
+    def test_shared_parameter_is_listed_once(self, contrast_project: Project) -> None:
+        # When
+        rows = list(_named_parameters(contrast_project))
+
+        # Then Expect: one row per distinct parameter object, none left out
+        ids = [id(parameter) for _, parameter in rows]
+        assert len(ids) == len(set(ids))
+        every = {id(parameter) for model in contrast_project.models for parameter in model.get_all_parameters()}
+        assert set(ids) == every
+
+    def test_shared_parameter_names_every_owner(self, contrast_project: Project) -> None:
+        # When
+        names = {id(parameter): name for name, parameter in _named_parameters(contrast_project)}
+        reference, contrast = contrast_project.models
+
+        # Then Expect: the shared subphase layer is attributed to both models, in model order
+        shared = reference.sample[2].layers[0].thickness
+        assert shared is contrast.sample[2].layers[0].thickness
+        assert contrast_project.parameter_models(shared) == [0, 1]
+        assert names[id(shared)] == 'Model+H2O Si Layer thickness'
+
+        # And an unshared parameter keeps its single model's name
+        own = reference.sample[1].layers[0].thickness
+        assert contrast_project.parameter_models(own) == [0]
+        assert names[id(own)] == 'Model D2O Layer thickness'
+
+    def test_owner_names_agree_with_project(self, contrast_project: Project) -> None:
+        # When
+        rows = list(_named_parameters(contrast_project))
+        models = contrast_project.models
+
+        # Then Expect: every row is prefixed by exactly the models the project says own it
+        for name, parameter in rows:
+            owners = '+'.join(models[index].name for index in contrast_project.parameter_models(parameter))
+            assert name.startswith(owners + ' ') or name == owners, name
+
+    def test_sample_section_shows_shared_owners(self, contrast_project: Project) -> None:
+        # When
+        html = Summary(contrast_project)._sample_section()
+
+        # Then Expect
+        assert 'Model+H2O Si Layer thickness' in html

@@ -102,23 +102,37 @@ def _format_value(value: float, sig_figs: int) -> str:
 
 
 def _named_parameters(project: Project):
-    """``(display name, parameter)`` for every parameter of every model, each once:
-    the model's name, the name of the object holding the parameter, the parameter's."""
-    seen: set[int] = set()
+    """``(display name, parameter)`` for every parameter of every model, each once.
 
-    def walk(obj, model_name: str, owner_name: str):
+    The display name is the name of the model, of the object holding the parameter,
+    and the parameter's own. A parameter shared by several models (a contrast reusing
+    an assembly of its reference) is one value fitted for all of them, so it carries
+    every owner's name, joined by '+' as in the app's parameter table.
+    """
+    found: dict[int, tuple[Parameter, str]] = {}  # first encounter, in walk order
+    owners: dict[int, list[str]] = {}
+
+    def walk(obj, owner_name: str, seen: set[int]):
         for _, child in paths.children(obj):
+            if id(child) in seen:
+                continue
+            seen.add(id(child))
             if isinstance(child, DescriptorNumber):
-                if isinstance(child, Parameter) and id(child) not in seen:
-                    seen.add(id(child))
-                    # A model's own parameter (scale) has the model as its owner: name it once.
-                    yield ' '.join(dict.fromkeys([model_name, owner_name, child.name])), child
-            elif id(child) not in seen:
-                seen.add(id(child))
-                yield from walk(child, model_name, getattr(child, 'name', owner_name))
+                if isinstance(child, Parameter):
+                    yield child, owner_name
+            else:
+                yield from walk(child, getattr(child, 'name', owner_name), seen)
 
+    # Each model is walked in full, shared objects included, to learn every owner.
     for model in project.models:
-        yield from walk(model, model.name, model.name)
+        for parameter, owner_name in walk(model, model.name, set()):
+            found.setdefault(id(parameter), (parameter, owner_name))
+            owners.setdefault(id(parameter), []).append(model.name)
+
+    for key, (parameter, owner_name) in found.items():
+        model_names = '+'.join(owners[key])
+        # A model's own parameter (scale) has the model as its owner: name it once.
+        yield ' '.join(dict.fromkeys([model_names, owner_name, parameter.name])), parameter
 
 
 def _truncate_name(name: str, max_len: int = _NAME_MAX_LEN) -> str:
