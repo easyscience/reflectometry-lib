@@ -657,7 +657,12 @@ class Project:
 
     @property
     def last_fit(self) -> Optional[FitRun]:
-        """The record of the latest fit recorded with :meth:`record_fit`, or None."""
+        """The record of the latest fit recorded with :meth:`record_fit`, or None.
+
+        The record is read-only history. Its ``pooled`` and ``per_dataset``
+        dictionaries are shared with the record itself, so copy them before
+        changing anything; see :class:`~easyreflectometry.fitting.FitRun`.
+        """
         return self._last_fit
 
     # ----- structural parameter paths -----

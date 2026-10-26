@@ -487,7 +487,10 @@ class FitRun:
       zero). The per-dataset objective values add up to the pooled one: the
       engine's per-dataset results are disjoint slices of the pooled residuals.
 
-    A record is history: read it, do not write to its dictionaries.
+    A record is history: read it, do not write to it. Being frozen, it
+    protects its fields from reassignment, but not the ``pooled`` and
+    ``per_dataset`` dictionaries inside them, which are plain and shared with
+    every holder of the record. Copy them before changing anything.
     """
 
     status: str
