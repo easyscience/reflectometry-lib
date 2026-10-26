@@ -7,9 +7,11 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 from easyscience import global_object
+from numpy.testing import assert_allclose
 
 from easyreflectometry import Project
 from easyreflectometry.contrasts import ReplaceMaterial
+from easyreflectometry.data import DataSet1D
 from easyreflectometry.model.resolution_functions import PercentageFwhm
 from easyreflectometry.sample import Material
 from easyreflectometry.summary import Summary
@@ -296,21 +298,32 @@ class TestSummaryPolarized:
         project.default_model()
         project.load_polarized_experiment({
             'pp': self._write_channel_file(tmp_path, 'sample_uu.txt'),
+            'pm': self._write_channel_file(tmp_path, 'sample_ud.txt'),
             'mm': self._write_channel_file(tmp_path, 'sample_dd.txt'),
         })
         return project
 
-    def test_measured_series_one_entry_per_channel(self, polarized_project: Project) -> None:
+    def test_reflectivity_series_one_entry_per_channel(self, polarized_project: Project) -> None:
         # When
         summary = Summary(polarized_project)
 
         # Then
-        series = summary._measured_series()
+        series = summary._reflectivity_series()
 
-        # Expect
-        assert [entry[0] for entry in series] == ['Experiment (pp)', 'Experiment (mm)']
-        assert series[0][2] != series[1][2]  # distinct channel colors
-        assert [entry[3].value for entry in series] == ['pp', 'mm']
+        # Expect: one series per measured channel, each in its own channel color, none shifted
+        name = polarized_project.experiments[0].name
+        assert [entry.label for entry in series] == [f'{name} (pp)', f'{name} (pm)', f'{name} (mm)']
+        assert len({entry.color for entry in series}) == 3
+        assert all(entry.offset == 0 for entry in series)
+
+    def test_spin_flip_channel_of_a_non_magnetic_model_has_no_curve(self, polarized_project: Project) -> None:
+        # When: a non-magnetic model cannot produce a spin-flip cross-section
+        series = {entry.label[-3:-1]: entry for entry in Summary(polarized_project)._reflectivity_series()}
+
+        # Then Expect: its data is drawn without a misleading overlay
+        assert series['pm'].measured is not None
+        assert series['pm'].calculated is None
+        assert series['pp'].calculated is not None
 
     @pytest.fixture
     def project(self) -> Project:
@@ -319,41 +332,152 @@ class TestSummaryPolarized:
         project.default_model()
         return project
 
-    def test_measured_series_unpolarized_and_empty(self, project: Project) -> None:
+    def test_reflectivity_series_unpolarized_and_empty(self, project: Project) -> None:
         # When
         summary = Summary(project)
 
-        # Then Expect: nothing loaded
-        assert summary._measured_series() == []
+        # Then Expect: with nothing loaded, the model's curve alone
+        series = summary._reflectivity_series()
+        assert len(series) == 1
+        assert series[0].measured is None and series[0].calculated is not None
+        assert series[0].label == project.models[0].name
 
         # When an ordinary experiment is loaded
         project.load_experiment_for_model_at_index(os.path.join(PATH_STATIC, 'example.ort'))
 
-        # Expect one channel-less entry
-        series = summary._measured_series()
+        # Expect one series, the data and its curve, in the model's color
+        series = summary._reflectivity_series()
         assert len(series) == 1
-        assert series[0][0] == 'Experiment' and series[0][3] is None
+        assert series[0].label == project.experiments[0].name
+        assert series[0].measured is project.experiments[0]
+        assert series[0].color == project.models[0].color
+        assert_allclose(series[0].calculated.x, series[0].measured.x)
 
-    def test_model_curve_skips_uncalculable_channel(self, polarized_project: Project) -> None:
-        # When: a non-magnetic model cannot produce a spin-flip cross-section
-        summary = Summary(polarized_project)
-
-        # Then Expect: no misleading overlay is generated for it
-        assert summary._model_curve('pm') is None
-        assert summary._model_curve('pp') is not None
-
-    def test_fit_experiment_figure_has_a_trace_per_channel(self, polarized_project: Project) -> None:
+    def test_fit_experiment_figure_has_a_legend_entry_per_channel(self, polarized_project: Project) -> None:
         # When
         summary = Summary(polarized_project)
 
         # Then
         figure = summary._fit_experiment_plotly_figure()
 
-        # Expect: one measured trace per channel plus the calculable model curves
-        names = [trace.name for trace in figure.data]
-        assert 'Experiment (pp)' in names
-        assert 'Experiment (mm)' in names
-        assert 'Model (pp)' in names
+        # Expect: data and curve of a channel share a legend entry. A non-magnetic model
+        # calculates only pp (as the unpolarized curve), so pm and mm are drawn as data alone.
+        name = polarized_project.experiments[0].name
+        legend = [trace.name for trace in figure.data if trace.showlegend is not False]
+        assert legend == [f'{name} (pp)', f'{name} (pm)', f'{name} (mm)']
+        assert [trace.mode for trace in figure.data] == ['markers', 'lines', 'markers', 'markers']
+
+
+class TestSummaryMultipleExperiments:
+    """Report figures of several contrasts, each with its own experiment."""
+
+    Q = np.linspace(0.01, 0.25, 60)
+
+    @pytest.fixture
+    def contrasts(self) -> Project:
+        """The default model and two contrasts, each with synthetic data from its own model."""
+        global_object.map._clear()
+        project = Project()
+        project.default_model()
+        d2o = project._materials[1]
+        project.add_contrast(0, 'H2O', [ReplaceMaterial(d2o, Material(sld=-0.56, isld=0, name='H2O'))])
+        project.add_contrast(0, 'CMSi', [ReplaceMaterial(d2o, Material(sld=2.07, isld=0, name='CMSi'))])
+        experiments = {}
+        for index, model in enumerate(project.models):
+            y = project.model_data_for_model_at_index(index, q_range=self.Q).y
+            experiments[index] = DataSet1D(
+                name=f'{model.name} data', x=self.Q, y=y, ye=(0.02 * y) ** 2, model=model, auto_background=False
+            )
+        project.experiments = experiments
+        return project
+
+    def test_one_series_per_experiment_in_its_models_color(self, contrasts: Project) -> None:
+        # When
+        series = Summary(contrasts)._reflectivity_series()
+
+        # Then Expect: every experiment, shifted a decade apart, each on its own model's curve
+        assert [entry.label for entry in series] == ['Model data', 'H2O data', 'CMSi data']
+        assert [entry.color for entry in series] == [model.color for model in contrasts.models]
+        assert [entry.offset for entry in series] == [0, 1, 2]
+        assert [entry.legend for entry in series] == ['Model data', 'H2O data (×10)', 'CMSi data (×10^2)']
+        for entry, experiment in zip(series, contrasts.experiments.values()):
+            assert entry.measured is experiment
+            # The data was made from its own model, so its curve passes through it.
+            assert_allclose(entry.calculated.y, experiment.y, rtol=1e-8)
+
+    def test_a_recorded_fit_draws_its_own_experiments(self, contrasts: Project) -> None:
+        # When: the last fit used two of the three experiments
+        prepared = contrasts.prepare_fit([contrasts.experiments[2], contrasts.experiments[0]])
+        contrasts.record_fit(prepared, None, status='failed')
+
+        # Then
+        series = Summary(contrasts)._reflectivity_series()
+
+        # Expect: only those, in the fit's order
+        assert [entry.label for entry in series] == ['CMSi data', 'Model data']
+        assert [entry.offset for entry in series] == [0, 1]
+
+    def test_a_fit_whose_experiments_are_gone_draws_every_experiment(self, contrasts: Project) -> None:
+        # When: the only fitted experiment has been removed since
+        contrasts.record_fit(contrasts.prepare_fit([contrasts.experiments[1]]), None, status='failed')
+        contrasts.remove_experiment(1)
+
+        # Then
+        series = Summary(contrasts)._reflectivity_series()
+
+        # Expect: the figure falls back to every experiment still loaded
+        assert [entry.label for entry in series] == ['Model data', 'CMSi data']
+
+    def test_without_experiments_every_model_is_drawn(self, contrasts: Project) -> None:
+        # When
+        contrasts.experiments = {}
+
+        # Then
+        series = Summary(contrasts)._reflectivity_series()
+
+        # Expect: one calculated curve per model, shifted the same way
+        assert [entry.label for entry in series] == [model.name for model in contrasts.models]
+        assert all(entry.measured is None for entry in series)
+        assert [entry.offset for entry in series] == [0, 1, 2]
+
+    def test_one_sld_profile_per_model(self, contrasts: Project) -> None:
+        # When
+        summary = Summary(contrasts)
+
+        # Then
+        series = summary._sld_series()
+        figure = summary._sld_plotly_figure()
+
+        # Expect
+        names = [model.name for model in contrasts.models]
+        assert [entry.label for entry in series] == names
+        assert [entry.color for entry in series] == [model.color for model in contrasts.models]
+        assert [trace.name for trace in figure.data] == names
+
+    def test_interactive_reflectivity_figure_shifts_every_experiment(self, contrasts: Project) -> None:
+        # When
+        figure = Summary(contrasts)._fit_experiment_plotly_figure()
+
+        # Then Expect: data and curve per experiment, shifted by its legend's factor
+        assert len(figure.data) == 6
+        legend = [trace.name for trace in figure.data if trace.showlegend is not False]
+        assert legend == ['Model data', 'H2O data (×10)', 'CMSi data (×10^2)']
+        for offset, experiment in enumerate(contrasts.experiments.values()):
+            measured, calculated = figure.data[2 * offset], figure.data[2 * offset + 1]
+            assert measured.legendgroup == calculated.legendgroup
+            assert_allclose(measured.y, np.asarray(experiment.y) * 10.0**offset)
+
+    def test_static_figures_are_saved(self, contrasts: Project, tmp_path) -> None:
+        # When
+        summary = Summary(contrasts)
+
+        # Then
+        summary.save_fit_experiment_plot(tmp_path / 'reflectivity.png')
+        summary.save_sld_plot(tmp_path / 'sld.png')
+
+        # Expect
+        assert (tmp_path / 'reflectivity.png').exists()
+        assert (tmp_path / 'sld.png').exists()
 
 
 class TestSummarySharedParameters:

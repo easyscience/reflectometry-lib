@@ -4,6 +4,7 @@
 import contextlib
 import io
 import logging
+from dataclasses import dataclass
 from html import escape
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
@@ -17,6 +18,9 @@ from easyscience.variable import Parameter
 from xhtml2pdf import pisa
 
 from easyreflectometry import Project
+from easyreflectometry.calculators import PolarizationChannel
+from easyreflectometry.data import DataSet1D
+from easyreflectometry.data import PolarizedDataSet
 from easyreflectometry.sample import paths
 
 from .html_templates import HTML_DATA_COLLECTION_TEMPLATE
@@ -53,6 +57,8 @@ def _silence_pdf_converter():
 _NAME_MAX_LEN = 20
 # Fixed per-channel colors for polarized experiments, shared with the app so a
 # channel keeps the same color in the GUI and in the report.
+# Color of an ordinary experiment that has no model to take one from.
+_DEFAULT_COLOR = '#0173B2'
 _CHANNEL_COLORS = {'pp': '#0173B2', 'pm': '#029E73', 'mp': '#CC78BC', 'mm': '#DE8F05'}
 # Custom href scheme used to pass the full name to QML via TextEdit.hoveredLink.
 _TOOLTIP_SCHEME = 'nametooltip'
@@ -149,6 +155,43 @@ def _truncate_name(name: str, max_len: int = _NAME_MAX_LEN) -> str:
     return f'<a style="color:inherit;text-decoration:none;" href="{_TOOLTIP_SCHEME}:{encoded}" title="{safe}">{short}…</a>'
 
 
+@dataclass(frozen=True)
+class _ReflectivitySeries:
+    """One entry of the reflectivity figure: a measured dataset, the curve it is
+    compared to, or both, drawn in one color and shifted by one scale factor.
+
+    `measured` is None when no experiment is loaded and a model is drawn alone;
+    `calculated` is None when the curve cannot be calculated (e.g. a spin-flip
+    channel of a non-magnetic model): no overlay is better than a wrong one.
+    """
+
+    label: str
+    measured: DataSet1D | None
+    calculated: DataSet1D | None
+    color: str
+    offset: int = 0
+
+    @property
+    def scale(self) -> float:
+        return 10.0**self.offset
+
+    @property
+    def legend(self) -> str:
+        """The label, with the factor the series is shifted by when it is shifted."""
+        if self.offset == 0:
+            return self.label
+        return f'{self.label} (×10)' if self.offset == 1 else f'{self.label} (×10^{self.offset})'
+
+
+@dataclass(frozen=True)
+class _SldSeries:
+    """The SLD profile of one model, in the model's color."""
+
+    label: str
+    profile: DataSet1D
+    color: str
+
+
 class Summary:
     def __init__(self, project: Project):
         """Init function."""
@@ -210,82 +253,161 @@ class Summary:
                 print('An error occured when generating PDF summary!')
 
     def save_sld_plot(self, filename: str) -> None:
-        """Save sld plot."""
+        """Save the SLD figure: one profile per model."""
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
-        sld = self._project.sld_data_for_model_at_index(0)
-        ax.plot(sld.x, sld.y, color='blue')
+        for series in self._sld_series():
+            ax.plot(series.profile.x, series.profile.y, color=series.color, label=series.label)
 
         ax.set_xlabel('z (Å)')
         ax.set_ylabel('SLD (Å⁻²)')
-        fig.legend(['SLD'])
+        if ax.has_data():
+            ax.legend(loc='best')
         fig.savefig(filename, dpi=600)
         plt.close()
 
-    def _measured_series(self) -> list:
-        """Measured data of experiment 0 as ``(label, dataset, color, channel)`` entries.
-
-        One entry per measured spin channel for a polarized experiment (each
-        with its own channel color and channel key), a single channel-less
-        entry for an ordinary experiment, and an empty list when no experiment
-        is loaded.
-        """
-        try:
-            experiment = self._project.experimental_data_for_model_at_index(0)
-        except IndexError:
-            return []
-
-        channels = self._project.experiment_channels_at_index(0)
-        if not channels:
-            return [('Experiment', experiment, 'red', None)]
-        return [
-            (f'Experiment ({channel.value})', experiment[channel], _CHANNEL_COLORS[channel.value], channel)
-            for channel in channels
-        ]
-
-    def _model_curve(self, channel=None):
-        """Calculated curve for experiment 0, per spin channel when asked.
-
-        Returns None when the requested channel cannot be calculated (e.g. a
-        spin-flip channel on a non-magnetic model) — an incorrect overlay is
-        worse than none.
-        """
-        try:
-            return self._project.model_data_for_model_at_index(0, channel=channel)
-        except (ValueError, NotImplementedError) as exception:
-            logging.getLogger(__name__).warning(
-                'No calculated curve for channel %s: %s', getattr(channel, 'value', channel), exception
-            )
-            return None
-
     def save_fit_experiment_plot(self, filename: str) -> None:
-        """Save fit experiment plot."""
+        """Save the reflectivity figure; see :meth:`_reflectivity_series` for what it draws."""
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
-        legends = []
+        ax.set_yscale('log')
 
-        measured_series = self._measured_series()
-        # One calculated curve per measured channel; the ordinary single curve
-        # when the experiment is unpolarized or nothing is loaded.
-        model_channels = [entry[3] for entry in measured_series] or [None]
-        for channel in model_channels:
-            model = self._model_curve(channel)
-            if model is None:
-                continue
-            color = 'blue' if channel is None else _CHANNEL_COLORS[channel.value]
-            ax.plot(model.x, np.log10(model.y), color=color)
-            legends.append('Model' if channel is None else f'Model ({channel.value})')
-
-        for label, dataset, color, _channel in measured_series:
-            ax.plot(dataset.x, np.log10(dataset.y), color=color)
-            legends.append(label)
+        for series in self._reflectivity_series():
+            # One legend entry per series: on the curve when there is one, else on the data.
+            if series.measured is not None:
+                ax.plot(
+                    series.measured.x,
+                    np.asarray(series.measured.y) * series.scale,
+                    ls='',
+                    marker='.',
+                    color=series.color,
+                    alpha=0.6,
+                    label=series.legend if series.calculated is None else None,
+                )
+            if series.calculated is not None:
+                ax.plot(
+                    series.calculated.x,
+                    np.asarray(series.calculated.y) * series.scale,
+                    ls='-',
+                    color=series.color,
+                    zorder=10,
+                    label=series.legend,
+                )
 
         ax.set_xlabel('Q (Å⁻¹)')
         ax.set_ylabel('Reflectivity')
-        fig.legend(legends)
+        if ax.has_data():
+            ax.legend(loc='best')
         fig.savefig(filename, dpi=600)
         plt.close()
+
+    def _sld_series(self) -> list[_SldSeries]:
+        """The SLD profile of every model, each in its model's color."""
+        return [
+            _SldSeries(model.name, self._project.sld_data_for_model_at_index(index), model.color)
+            for index, model in enumerate(self._project.models)
+        ]
+
+    def _drawn_datasets(self) -> list[tuple[int, PolarizationChannel | None]]:
+        """``(experiment key, channel)`` of every measured dataset the reflectivity figure draws.
+
+        The datasets of the last recorded fit, when there is one and they are still
+        loaded, so that the figure describes the fit the report's numbers come from.
+        Otherwise every dataset of every experiment: one per spin channel of a
+        polarized experiment, one for an ordinary experiment.
+        """
+        experiments = self._project.experiments
+        run = self._project.last_fit
+        if run is not None:
+            fitted = []
+            for key, _name, channel in run.inputs:
+                entry = (key, None if channel is None else PolarizationChannel(channel))
+                if entry not in fitted and self._is_loaded(*entry):
+                    fitted.append(entry)
+            if fitted:
+                return fitted
+
+        drawn = []
+        for key in sorted(experiments):
+            channels = self._project.experiment_channels_at_index(key)
+            drawn.extend([(key, channel) for channel in channels] if channels else [(key, None)])
+        return drawn
+
+    def _is_loaded(self, key, channel: PolarizationChannel | None) -> bool:
+        """Whether the project still holds the dataset of `key` and `channel`.
+
+        The experiment at a recorded key may have been replaced since the fit.
+        """
+        experiment = self._project.experiments.get(key)
+        if isinstance(experiment, PolarizedDataSet):
+            return channel is not None and channel in experiment.available_channels
+        return experiment is not None and channel is None
+
+    def _reflectivity_series(self) -> list[_ReflectivitySeries]:
+        """What the reflectivity figure draws, shared by the static and the interactive figure.
+
+        Each measured dataset of :meth:`_drawn_datasets` with the curve the fit compares
+        it to: its experiment's model, at its q, with its resolution. An ordinary
+        experiment is drawn in its model's color, a polarized one in one color per
+        spin channel. With more than one experiment, the n-th is shifted up by 10^n
+        so that the curves do not overlap. With no experiment loaded, the calculated
+        curve of every model over the project's q range, shifted the same way.
+        """
+        drawn = self._drawn_datasets()
+        if not drawn:
+            models = self._project.models
+            shift = len(models) > 1
+            return [
+                _ReflectivitySeries(
+                    label=model.name,
+                    measured=None,
+                    calculated=self._project.model_data_for_model_at_index(index),
+                    color=model.color,
+                    offset=index if shift else 0,
+                )
+                for index, model in enumerate(models)
+            ]
+
+        keys = list(dict.fromkeys(key for key, _channel in drawn))
+        shift = len(keys) > 1
+        series = []
+        for key, channel in drawn:
+            experiment = self._project.experiments[key]
+            name = experiment.name or f'Experiment {key}'
+            if channel is None:
+                label, measured = name, experiment
+                color = getattr(experiment.model, 'color', None) or _DEFAULT_COLOR
+            else:
+                label, measured = f'{name} ({channel.value})', experiment[channel]
+                color = _CHANNEL_COLORS[channel.value]
+            series.append(
+                _ReflectivitySeries(
+                    label=label,
+                    measured=measured,
+                    calculated=self._calculated_curve(key, channel),
+                    color=color,
+                    offset=keys.index(key) if shift else 0,
+                )
+            )
+        return series
+
+    def _calculated_curve(self, key, channel: PolarizationChannel | None = None) -> DataSet1D | None:
+        """The curve the fit compares the dataset of `key` and `channel` to, or None.
+
+        None when it cannot be calculated: a spin-flip channel of a non-magnetic
+        model, a calculator without magnetism, or an experiment without a model.
+        """
+        try:
+            return self._project.model_data_for_experiment_at_index(key, channel=channel)
+        except (ValueError, NotImplementedError) as exception:
+            logging.getLogger(__name__).warning(
+                'No calculated curve for experiment %s, channel %s: %s',
+                key,
+                getattr(channel, 'value', channel),
+                exception,
+            )
+            return None
 
     def _project_information_section(self) -> str:
         """Project information section."""
@@ -463,21 +585,20 @@ class Summary:
         return html_figures
 
     def _sld_plotly_figure(self):
-        """Interactive SLD profile figure."""
+        """Interactive SLD figure: one profile per model."""
         import plotly.graph_objects as go
 
-        sld = self._project.sld_data_for_model_at_index(0)
-
         fig = go.Figure()
-        fig.add_trace(
-            go.Scatter(
-                x=np.asarray(sld.x),
-                y=np.asarray(sld.y),
-                mode='lines',
-                name='SLD',
-                line={'color': 'blue'},
+        for series in self._sld_series():
+            fig.add_trace(
+                go.Scatter(
+                    x=np.asarray(series.profile.x),
+                    y=np.asarray(series.profile.y),
+                    mode='lines',
+                    name=series.label,
+                    line={'color': series.color},
+                )
             )
-        )
         fig.update_layout(
             xaxis_title='z (Å)',
             yaxis_title='SLD (Å⁻²)',
@@ -488,40 +609,36 @@ class Summary:
         return fig
 
     def _fit_experiment_plotly_figure(self):
-        """Interactive reflectivity (model vs. experiment) figure."""
+        """Interactive reflectivity figure; see :meth:`_reflectivity_series` for what it draws."""
         import plotly.graph_objects as go
 
         fig = go.Figure()
-
-        measured_series = self._measured_series()
-        # One calculated curve per measured channel; the ordinary single curve
-        # when the experiment is unpolarized or nothing is loaded.
-        model_channels = [entry[3] for entry in measured_series] or [None]
-        for channel in model_channels:
-            model = self._model_curve(channel)
-            if model is None:
-                continue
-            color = 'blue' if channel is None else _CHANNEL_COLORS[channel.value]
-            fig.add_trace(
-                go.Scatter(
-                    x=np.asarray(model.x),
-                    y=np.asarray(model.y),
-                    mode='lines',
-                    name='Model' if channel is None else f'Model ({channel.value})',
-                    line={'color': color},
+        for index, series in enumerate(self._reflectivity_series()):
+            # The data and its curve toggle together under one legend entry.
+            group = f'series-{index}'
+            if series.measured is not None:
+                fig.add_trace(
+                    go.Scatter(
+                        x=np.asarray(series.measured.x),
+                        y=np.asarray(series.measured.y) * series.scale,
+                        mode='markers',
+                        name=series.legend,
+                        legendgroup=group,
+                        showlegend=series.calculated is None,
+                        marker={'color': series.color, 'size': 4},
+                    )
                 )
-            )
-
-        for label, dataset, color, _channel in measured_series:
-            fig.add_trace(
-                go.Scatter(
-                    x=np.asarray(dataset.x),
-                    y=np.asarray(dataset.y),
-                    mode='markers',
-                    name=label,
-                    marker={'color': color, 'size': 4},
+            if series.calculated is not None:
+                fig.add_trace(
+                    go.Scatter(
+                        x=np.asarray(series.calculated.x),
+                        y=np.asarray(series.calculated.y) * series.scale,
+                        mode='lines',
+                        name=series.legend,
+                        legendgroup=group,
+                        line={'color': series.color},
+                    )
                 )
-            )
 
         fig.update_layout(
             xaxis_title='Q (Å⁻¹)',
