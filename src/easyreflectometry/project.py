@@ -438,8 +438,17 @@ class Project:
 
     @models.setter
     def models(self, models: ModelCollection) -> None:
-        """Models function."""
+        """Models function.
+
+        A loaded experiment whose model is dropped is bound to the new model at
+        the same index, or to the first one when there are fewer.
+        """
+        old_indices = {key: self._model_index(experiment.model) for key, experiment in self._experiments.items()}
         self._replace_collection(models, self._models)
+        for key, experiment in self._experiments.items():
+            if old_indices[key] is not None and self._model_index(experiment.model) is None and len(self._models):
+                index = old_indices[key] if old_indices[key] < len(self._models) else 0
+                experiment.model = self._models[index]
         self._invalidate_fitter()
         # Use setter to update indicies for current model, assembly and layer
         self.current_model_index = 0
