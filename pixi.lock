@@ -8334,6 +8334,7 @@ packages:
   - gitpython ; extra == 'dev'
   - interrogate ; extra == 'dev'
   - jinja2 ; extra == 'dev'
+  - jupyterlab ; extra == 'dev'
   - jupyterquiz ; extra == 'dev'
   - jupytext ; extra == 'dev'
   - mike ; extra == 'dev'

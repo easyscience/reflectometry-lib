@@ -1288,6 +1288,19 @@ class TestProject:
         # Current model index should be reset to 0
         assert project.current_model_index == 0
 
+    def test_replace_models_from_orso_rebinds_loaded_experiments(self):
+        """An experiment loaded before the models are replaced follows the new model and can be fitted."""
+        global_object.map._clear()
+        project = Project()
+        project.default_model()
+        project.load_new_experiment(os.path.join(PATH_STATIC, 'Ni_example.ort'))
+
+        sample = Sample(Multilayer([Layer(material=Material(sld=5.0, isld=0.0), thickness=50, roughness=2)]))
+        project.replace_models_from_orso(sample)
+
+        assert project.experiments[0].model is project.models[0]
+        assert project.prepare_fit().skipped == []
+
     def test_is_default_model_true(self):
         # When
         global_object.map._clear()
