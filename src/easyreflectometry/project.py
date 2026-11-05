@@ -443,6 +443,10 @@ class Project:
         the same index, or to the first one when there are fewer.
         """
         old_indices = {key: self._model_index(experiment.model) for key, experiment in self._experiments.items()}
+        # The calculator serves exactly these models from now on; they are
+        # registered again below. Not in `_replace_collection`: that also
+        # replaces the materials palette, which must not unregister any model.
+        self._calculator.reset_storage()
         self._replace_collection(models, self._models)
         for key, experiment in self._experiments.items():
             if old_indices[key] is not None and self._model_index(experiment.model) is None and len(self._models):
@@ -2548,6 +2552,7 @@ class Project:
             for key in plan.experiments:
                 self._experiments[key].model = self._models[experiments]
         self._keeping_inequality_paths(lambda: self._models.pop(index))
+        self._calculator.discard_model(removed.unique_name)
         self._invalidate_fitter()
 
         # Adjust current model index if necessary

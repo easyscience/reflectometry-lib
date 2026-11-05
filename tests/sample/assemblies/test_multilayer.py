@@ -12,10 +12,16 @@ from numpy.testing import assert_equal
 from numpy.testing import assert_raises
 
 from easyreflectometry.calculators.factory import CalculatorFactory
+from easyreflectometry.calculators.refnx.wrapper import _slab
 from easyreflectometry.sample.assemblies.multilayer import Multilayer
 from easyreflectometry.sample.collections.layer_collection import LayerCollection
 from easyreflectometry.sample.elements.layers.layer import Layer
 from easyreflectometry.sample.elements.materials.material import Material
+
+
+def _refnx_slabs(assembly):
+    """The refnx slabs the calculator builds for *assembly* at every evaluation."""
+    return [_slab(layer) for layer in assembly.layers]
 
 
 class TestMultilayer(unittest.TestCase):
@@ -83,10 +89,10 @@ class TestMultilayer(unittest.TestCase):
         p = Layer(m, 5.0, 2.0, 'thinBoron', interface=interface)
         q = Layer(k, 50.0, 1.0, 'thickPotassium', interface=interface)
         o = Multilayer(p, 'twoLayerItem', interface=interface)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 1)
+        assert_equal(len(_refnx_slabs(o)), 1)
         o.add_layer(q)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 2)
-        assert_equal(o.interface()._wrapper.storage['item'][o.unique_name].components[1].thick.value, 50.0)
+        assert_equal(len(_refnx_slabs(o)), 2)
+        assert_equal(_refnx_slabs(o)[1].thick.value, 50.0)
 
     def test_duplicate_layer(self):
         m = Material(6.908, -0.278, 'Boron')
@@ -110,18 +116,18 @@ class TestMultilayer(unittest.TestCase):
         p = Layer(m, 5.0, 2.0, 'thinBoron', interface=interface)
         q = Layer(k, 50.0, 1.0, 'thickPotassium', interface=interface)
         o = Multilayer(p, 'twoLayerItem', interface=interface)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 1)
+        assert_equal(len(_refnx_slabs(o)), 1)
         o.add_layer(q)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 2)
-        assert_equal(o.interface()._wrapper.storage['item'][o.unique_name].components[1].thick.value, 50.0)
+        assert_equal(len(_refnx_slabs(o)), 2)
+        assert_equal(_refnx_slabs(o)[1].thick.value, 50.0)
         o.duplicate_layer(1)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 3)
-        assert_equal(o.interface()._wrapper.storage['item'][o.unique_name].components[2].thick.value, 50.0)
+        assert_equal(len(_refnx_slabs(o)), 3)
+        assert_equal(_refnx_slabs(o)[2].thick.value, 50.0)
         assert_raises(
             AssertionError,
             assert_equal,
-            o.interface()._wrapper.storage['item'][o.unique_name].components[1].name,
-            o.interface()._wrapper.storage['item'][o.unique_name].components[2].name,
+            _refnx_slabs(o)[1].name,
+            _refnx_slabs(o)[2].name,
         )
 
     def test_remove_layer(self):
@@ -146,12 +152,12 @@ class TestMultilayer(unittest.TestCase):
         p = Layer(m, 5.0, 2.0, 'thinBoron', interface=interface)
         q = Layer(k, 50.0, 1.0, 'thickPotassium', interface=interface)
         o = Multilayer(p, name='twoLayerItem', interface=interface)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 1)
+        assert_equal(len(_refnx_slabs(o)), 1)
         o.add_layer(q)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 2)
+        assert_equal(len(_refnx_slabs(o)), 2)
         assert_equal(o.layers[1].name, 'thickPotassium')
         o.remove_layer(1)
-        assert_equal(len(o.interface()._wrapper.storage['item'][o.unique_name].components), 1)
+        assert_equal(len(_refnx_slabs(o)), 1)
         assert_equal(o.layers[0].name, 'thinBoron')
 
     def test_repr(self):
