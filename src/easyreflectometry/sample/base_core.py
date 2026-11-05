@@ -12,6 +12,15 @@ from easyscience.base_classes import ModelBase
 from easyreflectometry.sample import references
 from easyreflectometry.utils import yaml_dump
 
+#: What `Parameter.to_dict` adds to record a dependency (see `BaseCore._convert_to_dict`).
+_CORE_DEPENDENCY_FIELDS = (
+    '_dependency_string',
+    '_dependency_map_serializer_ids',
+    '_independent',
+    '_desired_unit',
+    '__serializer_id',
+)
+
 
 class BaseCore(ModelBase):
     """Local base class for sample-tree objects (Material, Layer, assemblies).
@@ -95,7 +104,7 @@ class BaseCore(ModelBase):
         We propagate to any child whose class advertises an ``interface`` property
         with a setter. That includes both the new `BaseCore`-based children and
         legacy `BasedBase`-derived collections (which extend `SerializerComponent`,
-        not `NewBase`).
+        not `EasyBase`).
         """
         if self._interface is None:
             raise AttributeError('Interface error for generating bindings. `interface` has to be set.')
@@ -107,7 +116,7 @@ class BaseCore(ModelBase):
     def _iter_public_children(self):
         """Yield public child objects from both class-level (dir) and instance-level (__dict__) attrs.
 
-        `NewBase.__dir__` exposes only class attributes, which means plain instance
+        `EasyBase.__dir__` exposes only class attributes, which means plain instance
         attributes (the transitional `setattr(self, key, value)` path in
         `__init__`) are invisible to a pure `dir()` scan. To bridge both worlds —
         legacy subclasses that still use plain attrs, and migrated subclasses that
@@ -160,10 +169,6 @@ class BaseCore(ModelBase):
         """
         return self.get_all_variables()
 
-    def get_parameters(self):
-        """Compatibility shim for legacy callers; prefer :meth:`get_all_parameters`."""
-        return self.get_all_parameters()
-
     def _add_component(self, key: str, component: Any) -> None:
         """Compatibility shim for legacy `ObjBase._add_component`.
 
@@ -177,7 +182,7 @@ class BaseCore(ModelBase):
     def get_all_variables(self):
         """Discover Parameters/Descriptors across both class-level and instance-level attrs.
 
-        `ModelBase.get_all_variables` walks `dir(self)`, which `NewBase` restricts
+        `ModelBase.get_all_variables` walks `dir(self)`, which `EasyBase` restricts
         to class attributes only. During the transition some subclasses still
         store child Parameters as plain instance attributes (see the kwargs path
         in :meth:`__init__`); those are invisible to `dir()`. We therefore also
@@ -216,7 +221,7 @@ class BaseCore(ModelBase):
         the dict (e.g. `Parameter_0`) that subsequently collide on reload when
         the global counter restarts from 0.
 
-        Pass a *copy* of `skip` to super since `NewBase.to_dict` mutates the
+        Pass a *copy* of `skip` to super since `EasyBase.to_dict` mutates the
         list (appends `unique_name` / `display_name` if those are default).
         """
         skip = list(skip or [])
@@ -231,8 +236,18 @@ class BaseCore(ModelBase):
         return self.to_dict(skip=skip)
 
     def _convert_to_dict(self, d: dict, encoder=None, skip: Optional[list[str]] = None, **kwargs) -> dict:
-        """Serializer hook, called for this object at any depth: tag it, or refer
-        to its first occurrence (see :mod:`easyreflectometry.sample.references`)."""
+        """Serializer hook, called for this object at any depth.
+
+        Drops easyscience's own dependency record from this object's parameters:
+        the library persists dependencies itself (owning classes rebuild the
+        internal ones, `Project` saves user constraints), and a second record
+        would be restored on top of them. Then tags the object, or refers to
+        its first occurrence (see :mod:`easyreflectometry.sample.references`).
+        """
+        for value in d.values():
+            if isinstance(value, dict):
+                for key in _CORE_DEPENDENCY_FIELDS:
+                    value.pop(key, None)
         return references.tag(self, d)
 
     @classmethod

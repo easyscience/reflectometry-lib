@@ -173,15 +173,9 @@ class Layer(BaseCore):
         if previous is not None and previous is not value:
             if value is None and self.interface is not None:
                 self.interface().remove_layer_magnetism(self.unique_name)
-            # The detached object must not follow the material any more...
+            # The detached object must not follow the material any more.
             if coupled:
                 _release(previous.rho_m)
-            # ...and its value changes must no longer reach the backend.
-            # `property()` (fget/fset/fdel all None) is easyscience's own "no
-            # callback" sentinel -- `Parameter.__copy__` sets it the same way --
-            # so a later `fset` guard in `Parameter` cleanly no-ops.
-            previous.rho_m._callback = property()
-            previous.theta_m._callback = property()
         self._magnetism = value
         self._reconcile_rho_m_coupling(coupled)
         if value is not None and self.interface is not None:

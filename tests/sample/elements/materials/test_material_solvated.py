@@ -113,7 +113,7 @@ class TestMaterialSolvated:
     def test_dict_round_trip(self):
         p = MaterialSolvated()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialSolvated.from_dict(p_dict)
 
@@ -150,7 +150,7 @@ class TestMaterialSolvated:
         p.solvent_fraction.min = 0.12
 
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialSolvated.from_dict(p_dict)
 

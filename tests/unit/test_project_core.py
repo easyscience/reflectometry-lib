@@ -19,9 +19,9 @@ PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static'
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 @pytest.fixture
@@ -147,7 +147,7 @@ class TestModelData:
 class TestAsDictMinimizer:
     def test_as_dict_writes_the_settings_minimizer(self, project: Project):
         project_dict = project.as_dict()
-        assert project_dict['fitter_minimizer'] == project.fit_settings.minimizer.name
+        assert 'fitter_minimizer' not in project_dict
         assert project_dict['fit_settings'] == project.fit_settings.to_dict()
 
     def test_as_dict_does_not_create_a_fitter(self, project: Project):

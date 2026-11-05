@@ -47,7 +47,7 @@ def _reconstructed_sld(profile, materials):
 
 class TestAgainstCalculators:
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     def test_reconstructs_refnx_sld_profile_on_the_same_grid(self):
         model, materials = _solvated_model()

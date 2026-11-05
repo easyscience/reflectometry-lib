@@ -78,7 +78,7 @@ class TestLayerWithMagnetism:
     def test_magnetic_parameters_are_fittable_variables(self):
         magnetism = LayerMagnetism(rho_m=2.0, theta_m=45.0)
         layer = Layer(magnetism=magnetism)
-        variable_names = [variable.name for variable in layer.get_all_variables()]
+        variable_names = [variable.display_name for variable in layer.get_all_variables()]
         assert 'rho_m' in variable_names
         assert 'theta_m' in variable_names
 
@@ -144,8 +144,9 @@ class TestMagnetismThroughCalculator:
         assert calculator.include_magnetism is True
         wrapper = calculator._wrapper
         assert wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 2.0
-        # The parameter is live: a change propagates to the backend.
+        # The parameter is live: a change reaches the backend at the next evaluation.
         layer.magnetism.rho_m = 3.0
+        calculator._push_values()
         assert wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 3.0
 
     def test_removing_last_magnetism_disables_calculator_magnetism(self):
@@ -248,6 +249,8 @@ class TestRhoMCoupling:
 
     @staticmethod
     def _backend_rho_m(film):
+        # Values reach the backend when the model is evaluated.
+        film.interface()._push_values()
         return film.interface()._wrapper.get_layer_value(film.unique_name, 'magnetism_rhoM')
 
     def test_coupling_attaches_magnetism_and_follows_the_material(self):
@@ -362,7 +365,7 @@ class TestRhoMCoupling:
         project.models = ModelCollection(model)
         project.save_as_json()
 
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded = Project()
         reloaded.load_from_json(project.path_json)
         first, other = reloaded.models[0].sample[1].layers
@@ -410,6 +413,7 @@ class TestRhoMCoupling:
 
         iron.magnetic_moment = 1.1
 
+        interface()._push_values()  # values reach the backend when the model is evaluated
         wrapper = interface()._wrapper
         assert wrapper.get_layer_value(coupled.unique_name, 'magnetism_rhoM') == pytest.approx(FE_RHO_M / 2)
         assert wrapper.get_layer_value(uncoupled.unique_name, 'magnetism_rhoM') == pytest.approx(1.0)
@@ -431,7 +435,7 @@ class TestRhoMUserConstraint:
             source = iron.rho_m
             constrain(film.magnetism.rho_m, '0.5 * m', m=source)
         else:
-            source = Parameter(name='external', value=1.0, unit='1/angstrom^2')
+            source = Parameter(display_name='external', value=1.0, unit='1/angstrom^2')
             constrain(film.magnetism.rho_m, 'x', x=source)
         return film, source
 

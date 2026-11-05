@@ -17,7 +17,8 @@ from typing import Sequence
 
 import numpy as np
 import scipp as sc
-from easyscience.fitting import AvailableMinimizers
+from easyscience import EasyList
+from easyscience import Minimizers
 from easyscience.fitting import FitResults
 from easyscience.fitting import Sampler
 from easyscience.fitting.multi_fitter import MultiFitter as EasyScienceMultiFitter
@@ -928,9 +929,7 @@ class MultiFitter:
         Without settings, a run over exactly the stored fit functions uses the
         stored core fitter, as direct configuration of it (notebooks, tests)
         expects; any other run gets a fresh one carrying the stored minimizer,
-        tolerance and budget. With settings, a fresh one configured from them.
-        `roots` (see :func:`_free_roots`) join the fit objects, so the core
-        varies them like any free parameter of the models.
+        tolerance and budget.
         """
         if (
             settings is None
@@ -939,7 +938,8 @@ class MultiFitter:
             and all(a is b for a, b in zip(fit_funcs, self._fit_func))
         ):
             return self.easy_science_multi_fitter
-        core_fitter = self._build_easy_science_fitter([*models, *roots], fit_funcs, keep_owner=True)
+        fit_objects = [*models, EasyList(*roots)] if roots else list(models)
+        core_fitter = self._build_easy_science_fitter(fit_objects, fit_funcs, keep_owner=True)
         if settings is not None:
             settings.configure(core_fitter)
         else:
@@ -959,15 +959,15 @@ class MultiFitter:
         """
         minimizer = getattr(core_fitter, 'minimizer', None)
         enum = getattr(minimizer, 'enum', None)
-        if not isinstance(enum, AvailableMinimizers) or not requires_finite_bounds(enum):
+        if not isinstance(enum, Minimizers) or not requires_finite_bounds(enum):
             return  # also: a stand-in fitter (tests) has nothing to check
         unbounded, seen = [], set()
-        for parameter in core_fitter.fit_object.get_fit_parameters():
+        for parameter in core_fitter.fit_object.get_free_parameters():
             if id(parameter) not in seen and not (np.isfinite(parameter.min) and np.isfinite(parameter.max)):
                 unbounded.append(parameter)
             seen.add(id(parameter))
         if unbounded:
-            names = ', '.join(f"'{parameter.name}'" for parameter in unbounded)
+            names = ', '.join(f"'{parameter.display_name}'" for parameter in unbounded)
             raise FitPreconditionError(
                 f'{enum.name} requires finite bounds on all free parameters; {names} have none.', unbounded
             )
@@ -982,16 +982,16 @@ class MultiFitter:
         exactly this state behind.
         """
         enum = getattr(getattr(core_fitter, 'minimizer', None), 'enum', None)
-        if not isinstance(enum, AvailableMinimizers) or (enum.package, enum.method) != ('lm', 'leastsq'):
+        if not isinstance(enum, Minimizers) or (enum.package, enum.method) != ('lm', 'leastsq'):
             return
         on_bound = []
-        for parameter in {id(p): p for p in core_fitter.fit_object.get_fit_parameters()}.values():
+        for parameter in {id(p): p for p in core_fitter.fit_object.get_free_parameters()}.values():
             span = parameter.max - parameter.min
             tolerance = 1e-6 * span if np.isfinite(span) else 0.0
             if any(
                 np.isfinite(bound) and abs(parameter.value - bound) <= tolerance for bound in (parameter.min, parameter.max)
             ):
-                on_bound.append(f"'{parameter.name}'")
+                on_bound.append(f"'{parameter.display_name}'")
         if on_bound:
             warnings.warn(
                 f'{", ".join(on_bound)} start on a bound. LMFit leastsq may not move such a parameter; '
@@ -1206,7 +1206,7 @@ class MultiFitter:
         """Run Bayesian MCMC sampling on reflectometry data using the DREAM sampler.
 
         Requires that the minimizer is a BUMPS instance (i.e. the minimizer was
-        switched to ``AvailableMinimizers.Bumps``).
+        switched to ``Minimizers.Bumps``).
 
         :param data: DataGroup with reflectivity data. May be left out for a
             fitter built with :meth:`for_experiments`: the sampler then runs
@@ -1252,8 +1252,8 @@ class MultiFitter:
         if getattr(minimizer, 'package', None) != 'bumps':
             raise RuntimeError(
                 'Bayesian sampling requires a BUMPS minimizer. Select one first, e.g. '
-                '``project.minimizer = AvailableMinimizers.Bumps_simplex`` or '
-                '``fitter.switch_minimizer(AvailableMinimizers.Bumps_simplex)``.'
+                '``project.minimizer = Minimizers.Bumps_simplex`` or '
+                '``fitter.switch_minimizer(Minimizers.Bumps_simplex)``.'
             )
         obj = self._resolve_objective(objective, self.settings)
         if data is None:
@@ -1293,7 +1293,10 @@ class MultiFitter:
         with self._constraints(factory, fitter=core_fitter):
             # The factory is current only while the problem is being built, so
             # `_keep_constraints_on_extend` covers a later continuation.
-            sampler = Sampler(core_fitter, x=prepared.x, y=prepared.y, weights=prepared.weights)
+            # Samples the raw per-dataset `fit_functions`, not the constraint-aware
+            # `fit` override (that one serves fit/prepare only): sampling gets its
+            # constraints from the patched `FitDriver` instead.
+            sampler = Sampler.from_fitter(core_fitter, prepared.x, prepared.y, prepared.weights)
             self._keep_constraints_on_extend(sampler, factory)
             # Retained so the chain can be continued afterwards via ``self.sampler.extend()``.
             self._sampler = sampler
@@ -1396,7 +1399,7 @@ class MultiFitter:
         self._fit_results = list(results) if results else None
         self._classical_fit_metrics = list(metrics) if (results and metrics) else None
 
-    def switch_minimizer(self, minimizer: AvailableMinimizers) -> None:
+    def switch_minimizer(self, minimizer: Minimizers) -> None:
         """Switch the minimizer for the fitting.
 
         A fitter with :attr:`settings` (one a project hands out) switches the
@@ -1405,7 +1408,7 @@ class MultiFitter:
 
         Parameters
         ----------
-        minimizer : AvailableMinimizers
+        minimizer : Minimizers
             Minimizer to be switched to.
         """
         if self.settings is None:

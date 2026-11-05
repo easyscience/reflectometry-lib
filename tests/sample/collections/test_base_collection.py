@@ -216,7 +216,7 @@ class TestBaseCollection:
         p = BaseCollection('name', MagicMock(), elem)
         variables = p.get_all_variables()
         # A Layer has thickness, roughness, and the material's sld/isld
-        names = {v.name for v in variables if hasattr(v, 'name')}
+        names = {v.display_name for v in variables}
         assert 'thickness' in names
         assert 'roughness' in names
 
@@ -240,19 +240,7 @@ class TestBaseCollection:
         elem.thickness.fixed = False
         free = p.get_free_parameters()
         assert len(free) == 1
-        assert free[0].name == 'thickness'
-
-    def test_get_fit_parameters_alias(self):
-        """get_fit_parameters should be an alias for get_free_parameters."""
-        elem = Layer(name='layer')
-        p = BaseCollection('name', MagicMock(), elem)
-        assert p.get_fit_parameters() == p.get_free_parameters()
-
-    def test_get_parameters_shim(self):
-        """get_parameters should be a compatibility alias for get_all_parameters."""
-        elem = Layer(name='layer')
-        p = BaseCollection('name', MagicMock(), elem)
-        assert p.get_parameters() == p.get_all_parameters()
+        assert free[0].display_name == 'thickness'
 
     def test_get_linkable_attributes(self):
         """_get_linkable_attributes should return get_all_variables."""

@@ -21,11 +21,10 @@ from typing import Sequence
 from typing import Union
 
 import numpy as np
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from easyscience.variable import DescriptorNumber as DescriptorNumberType
 from easyscience.variable import Parameter
-from easyscience.variable.parameter_dependency_resolver import resolve_all_parameter_dependencies
 from scipp import DataGroup
 
 from easyreflectometry.calculators import CalculatorFactory
@@ -182,7 +181,7 @@ class Project:
         """Reset function."""
         del self._models
         del self._materials
-        global_object.map._clear()
+        global_object.registry.clear()
 
         self.__init__()
 
@@ -843,7 +842,7 @@ class Project:
             path = paths.get(id(target))
             if path is None:
                 raise ValueError(
-                    f"Cannot save the constraint on '{parameter.name}': {described_as} is not "
+                    f"Cannot save the constraint on '{parameter.display_name}': {described_as} is not "
                     "reachable from the project's models. Only parameters that belong to a "
                     'model can take part in a saved constraint.'
                 )
@@ -854,13 +853,13 @@ class Project:
             if isinstance(dependency, Parameter):
                 # Embedding a live parameter by value would silently turn a
                 # dependency into a frozen constant on load.
-                dependencies[alias] = {'path': _addressable(dependency, f"its dependency '{dependency.name}'")}
+                dependencies[alias] = {'path': _addressable(dependency, f"its dependency '{dependency.display_name}'")}
             else:
                 # An object-less constant built for the expression (the explicit
                 # total of `constrain_to_sum`); nothing else serializes it, so it
                 # is embedded here.
                 dependencies[alias] = {
-                    'name': dependency.name,
+                    'display_name': dependency.display_name,
                     'value': float(dependency.value),
                     'unit': str(dependency.unit),
                 }
@@ -980,15 +979,15 @@ class Project:
         return any(model.has_magnetism for model in self._models)
 
     @property
-    def minimizer(self) -> AvailableMinimizers:
+    def minimizer(self) -> Minimizers:
         """The selected minimizer; an alias for ``fit_settings.minimizer``."""
         return self._fit_settings.minimizer
 
     @minimizer.setter
-    def minimizer(self, minimizer: AvailableMinimizers) -> None:
+    def minimizer(self, minimizer: Minimizers) -> None:
         """Select the minimizer; it applies to the next fit."""
-        if not isinstance(minimizer, AvailableMinimizers):
-            raise ValueError(f'minimizer must be an AvailableMinimizers member, got {minimizer!r}.')
+        if not isinstance(minimizer, Minimizers):
+            raise ValueError(f'minimizer must be an Minimizers member, got {minimizer!r}.')
         previous = self._fit_settings.minimizer
         self._fit_settings.minimizer = minimizer
         logger.info('Minimizer changed from %s to %s', previous.name, self._fit_settings.minimizer.name)
@@ -1175,13 +1174,13 @@ class Project:
         owners = self.parameter_models(parameter)
         if model_index is not None and model_index not in owners:
             name = self._models[model_index].name if 0 <= model_index < len(self._models) else model_index
-            raise ValueError(f"'{parameter.name}' is not part of '{name}'.")
+            raise ValueError(f"'{parameter.display_name}' is not part of '{name}'.")
         if not parameter.independent:
             if not getattr(parameter, USER_CONSTRAINT_FLAG, False):
-                raise ValueError(f"'{parameter.name}' is derived from other parameters; it cannot be detached.")
+                raise ValueError(f"'{parameter.display_name}' is derived from other parameters; it cannot be detached.")
             if len(owners) > 1 and model_index is not None:
                 raise ValueError(
-                    f"'{parameter.name}' is one parameter of {len(owners)} models and follows another one; "
+                    f"'{parameter.display_name}' is one parameter of {len(owners)} models and follows another one; "
                     'removing the tie frees it in all of them, so detach it without a model.'
                 )
             self._untie(parameter)
@@ -1189,7 +1188,7 @@ class Project:
         if len(owners) < 2:
             return
         if model_index is None:
-            raise ValueError(f"'{parameter.name}' is shared by several models; say which one to detach it in.")
+            raise ValueError(f"'{parameter.display_name}' is shared by several models; say which one to detach it in.")
         model = self._models[model_index]
         positions = [
             position
@@ -1198,14 +1197,16 @@ class Project:
         ]
         if len(positions) != 1:
             raise ValueError(
-                f"'{parameter.name}' is part of '{model.name}' at several positions ({positions}); "
+                f"'{parameter.display_name}' is part of '{model.name}' at several positions ({positions}); "
                 'give them their own assemblies first.'
             )
         position = positions[0]
         assembly = model.sample[position]
         kept = kept_children(assembly, {}, set())
         if any(parameter is p for material in kept.values() for p in material.get_all_parameters()):
-            raise ValueError(f"'{parameter.name}' belongs to a shared material; give the layer its own material instead.")
+            raise ValueError(
+                f"'{parameter.display_name}' belongs to a shared material; give the layer its own material instead."
+            )
         copy = references.rebuild(assembly, kept)
         twin = dict(paths.walk(copy, []))[next(path for path, p in paths.walk(assembly, []) if p is parameter)]
         tie_corresponding(copy, assembly, excluded={id(twin)})
@@ -2666,7 +2667,7 @@ class Project:
         # Serialize before touching the file system, so that a serialization failure
         # leaves no temporary file behind and no doubt about the existing file.
         try:
-            project_json = json.dumps(self.as_dict(include_materials_not_in_model=True), indent=4)
+            project_json = json.dumps(self.as_dict(), indent=4)
         except TypeError as error:
             # json.dumps reports a value it cannot encode (a stray numpy scalar, say) as a
             # TypeError; to the caller that is the same "cannot be serialized" failure.
@@ -2733,28 +2734,14 @@ class Project:
         self._path_project_parent = path.parents[1]
         self._created = True
 
-    #: Schema version embedded in every serialized project. Bumped from 1 → 2
-    #: when the sample/model classes migrated from the legacy
-    #: ``easyscience.ObjBase``/``CollectionBase`` pipeline to
-    #: ``ModelBase``/``EasyList``. The on-disk shape of nested objects (Layer,
-    #: Material, MaterialMixture, MaterialSolvated, LayerAreaPerMolecule, etc.)
-    #: changed in a way that is not backward-compatible with v1 files.
-    FILE_FORMAT = 2
-    #: Written instead of :attr:`FILE_FORMAT` when an older reader would load another
-    #: project: the models share objects (reference nodes, see
-    #: :mod:`easyreflectometry.sample.references`), an experiment is left out of the fit,
-    #: or an experiment's model is found by a name several models have. Readers that
-    #: predate it refuse the file rather than misread it.
-    FILE_FORMAT_SHARED = 3
+    FILE_FORMAT = 4
 
-    def as_dict(self, include_materials_not_in_model=False):
+    def as_dict(self):
         """As dict.
 
         Objects used in several places (a material in two layers, an assembly
         in two models) are written once and referred to elsewhere. The
         materials palette is written in order under ``materials``.
-        ``include_materials_not_in_model`` adds the unused materials once more
-        under their older key, for readers that predate ``materials``.
         """
         project_dict = {}
         project_dict['file_format'] = self.FILE_FORMAT
@@ -2766,15 +2753,9 @@ class Project:
                 project_dict['models']['unique_name'] = self._models.unique_name + '_to_prevent_collisions_on_load'
             project_dict['materials'] = [material.as_dict() for material in self._materials]
         references.prune(project_dict)
-        if include_materials_not_in_model:
-            self._as_dict_add_materials_not_in_model_dict(project_dict)
         if self._with_experiments:
             self._as_dict_add_experiments(project_dict)
-        if self._needs_new_format(project_dict):
-            project_dict['file_format'] = self.FILE_FORMAT_SHARED
         project_dict['fit_settings'] = self._fit_settings.to_dict()
-        # Kept for readers that predate `fit_settings`.
-        project_dict['fitter_minimizer'] = project_dict['fit_settings']['minimizer']
         if self._calculator is not None:
             project_dict['calculator'] = self._calculator.current_interface_name
         if self._colors is not None:
@@ -2835,33 +2816,9 @@ class Project:
             except (KeyError, IndexError, TypeError) as error:
                 report.append(f'A link between models could not be restored: {error}')
 
-    def _as_dict_add_materials_not_in_model_dict(self, project_dict: dict):
-        """As dict add materials not in model dict."""
-        materials_not_in_model = []
-        for material in self._materials:
-            if material not in self._get_materials_in_models():
-                materials_not_in_model.append(material)
-        if len(materials_not_in_model) > 0:
-            project_dict['materials_not_in_model'] = MaterialCollection(materials_not_in_model).as_dict(skip=['interface'])
-
-    def _needs_new_format(self, project_dict: dict) -> bool:
-        """Whether a reader of :attr:`FILE_FORMAT` would load another project from `project_dict`.
-
-        Such a reader keeps no shared objects (older readers ignore ``materials``, so
-        only references inside the models count), fits every experiment, and finds an
-        experiment's model by name.
-        """
-        if references.contains_references(project_dict.get('models')):
-            return True
-        if any(included is False for included in project_dict.get('experiments_fit_scope', {}).values()):
-            return True
-        names = [model.name for model in self._models] if self._models is not None else []
-        return any(names.count(name) > 1 for name in project_dict.get('experiments_models', {}).values())
-
     def _as_dict_add_experiments(self, project_dict: dict):
         """As dict add experiments."""
         project_dict['experiments'] = {}
-        project_dict['experiments_models'] = {}
         project_dict['experiments_model_indices'] = {}
         project_dict['experiments_names'] = {}
         project_dict['experiments_fit_scope'] = {}
@@ -2909,13 +2866,12 @@ class Project:
             dataset.resolution_function = ResolutionFunction.from_dict(arrays[position])
 
     def _as_dict_add_experiment_model(self, project_dict: dict, key: int, experiment) -> None:
-        """Record the experiment's name, fit inclusion and model: by index (authoritative) and by name (older readers)."""
+        """Record the experiment's name, fit inclusion and model index."""
         project_dict['experiments_names'][key] = experiment.name
         project_dict['experiments_fit_scope'][key] = experiment.include_in_fit
         model_index = self._model_index_for_experiment(experiment)
         if model_index is not None:
             project_dict['experiments_model_indices'][key] = model_index
-            project_dict['experiments_models'][key] = experiment.model.name
 
     def _as_dict_add_polarized_experiment(self, project_dict: dict, key: int, experiment: PolarizedDataSet) -> None:
         """Serialize a `PolarizedDataSet`: one (name, x, y, ye, xe, resolution) array set per measured channel.
@@ -2944,23 +2900,17 @@ class Project:
     def from_dict(self, project_dict: dict):
         """From dict."""
         keys = list(project_dict.keys())
-        # Validate file format. v1 files were written by the legacy
-        # `ObjBase`/`CollectionBase` pipeline; their inner shapes (Layer,
-        # Material, MaterialMixture, …) are not compatible with the v2
-        # `ModelBase`/`EasyList` deserializer. Older files must be re-created.
         file_format = project_dict.get('file_format')
-        if file_format is None:
+        if file_format in (None, 2, 3):
             raise ValueError(
-                'This project file predates file_format=2 and cannot be loaded by '
-                'this version of easyreflectometry. The serialization format changed '
-                'when the sample/model classes migrated from the legacy ObjBase / '
-                'CollectionBase pipeline. Please re-create the project from its '
-                'underlying data using the current API.'
+                f'This project file (file_format={file_format!r}) was written by easyreflectometry 1.x '
+                'for easyscience 2.x and cannot be loaded by this version. Re-create the project '
+                'with easyreflectometry 2, or open it with easyreflectometry 1.9.'
             )
-        if file_format not in (self.FILE_FORMAT, self.FILE_FORMAT_SHARED):
+        if file_format != self.FILE_FORMAT:
             raise ValueError(
                 f'Unsupported project file_format={file_format!r}; this version of '
-                f'easyreflectometry only reads file_format={self.FILE_FORMAT} and {self.FILE_FORMAT_SHARED}. '
+                f'easyreflectometry only reads file_format={self.FILE_FORMAT}. '
                 'Please either update easyreflectometry or re-create the project.'
             )
         report: list[str] = []
@@ -2972,17 +2922,9 @@ class Project:
             if 'models' in keys:
                 self.models = ModelCollection.from_dict(project_dict['models'])
             palette = [references.deserialize(entry) for entry in project_dict.get('materials', [])]
-        if 'materials' in keys:
-            self._replace_collection(palette, self._materials)
-        else:
-            # A file predating `materials`: the models' materials, then the unused ones.
-            self._replace_collection(self._get_materials_in_models(), self._materials)
-            if 'materials_not_in_model' in keys:
-                self._materials.extend(MaterialCollection.from_dict(project_dict['materials_not_in_model']))
+        self._replace_collection(palette, self._materials)
         # Settings are replaced wholesale, never merged with the previous project's.
-        # A file predating `fit_settings` only stored `fitter_minimizer`.
-        legacy = {'minimizer': project_dict.get('fitter_minimizer')}
-        self._fit_settings, settings_report = FitSettings.from_dict(project_dict.get('fit_settings', legacy))
+        self._fit_settings, settings_report = FitSettings.from_dict(project_dict.get('fit_settings', {}))
         report.extend(settings_report)
         self._invalidate_fitter()
         self._last_fit = None  # the previous contents' run, not this project's
@@ -2992,50 +2934,14 @@ class Project:
             self._experiments = {}
         self.load_report = report
 
-        # Resolve any pending parameter dependencies parked by the core
-        # deserializer. Only cores that serialize nested dependencies produce
-        # them; on the others this is a no-op safety net and `parameter_constraints`
-        # below carries the user constraints instead.
-        resolve_all_parameter_dependencies(self)
+        # Internal dependencies are rebuilt by their owning classes; user
+        # constraints are carried by `parameter_constraints`.
         self._restore_user_constraints(project_dict.get('parameter_constraints', []))
         self._restore_sum_partner_max_backups(project_dict.get('sum_partner_max_backups', {}))
-        self._warn_on_unreadable_dependencies(project_dict.get('models'))
         # Inequality constraints are declarative (paths), nothing to resolve yet:
         # they are bound to parameters when a fit starts.
         self._inequality_constraints = [InequalitySpec.from_dict(raw) for raw in project_dict.get('inequality_constraints', [])]
         self._from_dict_restore_contrasts(project_dict, self.load_report)
-
-    @staticmethod
-    def _warn_on_unreadable_dependencies(models_dict) -> None:
-        """Warn about embedded dependencies this build cannot restore.
-
-        A core that serializes dependencies inside each nested parameter writes
-        ``_dependency_string`` there. Cores without that feature drop the field
-        silently on load, so such a file would lose its equality constraints
-        with no signal at all. Detect it and say so; the constraints have to be
-        re-applied by hand.
-
-        The field is written for internal dependencies too (material mixtures,
-        conformal roughness, ``Model.total_thickness``), and those are rebuilt
-        by their owning class regardless — so its presence does not prove
-        anything was actually lost. The wording is hedged accordingly.
-        """
-
-        def _contains_dependency(node) -> bool:
-            if isinstance(node, dict):
-                return '_dependency_string' in node or any(_contains_dependency(v) for v in node.values())
-            if isinstance(node, (list, tuple)):
-                return any(_contains_dependency(item) for item in node)
-            return False
-
-        if _contains_dependency(models_dict):
-            warnings.warn(
-                'This project was saved by a build that stores parameter dependencies inside '
-                'each parameter, which this build cannot restore. Internal constraints are '
-                'rebuilt automatically, but any custom equality constraints have been dropped '
-                'and must be re-applied.',
-                stacklevel=2,
-            )
 
     def _from_dict_extract_experiments(self, project_dict: dict, report: list[str]) -> Dict[int, DataSet1D | PolarizedDataSet]:
         """From dict extract experiments."""
@@ -3066,19 +2972,12 @@ class Project:
         return dataset
 
     def _saved_experiment_model(self, project_dict: dict, key, name: str, report: list[str]) -> Optional[Model]:
-        """The model a saved experiment is bound to: by index, else by name (files that
-        predate the index); an ambiguous or missing one is reported."""
+        """The model a saved experiment is bound to, by index; a missing one is reported."""
         index = project_dict.get('experiments_model_indices', {}).get(key)
         if isinstance(index, int) and 0 <= index < len(self._models):
             return self._models[index]
-        model_name = project_dict.get('experiments_models', {}).get(key)
-        matches = [model for model in self._models if model.name == model_name]
-        if not matches:
-            report.append(f"Experiment '{name}' has no model; assign one before fitting it.")
-            return None
-        if len(matches) > 1:
-            report.append(f"Experiment '{name}': several models are named '{model_name}'; the first is used.")
-        return matches[0]
+        report.append(f"Experiment '{name}' has no model; assign one before fitting it.")
+        return None
 
     def _polarized_experiment_from_dict(self, name: str, raw: dict, model: Optional[Model]) -> PolarizedDataSet:
         """Reconstruct a `PolarizedDataSet` serialized by `_as_dict_add_polarized_experiment`."""

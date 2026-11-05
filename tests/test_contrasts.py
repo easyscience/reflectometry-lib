@@ -7,8 +7,8 @@ import warnings
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from numpy.testing import assert_allclose
 
 from easyreflectometry.constraints import constrain_equal
@@ -37,14 +37,14 @@ Q = np.linspace(0.01, 0.25, 40)
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _reload(project: Project) -> Project:
     data = json.loads(json.dumps(project.as_dict()))
-    global_object.map._clear()
+    global_object.registry.clear()
     loaded = Project()
     loaded.from_dict(data)
     return loaded
@@ -463,7 +463,7 @@ class TestFitScope:
         prepared = project.prepare_fit()
 
         assert prepared.added_roots == [root]
-        assert any(parameter is root for parameter in prepared.core_fitter.fit_object.get_fit_parameters())
+        assert any(parameter is root for parameter in prepared.core_fitter.fit_object.get_free_parameters())
         assert len(prepared.fitted) == 1  # the excluded data is not in the objective
         assert prepared.experiments == [follower_data]
 
@@ -477,7 +477,7 @@ class TestFitScope:
         project.experiments = {0: _synthetic(project, 0), 1: _synthetic(project, 1)}
         project.experiments[0].include_in_fit = False
 
-        expected = project.prepare_fit().core_fitter.fit_object.get_fit_parameters()
+        expected = project.prepare_fit().core_fitter.fit_object.get_free_parameters()
 
         assert {id(p) for p in project.fit_parameters()} == {id(p) for p in expected}
         assert any(p is root for p in project.fit_parameters())
@@ -547,9 +547,9 @@ class TestRunRecord:
     def test_the_record_names_the_minimizer_of_the_run(self):
         project = _two_layouts()
         project.experiments = {0: _synthetic(project, 0)}
-        project.minimizer = AvailableMinimizers.LMFit_leastsq
+        project.minimizer = Minimizers.LMFit_leastsq
         prepared = project.prepare_fit()
-        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project.minimizer = Minimizers.Bumps_simplex
         assert project.record_fit(prepared, None, status='failed').minimizer == 'LMFit_leastsq'
 
     def test_an_experiment_removed_before_recording_leaves_the_record_its_current_keys(self):

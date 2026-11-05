@@ -24,7 +24,7 @@ FE_RHO_M = 5.0420761  # 1e-6 / angstrom^2: 7.874 g/cm^3, 2.2 muB per atom
 
 @pytest.fixture(autouse=True)
 def _clear_map():
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 class TestConstants:
@@ -130,5 +130,5 @@ class TestMomentBounds:
     def test_a_parameter_keeps_its_own_bounds(self):
         from easyscience.variable import Parameter
 
-        given = Parameter(name='magnetic_moment', value=1.0, min=0.5, max=2.0)
+        given = Parameter(display_name='magnetic_moment', value=1.0, min=0.5, max=2.0)
         assert MaterialMagnetic(magnetic_moment=given).magnetic_moment is given

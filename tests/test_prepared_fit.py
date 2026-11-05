@@ -8,8 +8,8 @@ import warnings
 import numpy as np
 import pytest
 import scipp as sc
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import DataSet1D
@@ -25,9 +25,9 @@ Q = np.linspace(0.01, 0.2, 12)
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _model() -> Model:
@@ -163,7 +163,7 @@ class TestPreconditions:
         model.scale.max = np.inf
         model.background.fixed = False
         model.background.max = 1e-5
-        project.minimizer = AvailableMinimizers.LMFit_differential_evolution
+        project.minimizer = Minimizers.LMFit_differential_evolution
 
         with pytest.raises(FitPreconditionError) as error:
             project.prepare_fit([dataset])
@@ -173,7 +173,7 @@ class TestPreconditions:
     def test_fixed_parameters_are_not_reported(self):
         project, dataset = self._project()
         project.models[0].scale.max = np.inf  # fixed: irrelevant
-        project.minimizer = AvailableMinimizers.LMFit_differential_evolution
+        project.minimizer = Minimizers.LMFit_differential_evolution
         project.prepare_fit([dataset])
 
     def test_other_minimizers_accept_unbounded_parameters(self):
@@ -186,7 +186,7 @@ class TestPreconditions:
         project, dataset = self._project()
         project.models[0].scale.fixed = False
         project.models[0].scale.max = np.inf
-        project.minimizer = AvailableMinimizers.LMFit_differential_evolution
+        project.minimizer = Minimizers.LMFit_differential_evolution
         reached = []
         monkeypatch.setattr('lmfit.Model.fit', lambda *a, **k: reached.append(True))
         with pytest.raises(FitPreconditionError):
@@ -214,7 +214,7 @@ class TestBoundStarts:
 
     @pytest.mark.parametrize(
         ('value', 'minimizer'),
-        [(1.0, AvailableMinimizers.LMFit_leastsq), (0.5, AvailableMinimizers.LMFit_scipy_least_squares)],
+        [(1.0, Minimizers.LMFit_leastsq), (0.5, Minimizers.LMFit_scipy_least_squares)],
     )
     def test_no_warning_inside_the_range_or_for_other_methods(self, value, minimizer):
         project, dataset = self._project(value)

@@ -25,7 +25,7 @@
 - `easyscience.base_classes.ModelBase` / `EasyList`,
   `easyscience.io.SerializerComponent` / `SerializerBase` - Base classes
   for `BaseCore`, `BaseCollection`, `DataSet1D`, `CalculatorBase`
-- `easyscience.global_object` - Unique-name registry and undo stack
+- `easyscience.global_object` - Unique-name registry
 - `easyscience.fitting.calculators.interface_factory.InterfaceFactoryTemplate`
   / `ItemContainer` - `CalculatorFactory` base
 - Auth: None (Python import)

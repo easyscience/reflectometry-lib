@@ -27,15 +27,15 @@ Q = np.linspace(0.01, 0.25, 30)
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _reload(project: Project, calculator: str | None = None) -> Project:
     """Save through JSON and load into a fresh project, as a file round trip does."""
     data = json.loads(json.dumps(project.as_dict()))
-    global_object.map._clear()
+    global_object.registry.clear()
     loaded = Project()
     loaded.from_dict(data)
     if calculator is not None:
@@ -103,9 +103,9 @@ class TestSharedObjects:
     def test_parameters_and_free_set_are_unchanged(self):
         project = _contrasts()
         project.models[0].sample[1].layers[0].thickness.fixed = False
-        before = sorted(parameter.name for parameter in project.parameters)
+        before = sorted(parameter.display_name for parameter in project.parameters)
         loaded = _reload(project)
-        assert sorted(parameter.name for parameter in loaded.parameters) == before
+        assert sorted(parameter.display_name for parameter in loaded.parameters) == before
         free = [parameter for parameter in loaded.parameters if parameter.independent and not parameter.fixed]
         assert free == [loaded.models[0].sample[1].layers[0].thickness]
 
@@ -174,33 +174,38 @@ class TestPalette:
 
 
 class TestFileFormat:
-    def test_a_project_without_shared_model_objects_keeps_the_old_format(self):
+    def test_every_project_is_written_in_the_current_format(self):
         project = Project()
         project.models = ModelCollection(Model())
         assert project.as_dict()['file_format'] == Project.FILE_FORMAT
 
-    def test_sharing_raises_the_format(self):
-        assert _contrasts().as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
+    def test_every_reference_has_a_definition(self):
+        definitions, references_ = set(), set()
 
-    def _with_experiments(self, same_names: bool) -> Project:
-        project = Project()
-        project.default_model()
-        project.models.duplicate_model(0)
-        if same_names:
-            project.models[1].name = project.models[0].name
-        dataset = DataSet1D(name='data', x=Q, y=np.exp(-Q), ye=np.full(Q.size, 1e-4), model=project.models[1])
-        project.experiments = {0: dataset}
-        project._with_experiments = True
-        return project
+        def walk(node):
+            if isinstance(node, dict):
+                if '@ref_id' in node:
+                    definitions.add(node['@ref_id'])
+                if '@ref' in node:
+                    references_.add(node['@ref'])
+                for value in node.values():
+                    walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
 
-    def test_an_experiment_an_older_reader_would_fit_or_pair_differently_raises_the_format(self):
-        # An older reader fits every experiment and finds its model by name.
-        project = self._with_experiments(same_names=False)
-        assert project.as_dict()['file_format'] == Project.FILE_FORMAT
-        project.experiments[0].include_in_fit = False
-        assert project.as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
-        global_object.map._clear()
-        assert self._with_experiments(same_names=True).as_dict()['file_format'] == Project.FILE_FORMAT_SHARED
+        walk(_contrasts().as_dict())
+        assert references_
+        assert references_ <= definitions
+
+    def test_dependencies_are_written_once_by_the_library(self):
+        # Mixtures and a shared assembly give dependent parameters. easyscience 3
+        # adds its own per-parameter dependency record; the library drops it,
+        # because owners rebuild internal dependencies and user constraints are
+        # saved under `parameter_constraints`.
+        text = json.dumps(_contrasts().as_dict())
+        for key in ('_dependency_string', '_dependency_map_serializer_ids', '__serializer_id'):
+            assert key not in text
 
     def test_a_shared_object_of_another_class_is_reported_not_used(self):
         data = json.loads(json.dumps(_contrasts().as_dict()))
@@ -212,7 +217,7 @@ class TestFileFormat:
             '@module': node['@module'],
             '@class': node['@class'],
         }
-        global_object.map._clear()
+        global_object.registry.clear()
         loaded = Project()
         loaded.from_dict(data)
         assert any('is a Multilayer in the file' in line for line in loaded.load_report)
@@ -222,7 +227,7 @@ class TestFileFormat:
         data = json.loads(json.dumps(_contrasts().as_dict()))
         data['models']['data'][1]['sample']['data'][1]['@ref'] = 'no-such-id'
         data['fit_settings'] = {'minimizer': 'NoSuchEngine'}
-        global_object.map._clear()
+        global_object.registry.clear()
         loaded = Project()
         loaded.from_dict(data)
         assert any('missing from the file' in line for line in loaded.load_report)
@@ -267,17 +272,18 @@ class TestExperimentModels:
         assert loaded.experiments[1].model is loaded.models[1]
         assert loaded.load_report == []
 
-    def test_a_file_without_indices_reports_an_ambiguous_name(self):
+    def test_a_file_without_indices_loads_the_experiment_unbound(self):
+        # Models are found by index only; there is no lookup by name.
         project = self._project()
         project.experiments = {0: self._dataset(project.models[1])}
         project._with_experiments = True
         data = json.loads(json.dumps(project.as_dict()))
         del data['experiments_model_indices']
-        global_object.map._clear()
+        global_object.registry.clear()
         loaded = Project()
         loaded.from_dict(data)
-        assert loaded.experiments[0].model is loaded.models[0]
-        assert any('several models' in line for line in loaded.load_report)
+        assert loaded.experiments[0].model is None
+        assert any('has no model' in line for line in loaded.load_report)
 
     def test_experiments_without_a_model_load_unbound(self):
         project = Project()

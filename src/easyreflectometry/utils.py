@@ -25,7 +25,7 @@ def get_as_parameter(
         If the value is None, a parameter is created with the default value and metadata from the dictionary.
 
         param value: The value to use for the parameter.  If None, the default value in the dictionary is used.
-        param name: The name of the parameter
+        param name: The display name of the parameter (core's `display_name`)
         param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter
     """
     # This is a parameter, return it
@@ -45,11 +45,11 @@ def get_as_parameter(
 
     if value is None:
         # Create a default parameter using both value and metadata from dictionary
-        return Parameter(name, **parameter_dict)
+        return Parameter(display_name=name, **parameter_dict)
     elif isinstance(value, Number):
         # Create a parameter using provided value and metadata from dictionary
         del parameter_dict['value']
-        return Parameter(name, value, **parameter_dict)
+        return Parameter(value, display_name=name, **parameter_dict)
 
     raise ValueError(f'{name} must be a Parameter, a number, or None.')
 

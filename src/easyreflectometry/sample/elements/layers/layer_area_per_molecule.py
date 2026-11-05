@@ -235,7 +235,7 @@ class LayerAreaPerMolecule(Layer):
             old = mixture._fraction
             mixture._fraction = saved_solvent_fraction
             try:
-                instance._global_object.map.prune(old.unique_name)
+                instance._global_object.registry.discard(old.unique_name)
             except (AttributeError, KeyError):
                 pass
             mixture._materials_constraints()

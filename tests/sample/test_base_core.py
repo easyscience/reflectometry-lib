@@ -60,7 +60,7 @@ class TestBaseCore:
 
     def test_construction_kwargs_stored_as_attributes(self) -> None:
         """Transitional kwargs path: extra kwargs become plain instance attrs."""
-        child = Parameter('extra_param', 5.0)
+        child = Parameter(5.0, display_name='extra_param')
         obj = _ConcreteCore(name='Kwargs', extra=child, extra2=42)
         assert obj.extra is child
         assert obj.extra2 == 42
@@ -115,7 +115,7 @@ class TestBaseCore:
     def test_generate_bindings_propagates_to_parameter_children(self) -> None:
         """Parameters stored as plain attrs should not break binding propagation."""
         mock_iface = MagicMock()
-        param = Parameter('p', 1.0)
+        param = Parameter(1.0, display_name='p')
         obj = _ConcreteCore(name='WithParam', p=param)
         obj.interface = mock_iface
         mock_iface.generate_bindings.assert_called_once_with(obj)
@@ -129,7 +129,7 @@ class TestBaseCore:
         assert child in children
 
     def test_iter_public_children_includes_instance_attrs(self) -> None:
-        param = Parameter('p', 1.0)
+        param = Parameter(1.0, display_name='p')
         obj = _ConcreteCore(name='Parent', p=param)
         children = list(obj._iter_public_children())
         assert param in children
@@ -171,40 +171,34 @@ class TestBaseCore:
     # ---- compatibility shims ----
 
     def test_get_linkable_attributes(self) -> None:
-        param = Parameter('p', 1.0)
+        param = Parameter(1.0, display_name='p')
         obj = _ConcreteCore(name='Core', p=param)
         result = obj._get_linkable_attributes()
         assert param in result
 
-    def test_get_parameters_shim(self) -> None:
-        param = Parameter('p', 1.0)
-        obj = _ConcreteCore(name='Core', p=param)
-        result = obj.get_parameters()
-        assert param in result
-
     def test_add_component(self) -> None:
         obj = _ConcreteCore(name='Core')
-        comp = Parameter('comp', 42.0)
+        comp = Parameter(42.0, display_name='comp')
         obj._add_component('my_comp', comp)
         assert obj.my_comp is comp
 
     # ---- get_all_variables ----
 
     def test_get_all_variables_includes_descriptors(self) -> None:
-        param = Parameter('p', 1.0)
+        param = Parameter(1.0, display_name='p')
         obj = _ConcreteCore(name='Core', p=param)
         result = obj.get_all_variables()
         assert param in result
 
     def test_get_all_variables_recurses_into_children(self) -> None:
-        inner_param = Parameter('inner', 2.0)
+        inner_param = Parameter(2.0, display_name='inner')
         child = _ConcreteCore(name='Child', p=inner_param)
         obj = _ConcreteCore(name='Parent', child=child)
         result = obj.get_all_variables()
         assert inner_param in result
 
     def test_get_all_variables_no_duplicates_across_children(self) -> None:
-        param = Parameter('shared', 1.0)
+        param = Parameter(1.0, display_name='shared')
         child_a = _ConcreteCore(name='A', p=param)
         child_b = _ConcreteCore(name='B', p=param)
         obj = _ConcreteCore(name='Parent', a=child_a, b=child_b)
@@ -266,10 +260,10 @@ class TestBaseCore:
         """Round-trip through a real subclass (Material) to verify BaseCore serialization."""
         from easyreflectometry.sample.elements.materials.material import Material
 
-        global_object.map._clear()
+        global_object.registry.clear()
         obj = Material(sld=2.0, isld=0.5, name='TestMat')
         d = obj.to_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         restored = Material.from_dict(d)
         assert restored.name == 'TestMat'
@@ -278,7 +272,7 @@ class TestBaseCore:
 
     def test_round_trip_skips_interface(self) -> None:
         """Round-trip via to_dict → from_dict should strip the interface."""
-        global_object.map._clear()
+        global_object.registry.clear()
         obj = _ConcreteCore(name='WithIface')
         d = obj.to_dict()
         assert 'interface' not in d

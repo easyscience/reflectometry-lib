@@ -178,7 +178,7 @@ class TestLayerAreaPerMolecule(unittest.TestCase):
             roughness=3,
         )
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = LayerAreaPerMolecule.from_dict(p_dict)
@@ -211,7 +211,7 @@ class TestLayerAreaPerMolecule(unittest.TestCase):
 
         original_mol_sld = p.material.material.sld.value
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = LayerAreaPerMolecule.from_dict(p_dict)
 

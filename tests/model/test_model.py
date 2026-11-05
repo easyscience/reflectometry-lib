@@ -358,7 +358,7 @@ def test_dict_round_trip(interface):
     for additional_layer in [SurfactantLayer(), Multilayer(), RepeatingMultilayer()]:
         model.add_assemblies(additional_layer)
     src_dict = model.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     model_from_dict = Model.from_dict(src_dict)
@@ -447,46 +447,46 @@ class TestModelRoundTrip:
     """Tests verifying serialization round-trip for the Model class."""
 
     def test_basic_round_trip_preserves_name(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(name='MyModel')
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.name == 'MyModel'
 
     def test_round_trip_preserves_scale_and_background(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(scale=2.0, background=1e-7)
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.scale.value == 2.0
         assert restored.background.value == 1e-7
 
     def test_round_trip_preserves_resolution_function(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(resolution_function=PercentageFwhm(3.0))
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         sigma_to_fwhm = 2.0 * np.sqrt(2.0 * np.log(2.0))
         assert np.allclose(restored._resolution_function.smearing(100), 3.0 / 100.0 * 100.0 / sigma_to_fwhm)
 
     def test_round_trip_preserves_interface(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         interface = CalculatorFactory()
         model = Model(interface=interface)
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.interface().name == 'refnx'
 
     def test_round_trip_preserves_is_default(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model()
         model.is_default = True
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         # Note: is_default is a runtime flag that may not survive round-trip
         # because from_dict reconstructs via __init__ which resets _is_default.

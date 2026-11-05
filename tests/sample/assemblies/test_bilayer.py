@@ -20,12 +20,8 @@ class TestBilayer:
     def setup_method(self):
         from easyscience import global_object
 
-        # Clear the global object map to prevent name collisions
-        # Accessing private _clear method as Map doesn't expose a public clear
-        if hasattr(global_object.map, 'clear'):
-            global_object.map.clear()
-        elif hasattr(global_object.map, '_clear'):
-            global_object.map._clear()
+        # Clear the global object registry to prevent name collisions
+        global_object.registry.clear()
 
     def test_default(self):
         """Test default bilayer creation with expected structure."""
@@ -325,7 +321,7 @@ def test_dict_round_trip():
         conformal_roughness=False,
     )
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)
@@ -339,7 +335,7 @@ def test_dict_round_trip_constraints_enabled():
     # When
     p = Bilayer(constrain_heads=True, conformal_roughness=True)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)
@@ -355,7 +351,7 @@ def test_dict_round_trip_constraints_disabled():
     # When
     p = Bilayer(constrain_heads=False, conformal_roughness=False)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)

@@ -19,6 +19,9 @@ def DEFAULT_ELEMENTS(interface):
 
 
 class ModelCollection(BaseCollection):
+    # Saved so a reloaded project assigns the next colour as before.
+    _arg_spec = BaseCollection._arg_spec + ['next_color_index']
+
     def __init__(
         self,
         *models: Tuple[Model],
@@ -112,7 +115,7 @@ class ModelCollection(BaseCollection):
         next_color_index = collection_dict.pop('next_color_index', None)
 
         # Reconstruct empty collection via EasyList.from_dict (handles
-        # protected_types and assigns name/unique_name/populate_if_none).
+        # protected_types and assigns name/unique_name).
         collection = super().from_dict(collection_dict)
 
         # Append each model without advancing the colour index — the saved

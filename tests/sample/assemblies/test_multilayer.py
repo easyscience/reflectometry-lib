@@ -164,7 +164,7 @@ class TestMultilayer(unittest.TestCase):
     def test_dict_round_trip(self):
         p = Multilayer()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = Multilayer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())
@@ -188,7 +188,7 @@ class TestMultilayer(unittest.TestCase):
         o_dict = o.as_dict()
         assert o_dict['conformal_roughness'] is True
         assert o_dict['conformal_thickness'] is False
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = Multilayer.from_dict(o_dict)
         assert q.conformal_roughness is True

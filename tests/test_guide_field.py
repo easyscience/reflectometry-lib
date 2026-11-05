@@ -74,7 +74,7 @@ class TestFieldFrameComponents:
 
 class TestRefl1dField:
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     @pytest.mark.parametrize(('angle', 'field'), [(270.0, 0.0), (90.0, 0.0), (0.0, 0.0), (45.0, 1.0)])
     def test_matches_public_refl1d(self, angle, field):
@@ -149,7 +149,7 @@ class TestRefl1dField:
 
 class TestModelField:
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     def test_defaults(self):
         model = Model()
@@ -194,7 +194,7 @@ class TestModelField:
 
 class TestFieldEnablement:
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     @staticmethod
     def _project(magnetism) -> Project:
@@ -231,11 +231,11 @@ class TestInactiveParametersLeaveTheFit:
     """`enabled = False` is display; the fitter reads `fixed`."""
 
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     @staticmethod
     def _in_fit(model, parameter):
-        return any(candidate is parameter for candidate in model.get_fit_parameters())
+        return any(candidate is parameter for candidate in model.get_free_parameters())
 
     def test_field_is_fixed_when_the_last_magnetic_layer_goes(self):
         project = TestFieldEnablement._project(LayerMagnetism(rho_m=2.5))
@@ -270,7 +270,7 @@ class TestInactiveParametersLeaveTheFit:
 
 class TestUnusedMagneticMaterialInputs:
     def setup_method(self):
-        global_object.map._clear()
+        global_object.registry.clear()
 
     @staticmethod
     def _project():

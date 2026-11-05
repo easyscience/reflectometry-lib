@@ -150,7 +150,7 @@ class MaterialSolvated(MaterialMixture):
             old = instance._fraction
             instance._fraction = saved
             try:
-                instance._global_object.map.prune(old.unique_name)
+                instance._global_object.registry.discard(old.unique_name)
             except (AttributeError, KeyError):
                 pass
             instance._materials_constraints()

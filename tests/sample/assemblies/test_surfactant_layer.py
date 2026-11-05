@@ -210,7 +210,7 @@ def test_dict_round_trip():
     )
     p = SurfactantLayer(head_layer=head_layer, tail_layer=tail_layer)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -224,7 +224,7 @@ def test_dict_round_trip_area_per_molecule_constraint_enabled():
     p = SurfactantLayer()
     p.constrain_area_per_molecule = True
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -239,7 +239,7 @@ def test_dict_round_trip_area_per_molecule_constraint_disabled():
     p.constrain_area_per_molecule = True
     p.constrain_area_per_molecule = False
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -253,7 +253,7 @@ def test_dict_round_trip_roughness_constraint_enabled():
     p = SurfactantLayer()
     p.conformal_roughness = True
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -268,7 +268,7 @@ def test_dict_round_trip_roughness_constraint_disabled():
     p.conformal_roughness = True
     p.conformal_roughness = False
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
