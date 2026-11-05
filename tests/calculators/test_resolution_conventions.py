@@ -27,10 +27,15 @@ from refnx import reflect
 
 from easyreflectometry.calculators.refl1d.wrapper import Refl1dWrapper
 from easyreflectometry.calculators.refnx.wrapper import RefnxWrapper
+from easyreflectometry.model import Model
 from easyreflectometry.model.resolution_functions import SIGMA_TO_FWHM
 from easyreflectometry.model.resolution_functions import LinearSpline
 from easyreflectometry.model.resolution_functions import PercentageFwhm
 from easyreflectometry.model.resolution_functions import Pointwise
+from easyreflectometry.sample import Layer
+from easyreflectometry.sample import Material
+from easyreflectometry.sample import Multilayer
+from easyreflectometry.sample import Sample
 
 Q = np.linspace(0.01, 0.3, 20)
 
@@ -43,24 +48,13 @@ SQZ = SIGMA_POINTS**2
 
 
 def _build_refnx():
+    """A film on a substrate on a refnx wrapper; the model is returned too, the wrapper holds it weakly."""
     wrapper = RefnxWrapper()
-    wrapper.reset_storage()
-    wrapper.create_material('Substrate')
-    wrapper.update_material('Substrate', real=2.07, imag=0.0)
-    wrapper.create_material('Film')
-    wrapper.update_material('Film', real=3.45, imag=0.0)
-    wrapper.create_layer('SubstrateLayer')
-    wrapper.assign_material_to_layer('Substrate', 'SubstrateLayer')
-    wrapper.create_layer('FilmLayer')
-    wrapper.assign_material_to_layer('Film', 'FilmLayer')
-    wrapper.update_layer('FilmLayer', thick=100.0, rough=3.0)
-    wrapper.create_item('Item')
-    wrapper.add_layer_to_item('FilmLayer', 'Item')
-    wrapper.add_layer_to_item('SubstrateLayer', 'Item')
-    wrapper.create_model('MyModel')
-    wrapper.add_item('Item', 'MyModel')
-    wrapper.update_model('MyModel', bkg=0.0)
-    return wrapper
+    film = Layer(Material(3.45, 0.0, 'Film'), 100.0, 3.0, 'FilmLayer')
+    substrate = Layer(Material(2.07, 0.0, 'Substrate'), 0.0, 0.0, 'SubstrateLayer')
+    model = Model(Sample(Multilayer([film, substrate], 'Item')), 1.0, 0.0, name='MyModel')
+    wrapper.register_model(model)
+    return wrapper, model
 
 
 def _build_refl1d():
@@ -95,9 +89,9 @@ def _capture_refnx_x_err(monkeypatch, resolution_function):
 
     monkeypatch.setattr(reflect.ReflectModel, '__call__', spy)
 
-    wrapper = _build_refnx()
+    wrapper, model = _build_refnx()
     wrapper.set_resolution_function(resolution_function)
-    wrapper.calculate(Q, 'MyModel')
+    wrapper.calculate(Q, model.unique_name)
     return captured['x_err']
 
 

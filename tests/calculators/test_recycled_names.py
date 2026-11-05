@@ -110,10 +110,10 @@ class TestRecycledNameGetsABlankEntry:
         assert wrapper.get_layer_value(name, 'thickness') == 50
         assert not interface().include_magnetism
 
-    @pytest.mark.parametrize('engine', ['refnx', 'refl1d'])
-    def test_material_on_a_dead_materials_name_is_blank(self, engine):
+    def test_material_on_a_dead_materials_name_is_blank(self):
+        # refl1d only: refnx keeps no backend objects between evaluations.
         interface = CalculatorFactory()
-        interface.switch(engine)
+        interface.switch('refl1d')
         dead = Material(4.0, 0.5, name='dead', interface=interface)
         name = dead.unique_name
         wrapper = interface()._wrapper
@@ -125,7 +125,7 @@ class TestRecycledNameGetsABlankEntry:
 
         assert reborn.unique_name == name
         assert wrapper.storage['material'][name] is not stale
-        assert wrapper.get_material_value(name, 'rho' if engine == 'refl1d' else 'real') == 1.0
+        assert wrapper.get_material_value(name, 'rho') == 1.0
 
     def test_model_on_a_dead_models_name_drops_its_resolution(self):
         from easyreflectometry.model import PercentageFwhm

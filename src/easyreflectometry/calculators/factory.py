@@ -60,8 +60,12 @@ class CalculatorFactory:
         self._calculator.bind(model)
 
     def reset_storage(self) -> None:
-        """Reset storage."""
-        return self().reset_storage()
+        """Stop serving every model."""
+        self().reset_storage()
+
+    def discard_model(self, model_id: str) -> None:
+        """Stop serving the model with *model_id*."""
+        self().discard_model(model_id)
 
     def sld_profile(self, model_id: str) -> tuple:
         """Sld profile."""

@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-from ..calculator_base import CalculatorBase
+from ..storage_calculator_base import StorageCalculatorBase
 from .wrapper import Refl1dWrapper
 
 
-class Refl1d(CalculatorBase):
+class Refl1d(StorageCalculatorBase):
     """Calculator for refl1."""
 
     name = 'refl1d'
