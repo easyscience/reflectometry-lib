@@ -164,16 +164,15 @@ Untracked in the working copy (not on `develop`): `.planning/`,
 
 ## Naming Conventions
 
-**Files:** snake*case modules; tests `test*<module>.py`; private module
-`\_bumps_constraints.py`.
+**Files:** snake*case modules; tests
+`test*<module>.py`; private module `\_bumps_constraints.py`.
 
 **Classes:** PascalCase (`MultiFitter`, `PreparedFit`, `FitRun`,
 `InequalitySpec`, `PolarizedDataSet`); core import aliased as
 `EasyScienceMultiFitter`; private subclasses prefixed `_`.
 
-**Functions:** snake*case; private helpers `*`-prefixed;
-`Project`exposes`\*\_at_index` accessors for GUI use
-(`model_data_for_experiment_at_index`).
+**Functions:** snake*case; private helpers
+`*`-prefixed; `Project`exposes`\*\_at_index` accessors for GUI use (`model_data_for_experiment_at_index`).
 
 **Constants:** UPPER_SNAKE (`DEFAULT_MINIMIZER`, `GUIDE_FIELD_ANGLE`,
 `DEFAULT_THETA_M`, `SIGMA_TO_FWHM`, `USER_CONSTRAINT_FLAG`).

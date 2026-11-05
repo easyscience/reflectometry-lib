@@ -62,8 +62,7 @@ class CalculatorBase(metaclass=ABCMeta):
         self._links = {}
 
     def bind(self, model: Material | MaterialMixture | Layer | BaseAssembly | Model) -> None:
-        """Create the backend entry of *model* and link its parameters to it.
-        """
+        """Create the backend entry of *model* and link its parameters to it."""
         for key, conversion, setter in self.create(model):
             parameters = {}
             for parameter in model._get_linkable_attributes():

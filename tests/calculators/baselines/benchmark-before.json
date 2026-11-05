@@ -39,11 +39,7 @@
         "max_ms": 19877.558800159022,
         "n": 3
       },
-      "n_evaluations": [
-        404,
-        404,
-        404
-      ]
+      "n_evaluations": [404, 404, 404]
     },
     "refnx/fit/repeated_10x20_3_contrasts/300q": {
       "fit": {
@@ -52,11 +48,7 @@
         "max_ms": 2907.462500035763,
         "n": 3
       },
-      "n_evaluations": [
-        29,
-        29,
-        29
-      ]
+      "n_evaluations": [29, 29, 29]
     },
     "refl1d/five_layer/300q": {
       "cold_build_and_first_call_ms": 168.49219985306263,
@@ -83,11 +75,7 @@
         "max_ms": 5824.137800140306,
         "n": 3
       },
-      "n_evaluations": [
-        512,
-        512,
-        512
-      ]
+      "n_evaluations": [512, 512, 512]
     },
     "refl1d/fit/repeated_10x20_3_contrasts/300q": {
       "fit": {
@@ -96,11 +84,7 @@
         "max_ms": 2374.143799999729,
         "n": 3
       },
-      "n_evaluations": [
-        29,
-        29,
-        29
-      ]
+      "n_evaluations": [29, 29, 29]
     },
     "refl1d/polarized_cache/300q": {
       "cache_miss": {
@@ -123,11 +107,7 @@
         "max_ms": 863.9145998749882,
         "n": 3
       },
-      "n_evaluations": [
-        65,
-        65,
-        65
-      ]
+      "n_evaluations": [65, 65, 65]
     }
   }
 }
