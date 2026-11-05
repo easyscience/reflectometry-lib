@@ -65,9 +65,8 @@ is computed by pluggable engine wrappers (refnx, refl1d) behind
 - Purpose: Post-hoc posterior analysis and chain persistence
 - Location: `src/easyreflectometry/analysis/bayesian.py`
 - Contains: `PosteriorResults` (summary, corner, trace, distribution,
-  credible*interval, gelman_rubin, save),
-  `posterior_predictive*\*`, `save_posterior`/`load_posterior` with
-  fingerprinted sidecar
+  credible*interval, gelman_rubin, save), `posterior_predictive*\*`,
+  `save_posterior`/`load_posterior` with fingerprinted sidecar
 - Depends on: plotly (required), arviz (optional), numpy
 
 **Model / Sample Layer:**
