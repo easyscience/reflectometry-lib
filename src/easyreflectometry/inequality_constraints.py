@@ -58,6 +58,7 @@ from typing import Optional
 
 import numpy as np
 from asteval import Interpreter
+from easyscience.fitting.engine_base import PARAMETER_PREFIX
 from easyscience.variable import DescriptorNumber
 from easyscience.variable import Parameter
 
@@ -85,9 +86,8 @@ class UnitError(ValueError):
 RELATIONS = ('<', '<=', '>', '>=')
 _RELATION_ALIASES = {'≤': '<=', '≥': '>=', '=<': '<=', '=>': '>='}
 
-#: BUMPS prefixes every EasyScience parameter name; must match
-#: ``easyscience.fitting.minimizers.minimizer_base.MINIMIZER_PARAMETER_PREFIX``.
-_BUMPS_PREFIX = 'p'
+#: BUMPS prefixes every EasyScience parameter name with core's prefix.
+_BUMPS_PREFIX = PARAMETER_PREFIX
 
 _SAFE_SYMBOLS = {
     'pi': np.pi,
@@ -334,7 +334,7 @@ def _source_for(parameter: DescriptorNumber, bumps_pars: Dict[str, Any], trail: 
     * dependent parameter → its dependency expression, expanded recursively.
     """
     if id(parameter) in trail:
-        raise ValueError(f"Circular dependency while expanding parameter '{parameter.name}'.")
+        raise ValueError(f"Circular dependency while expanding parameter '{parameter.display_name}'.")
     if isinstance(parameter, Parameter) and not parameter.independent:
         expression = getattr(parameter, '_clean_dependency_string', None)
         dependency_map = getattr(parameter, '_dependency_map', None) or {}
@@ -343,7 +343,7 @@ def _source_for(parameter: DescriptorNumber, bumps_pars: Dict[str, Any], trail: 
             # EasyScience; this is a defensive fallback for a foreign Parameter
             # subclass. Freezing silently would hide a bug, so say so.
             warnings.warn(
-                f"Dependent parameter '{parameter.name}' has no dependency expression; "
+                f"Dependent parameter '{parameter.display_name}' has no dependency expression; "
                 'its current value is frozen as a constant in the inequality constraint.',
                 stacklevel=2,
             )

@@ -8,8 +8,8 @@ import os
 import lmfit
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from easyscience.fitting.minimizers.utils import FitError
 
 from easyreflectometry import fit_settings as fit_settings_module
@@ -24,9 +24,9 @@ PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 class _Stop(Exception):
@@ -69,7 +69,7 @@ class TestValidation:
 
     def test_dfo_tolerance_is_capped(self):
         with pytest.raises(ValueError, match='0.1'):
-            FitSettings(minimizer=AvailableMinimizers.DFO_leastsq, tolerance=0.5).validate()
+            FitSettings(minimizer=Minimizers.DFO_leastsq, tolerance=0.5).validate()
 
     @pytest.mark.parametrize('value', [0, -5, 2.5, True])
     def test_budget_must_be_a_positive_integer(self, value):
@@ -79,7 +79,7 @@ class TestValidation:
     def test_sampling_needs_bumps(self):
         with pytest.raises(ValueError, match='BUMPS'):
             FitSettings(mode='sample').validate()
-        FitSettings(minimizer=AvailableMinimizers.Bumps_simplex, mode='sample').validate()
+        FitSettings(minimizer=Minimizers.Bumps_simplex, mode='sample').validate()
 
     def test_auto_objective_is_valid(self):
         FitSettings(objective='auto').validate()
@@ -103,27 +103,27 @@ class TestValidation:
         project = Project()
         project.default_model()
         project.fit_settings.tolerance = 0.5  # fine for LMFit
-        project.minimizer = AvailableMinimizers.DFO_leastsq
+        project.minimizer = Minimizers.DFO_leastsq
         with pytest.raises(ValueError, match='0.1'):
             project.fitter.fit_single_data_set_1d(_dataset())
 
     def test_minimizer_must_be_a_member(self):
         project = Project()
-        with pytest.raises(ValueError, match='AvailableMinimizers'):
+        with pytest.raises(ValueError, match='Minimizers'):
             project.minimizer = 'LMFit_leastsq'
         assert project.minimizer is fit_settings_module.DEFAULT_MINIMIZER
 
     def test_finite_bounds_only_for_differential_evolution(self):
-        assert requires_finite_bounds(AvailableMinimizers.LMFit_differential_evolution)
-        assert not requires_finite_bounds(AvailableMinimizers.LMFit_leastsq)
-        assert not requires_finite_bounds(AvailableMinimizers.Bumps_simplex)
+        assert requires_finite_bounds(Minimizers.LMFit_differential_evolution)
+        assert not requires_finite_bounds(Minimizers.LMFit_leastsq)
+        assert not requires_finite_bounds(Minimizers.Bumps_simplex)
 
 
 class TestConfigure:
     def test_writes_and_clears_the_generic_settings(self):
         project = Project()
         project.default_model()
-        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project.minimizer = Minimizers.Bumps_simplex
         core = project.fitter.easy_science_multi_fitter
         project.fit_settings.tolerance = 1e-4
         project.fit_settings.max_evaluations = 77
@@ -144,9 +144,9 @@ class TestConfigure:
         settings.configure(core)
         assert core.tolerance is None
         assert settings.engine_kwargs() == {'minimizer_kwargs': {'ftol': 1e-4}}
-        settings.minimizer = AvailableMinimizers.LMFit_powell
+        settings.minimizer = Minimizers.LMFit_powell
         assert settings.engine_kwargs() == {'minimizer_kwargs': {'tol': 1e-4}}
-        settings.minimizer = AvailableMinimizers.LMFit_differential_evolution
+        settings.minimizer = Minimizers.LMFit_differential_evolution
         settings.set_option('seed', 1)
         assert settings.engine_kwargs() == {'minimizer_kwargs': {'seed': 1, 'tol': 1e-4}}
 
@@ -162,7 +162,7 @@ class TestConfigure:
 class TestSerialization:
     def test_round_trip(self):
         settings = FitSettings(
-            minimizer=AvailableMinimizers.Bumps_simplex,
+            minimizer=Minimizers.Bumps_simplex,
             mode='sample',
             tolerance=1e-5,
             max_evaluations=300,
@@ -178,13 +178,13 @@ class TestSerialization:
     )
     def test_aliases_resolve_without_warning(self, alias, member):
         settings, report = FitSettings.from_dict({'minimizer': alias})
-        assert settings.minimizer is AvailableMinimizers[member]
+        assert settings.minimizer is Minimizers[member]
         assert report == []
-        assert FitSettings(minimizer=AvailableMinimizers[alias]).minimizer is AvailableMinimizers[member]
+        assert FitSettings(minimizer=Minimizers[alias]).minimizer is Minimizers[member]
 
     @pytest.mark.parametrize(('alias', 'option', 'value'), [('LMFit', 'epsfcn', 1e-5), ('DFO', 'rhobeg', 0.5)])
     def test_options_set_on_an_alias_survive_a_round_trip(self, alias, option, value):
-        settings = FitSettings(minimizer=AvailableMinimizers[alias])
+        settings = FitSettings(minimizer=Minimizers[alias])
         settings.set_option(option, value)
         restored, report = FitSettings.from_dict(settings.to_dict())
         assert restored.engine_kwargs() == settings.engine_kwargs() != {}
@@ -279,7 +279,7 @@ class TestOptions:
         ],
     )
     def test_invalid_options_are_rejected(self, options):
-        settings = FitSettings(minimizer=AvailableMinimizers.LMFit_differential_evolution)
+        settings = FitSettings(minimizer=Minimizers.LMFit_differential_evolution)
         with pytest.raises(ValueError):
             for name, value in options.items():
                 settings.set_option(name, value)
@@ -295,14 +295,14 @@ class TestOptions:
         ],
     )
     def test_values_next_to_an_excluded_bound_are_accepted(self, minimizer, name, value):
-        FitSettings(minimizer=AvailableMinimizers[minimizer]).set_option(name, value)
+        FitSettings(minimizer=Minimizers[minimizer]).set_option(name, value)
 
     def test_rhobeg_must_be_positive(self):
         with pytest.raises(ValueError, match=r'\(0.0, None\]'):
-            FitSettings(minimizer=AvailableMinimizers.DFO_leastsq).set_option('rhobeg', 0.0)
+            FitSettings(minimizer=Minimizers.DFO_leastsq).set_option('rhobeg', 0.0)
 
     def test_rhobeg_must_exceed_the_dfo_tolerance(self):
-        settings = FitSettings(minimizer=AvailableMinimizers.DFO_leastsq, tolerance=1e-3)
+        settings = FitSettings(minimizer=Minimizers.DFO_leastsq, tolerance=1e-3)
         settings.set_option('rhobeg', 1e-3)
         with pytest.raises(ValueError, match='rhobeg'):
             settings.validate()
@@ -310,18 +310,18 @@ class TestOptions:
         settings.validate()
 
     def test_bumps_has_no_options(self):
-        assert fit_settings_module.option_schema(AvailableMinimizers.Bumps_simplex) == []
+        assert fit_settings_module.option_schema(Minimizers.Bumps_simplex) == []
 
     def test_options_are_kept_per_minimizer(self):
-        settings = FitSettings(minimizer=AvailableMinimizers.LMFit_cobyla)
+        settings = FitSettings(minimizer=Minimizers.LMFit_cobyla)
         with pytest.raises(ValueError):
             settings.set_option('epsfcn', 1e-6)
-        settings.minimizer = AvailableMinimizers.LMFit_leastsq
+        settings.minimizer = Minimizers.LMFit_leastsq
         settings.set_option('epsfcn', 1e-6)
-        settings.minimizer = AvailableMinimizers.DFO_leastsq
+        settings.minimizer = Minimizers.DFO_leastsq
         settings.set_option('rhobeg', 0.5)
         assert settings.engine_kwargs() == {'rhobeg': 0.5}
-        settings.minimizer = AvailableMinimizers.LMFit_leastsq
+        settings.minimizer = Minimizers.LMFit_leastsq
         assert settings.engine_kwargs() == {'minimizer_kwargs': {'epsfcn': 1e-6}}
         settings.set_option('epsfcn', None)
         assert settings.engine_options == {'DFO_leastsq': {'rhobeg': 0.5}}
@@ -375,12 +375,12 @@ class TestProjectLifetime:
         project.fit_settings.objective = 'mighell'
         core = project.fitter.easy_science_multi_fitter
         project_dict = project.as_dict()
-        project_dict['fit_settings'] = FitSettings(minimizer=AvailableMinimizers.Bumps_simplex).to_dict()
-        global_object.map._clear()
+        project_dict['fit_settings'] = FitSettings(minimizer=Minimizers.Bumps_simplex).to_dict()
+        global_object.registry.clear()
 
         project.from_dict(project_dict)
 
-        assert project.fit_settings == FitSettings(minimizer=AvailableMinimizers.Bumps_simplex)
+        assert project.fit_settings == FitSettings(minimizer=Minimizers.Bumps_simplex)
         assert project.fitter.easy_science_multi_fitter is not core
         assert project.fitter.easy_science_multi_fitter.tolerance is None
 
@@ -390,19 +390,19 @@ class TestProjectLifetime:
         dataset = _dataset()
         dataset.model = project.models[0]
         fitter = project.fitter
-        fitter.switch_minimizer(AvailableMinimizers.Bumps)
-        assert project.minimizer is AvailableMinimizers.Bumps_simplex
-        assert fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+        fitter.switch_minimizer(Minimizers.Bumps)
+        assert project.minimizer is Minimizers.Bumps_simplex
+        assert fitter.easy_science_multi_fitter.minimizer.enum is Minimizers.Bumps_simplex
         # A new hand-out of the fitter keeps it, and so do the runs.
-        assert project.fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
-        assert project.prepare_fit([dataset]).core_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+        assert project.fitter.easy_science_multi_fitter.minimizer.enum is Minimizers.Bumps_simplex
+        assert project.prepare_fit([dataset]).core_fitter.minimizer.enum is Minimizers.Bumps_simplex
 
     def test_malformed_settings_in_a_project_file_fall_back(self):
         project = Project()
         project.default_model()
         project_dict = project.as_dict()
         project_dict['fit_settings'] = {'minimizer': [], 'objective': [], 'engine_options': []}
-        global_object.map._clear()
+        global_object.registry.clear()
         project.from_dict(project_dict)
         assert project.fit_settings == FitSettings()
         assert len(project.load_report) == 3
@@ -413,25 +413,14 @@ class TestProjectLifetime:
         project.default_model()
         project_dict = project.as_dict()
         project_dict['fit_settings'] = {'minimizer': 'NoSuchEngine'}
-        global_object.map._clear()
+        global_object.registry.clear()
         project.from_dict(project_dict)
         assert project.load_report
 
         project_dict['fit_settings'] = FitSettings().to_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         project.from_dict(project_dict)
         assert project.load_report == []
-
-    def test_legacy_file_without_fit_settings(self):
-        project = Project()
-        project.default_model()
-        project_dict = project.as_dict()
-        del project_dict['fit_settings']
-        project_dict['fitter_minimizer'] = 'Bumps'
-        global_object.map._clear()
-        project.from_dict(project_dict)
-        assert project.minimizer is AvailableMinimizers.Bumps_simplex
-        assert project.fit_settings.mode == 'minimize'
 
     def test_prepared_fit_uses_a_snapshot(self):
         project = Project()
@@ -483,10 +472,9 @@ class TestNativeBoundary:
 
     @pytest.mark.parametrize(
         'minimizer',
-        [AvailableMinimizers.LMFit_powell, pytest.param(AvailableMinimizers.LMFit_cobyla, marks=pytest.mark.slow)],
+        [Minimizers.LMFit_powell, pytest.param(Minimizers.LMFit_cobyla, marks=pytest.mark.slow)],
     )
     def test_lmfit_scalar_methods_run_with_a_tolerance(self, minimizer):
-        # Regression: on easyscience 2.5 a core-side tolerance crashes these.
         project = self._project(minimizer)
         project.fit_settings.tolerance = 1e-6
         result = project.fitter.fit_single_data_set_1d(_dataset())
@@ -495,10 +483,10 @@ class TestNativeBoundary:
     def test_a_switch_on_the_project_fitter_is_the_engine_that_runs(self):
         from easyscience.fitting.minimizers.minimizer_bumps import Bumps
 
-        project = self._project(AvailableMinimizers.LMFit_leastsq)
+        project = self._project(Minimizers.LMFit_leastsq)
         project.fit_settings.max_evaluations = 5
         fitter = project.fitter
-        fitter.switch_minimizer(AvailableMinimizers.Bumps_simplex)
+        fitter.switch_minimizer(Minimizers.Bumps_simplex)
         result = fitter.fit_single_data_set_1d(_dataset())
         assert result.minimizer_engine is Bumps
 
@@ -512,7 +500,7 @@ class TestNativeBoundary:
             raise _Stop
 
         monkeypatch.setattr(minimizer_dfo.dfols, 'solve', fake_solve)
-        project = self._project(AvailableMinimizers.DFO_leastsq)
+        project = self._project(Minimizers.DFO_leastsq)
         project.fit_settings.tolerance = 1e-3
         project.fit_settings.set_option('rhobeg', 0.25)
         with _stops_at_the_engine():
@@ -522,8 +510,8 @@ class TestNativeBoundary:
     def test_differential_evolution_seed_is_reproducible(self):
         values = []
         for _ in range(2):
-            global_object.map._clear()
-            project = self._project(AvailableMinimizers.LMFit_differential_evolution)
+            global_object.registry.clear()
+            project = self._project(Minimizers.LMFit_differential_evolution)
             project.fit_settings.max_evaluations = 200
             project.fit_settings.set_option('seed', 7)
             project.fit_settings.set_option('popsize', 5)

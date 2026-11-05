@@ -130,7 +130,7 @@ class TestLayer(unittest.TestCase):
     def test_dict_round_trip(self):
         p = Layer()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = Layer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())

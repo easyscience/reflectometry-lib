@@ -71,7 +71,7 @@ class TestMaterialCollection:
         p.insert(0, m)
         p.add_material(k)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = MaterialCollection.from_dict(p_dict)

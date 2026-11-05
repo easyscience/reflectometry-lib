@@ -119,7 +119,7 @@ class TestMaterialMixture:
         # When
         p = MaterialMixture()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = MaterialMixture.from_dict(p_dict)
@@ -170,7 +170,7 @@ class TestMaterialMixture:
         float kwarg in ``__init__``)."""
         p = MaterialMixture(Material(sld=2.0), Material(sld=6.0), fraction=0.25)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialMixture.from_dict(p_dict)
         assert_almost_equal(q.sld, 3.0)

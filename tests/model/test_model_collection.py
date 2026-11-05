@@ -162,7 +162,7 @@ class TestModelCollection:
         model_3 = Model(name='Model3')
         p = ModelCollection(model_1, model_2, model_3)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = ModelCollection.from_dict(p_dict)
@@ -181,7 +181,7 @@ class TestModelCollection:
 
         expected_index = collection._next_color_index
         dict_repr = collection.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         restored = ModelCollection.from_dict(dict_repr)
 
@@ -191,7 +191,7 @@ class TestModelCollection:
         collection = ModelCollection()
         legacy_dict = collection.as_dict()
         legacy_dict.pop('next_color_index', None)
-        global_object.map._clear()
+        global_object.registry.clear()
 
         restored = ModelCollection.from_dict(legacy_dict)
         restored.add_model()
@@ -215,23 +215,23 @@ class TestModelCollection:
 
     def test_from_dict_preserves_data_count(self):
         """from_dict should reconstruct the exact number of models."""
-        global_object.map._clear()
+        global_object.registry.clear()
         model_1 = Model(name='M1')
         model_2 = Model(name='M2')
         p = ModelCollection(model_1, model_2)
         d = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         q = ModelCollection.from_dict(d)
         assert len(q) == 2
 
     def test_from_dict_with_extra_data_entries(self):
         """from_dict should handle data entries correctly."""
-        global_object.map._clear()
+        global_object.registry.clear()
         model_1 = Model(name='M1')
         model_2 = Model(name='M2')
         p = ModelCollection(model_1, model_2)
         d = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         q = ModelCollection.from_dict(d)
         assert len(q) == 2
         assert q[0].name == 'M1'

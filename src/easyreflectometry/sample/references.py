@@ -130,7 +130,7 @@ def deserialize(value: Any) -> Any:
     """`value` deserialized: a reference node resolves to its object, anything
     else (including an unresolvable reference, built as a default of its class)
     goes through the serializer."""
-    from easyscience.io import SerializerBase
+    from easyscience.base_classes import SerializerBase
 
     obj = resolve(value)
     # A single-key dict routes the value through the serializer's per-value
@@ -155,7 +155,7 @@ def _is_sample_object(value: Any) -> bool:
         return True
     if not (isinstance(value, dict) and '@module' in value and '@class' in value):
         return False
-    from easyscience.io import SerializerBase
+    from easyscience.base_classes import SerializerBase
 
     from easyreflectometry.sample.base_core import BaseCore
 
@@ -200,14 +200,6 @@ def prune(node: Any) -> Any:
     collect(node)
     strip(node)
     return node
-
-
-def contains_references(node: Any) -> bool:
-    if isinstance(node, dict):
-        return REF in node or any(contains_references(value) for value in node.values())
-    if isinstance(node, list):
-        return any(contains_references(value) for value in node)
-    return False
 
 
 def rebuild(obj: Any, keep: dict[int, Any]) -> Any:

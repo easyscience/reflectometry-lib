@@ -32,7 +32,7 @@ FE_RHO_M = 5.0420761  # 1e-6 / angstrom^2: 7.874 g/cm^3, 2.2 muB per atom
 
 @pytest.fixture(autouse=True)
 def _clear_map():
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _film_from(tmp_path, **material_kwargs):

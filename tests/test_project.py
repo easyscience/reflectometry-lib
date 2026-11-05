@@ -10,8 +10,8 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from easyscience.variable import Parameter
 from numpy.testing import assert_allclose
 
@@ -36,7 +36,7 @@ class TestProject:
     def _clean_map(self):
         # A Project registers fixed unique names; one still alive from an earlier
         # test on the same worker would collide with the next one's.
-        global_object.map._clear()
+        global_object.registry.clear()
 
     def test_constructor(self):
         # When Then
@@ -107,7 +107,7 @@ class TestProject:
         assert project._report is None
         assert project._created is False
         assert project._with_experiments is False
-        assert global_object.map.vertices() == ['project_models', 'project_materials']
+        assert global_object.registry.names() == ['project_models', 'project_materials']
         assert project._fitter is None
         assert project._current_material_index == 0
         assert project._current_model_index == 0
@@ -159,7 +159,7 @@ class TestProject:
 
     def test_default_model(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
 
         # Then
@@ -274,7 +274,7 @@ class TestProject:
         project = Project()
 
         # Then Expect
-        assert project.minimizer == AvailableMinimizers.LMFit_leastsq
+        assert project.minimizer == Minimizers.LMFit_leastsq
 
     def test_set_minimizer(self):
         # When
@@ -283,12 +283,12 @@ class TestProject:
         fitter = project.fitter
 
         # Then
-        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project.minimizer = Minimizers.Bumps_simplex
 
         # Expect: the settings own it, and the fitter picks it up when handed out
-        assert project.fit_settings.minimizer is AvailableMinimizers.Bumps_simplex
+        assert project.fit_settings.minimizer is Minimizers.Bumps_simplex
         assert project.fitter is fitter
-        assert fitter.easy_science_multi_fitter.minimizer.enum is AvailableMinimizers.Bumps_simplex
+        assert fitter.easy_science_multi_fitter.minimizer.enum is Minimizers.Bumps_simplex
 
     def test_fitter_none(self):
         # When
@@ -451,7 +451,6 @@ class TestProject:
             'calculator',
             'file_format',
             'fit_settings',
-            'fitter_minimizer',
             'info',
             'materials',
             'models',
@@ -494,12 +493,17 @@ class TestProject:
         remove_keys(project_dict['models'])
         assert project_dict['models'] == models_dict
 
-    def test_from_dict_missing_file_format_raises(self):
-        """Loading a dict without file_format should raise ValueError."""
+    @pytest.mark.parametrize('file_format', [None, 2, 3])
+    def test_from_dict_refuses_a_1x_file_before_building_anything(self, file_format):
+        """Files written by easyreflectometry 1.x are refused with a message, not migrated."""
         project = Project()
-        bad_dict = {'info': {}, 'with_experiments': False, 'models': {'data': []}}
-        with pytest.raises(ValueError, match='predates file_format=2'):
-            project.from_dict(bad_dict)
+        # A 1.x parameter carries `name`, which the easyscience 3 constructors reject.
+        legacy_parameter = {'@module': 'easyscience.variable', '@class': 'Parameter', 'name': 'scale', 'value': 1.0}
+        old_dict = {'info': {}, 'with_experiments': False, 'models': {'data': [{'scale': legacy_parameter}]}}
+        if file_format is not None:
+            old_dict['file_format'] = file_format
+        with pytest.raises(ValueError, match='written by easyreflectometry 1.x'):
+            project.from_dict(old_dict)
 
     def test_from_dict_wrong_file_format_raises(self):
         """Loading a dict with an unsupported file_format should raise ValueError."""
@@ -515,7 +519,7 @@ class TestProject:
 
     def test_from_dict_correct_file_format_succeeds(self):
         """Loading a dict with the correct file_format should work."""
-        global_object.map._clear()
+        global_object.registry.clear()
         # Build a valid project dict with at least one model
         src_project = Project()
         src_project._info['name'] = 'Test'
@@ -524,7 +528,7 @@ class TestProject:
         src_project.default_model()  # ensures at least one model exists
         src_project._with_experiments = False
         good_dict = src_project.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(good_dict)
@@ -532,32 +536,33 @@ class TestProject:
         assert project._with_experiments is False
         assert len(project._models) >= 1
 
-    def test_as_dict_materials_not_in_model(self):
+    def test_as_dict_writes_unused_materials_only_in_the_palette(self):
         # When
         project = Project()
         models = ModelCollection(Model())
         project.models = models
-        material = Material()
+        material = Material(name='Unused')
         project.add_material(material)
 
         # Then
-        project_dict = project.as_dict(include_materials_not_in_model=True)
+        project_dict = project.as_dict()
 
         # Expect
-        assert project_dict['materials_not_in_model']['data'][0] == material.as_dict(skip=['interface'])
+        assert 'materials_not_in_model' not in project_dict
+        assert 'Unused' in [entry.get('name') for entry in project_dict['materials']]
 
     def test_as_dict_minimizer(self):
         # When
         project = Project()
-        project.minimizer = AvailableMinimizers.LMFit
+        project.minimizer = Minimizers.LMFit
 
         # Then
         project_dict = project.as_dict()
 
         # Expect
         # The alias is saved as the member it stands for
-        assert project_dict['fitter_minimizer'] == 'LMFit_leastsq'
         assert project_dict['fit_settings']['minimizer'] == 'LMFit_leastsq'
+        assert 'fitter_minimizer' not in project_dict
 
     def test_replace_collection(self):
         # When
@@ -591,26 +596,26 @@ class TestProject:
 
     def test_dict_round_trip(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         models = ModelCollection(Model())
         project.models = models
         material = Material(6.908, -0.278, 'Boron')
         project.add_material(material)
-        minimizer = AvailableMinimizers.LMFit
+        minimizer = Minimizers.LMFit
         project.minimizer = minimizer
         fpath = os.path.join(PATH_STATIC, 'example.ort')
         project.load_experiment_for_model_at_index(fpath)
-        project_dict = project.as_dict(include_materials_not_in_model=True)
+        project_dict = project.as_dict()
         project_materials_dict = project._materials.as_dict()
 
         del material
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         new_project = Project()
         new_project.from_dict(project_dict)
-        new_project_dict = new_project.as_dict(include_materials_not_in_model=True)
+        new_project_dict = new_project.as_dict()
         new_project_materials_dict = new_project._materials.as_dict()
 
         # Expect
@@ -621,7 +626,7 @@ class TestProject:
 
     def test_dict_round_trip_experiment_without_xe(self):
         # When - an experiment whose x-uncertainty was explicitly cleared
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.models = ModelCollection(Model(name='First'), Model(name='Second'))
         fpath = os.path.join(PATH_STATIC, 'example.ort')
@@ -631,14 +636,15 @@ class TestProject:
 
         # Expect - name and model are recorded regardless of xe
         assert project_dict['experiments_names'][1] == 'Example data file from refnx docs'
-        assert project_dict['experiments_models'][1] == project.models[1].name
+        assert project_dict['experiments_model_indices'][1] == 1
+        assert 'experiments_models' not in project_dict
         # xe is recorded as cleared; the measured resolution the experiment
         # still fits with is kept alongside it.
         assert project_dict['experiments'][1][3] is None
         assert project_dict['experiments'][1][4]['smearing'] == 'Pointwise'
 
         # Then - the project loads back with the experiment attached to the same model
-        global_object.map._clear()
+        global_object.registry.clear()
         new_project = Project()
         new_project.from_dict(project_dict)
 
@@ -651,7 +657,7 @@ class TestProject:
 
     def test_save_as_json(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.default_model()
@@ -668,7 +674,7 @@ class TestProject:
 
     def test_save_as_json_overwrite(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -684,7 +690,7 @@ class TestProject:
 
     def test_save_as_json_dont_overwrite(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -701,7 +707,7 @@ class TestProject:
 
     def test_save_as_json_serialization_failure_keeps_previous_file(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -719,7 +725,7 @@ class TestProject:
 
     def test_save_as_json_write_failure_keeps_previous_file(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -736,7 +742,7 @@ class TestProject:
 
     def test_save_as_json_reports_unserializable_content_as_value_error(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -754,7 +760,7 @@ class TestProject:
     @pytest.mark.skipif(sys.platform == 'win32', reason='POSIX file modes')
     def test_save_as_json_keeps_the_file_mode_of_an_existing_project_file(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -771,7 +777,7 @@ class TestProject:
     @pytest.mark.skipif(sys.platform == 'win32', reason='POSIX file modes')
     def test_save_as_json_new_file_is_not_owner_only(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         previous_umask = os.umask(0o022)
@@ -785,7 +791,7 @@ class TestProject:
 
     def test_save_as_json_overwrite_replaces_content(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.save_as_json()
@@ -800,7 +806,7 @@ class TestProject:
 
     def test_load_from_json(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.set_path_project_parent(tmp_path)
         project.default_model()
@@ -812,7 +818,7 @@ class TestProject:
         project.save_as_json()
         project_dict = project.as_dict()
 
-        global_object.map._clear()
+        global_object.registry.clear()
         new_project = Project()
 
         # Then
@@ -833,7 +839,7 @@ class TestProject:
 
     def test_load_from_json_missing_file_raises_and_keeps_the_project(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         project._info['name'] = 'untouched'
@@ -887,7 +893,7 @@ class TestProject:
 
     def test_load_experiment(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         model_5 = Model()
         project.models = ModelCollection(Model(), Model(), Model(), Model(), Model(), model_5)
@@ -907,7 +913,7 @@ class TestProject:
 
     def test_load_experiment_sets_resolution_function_pointwise_when_xe_present(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.models = ModelCollection(Model())
 
@@ -926,7 +932,7 @@ class TestProject:
 
     def test_load_experiment_keeps_percentage_fwhm_when_no_xe(self, tmp_path):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.models = ModelCollection(Model())
 
@@ -942,7 +948,7 @@ class TestProject:
 
     def test_apply_resolution_function_prefers_pointwise_falls_back_to_percentage(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         model = Model()
         with_xe = DataSet1D(x=[0.01, 0.02], y=[1.0, 2.0], ye=[0.1, 0.1], xe=[1e-8, 4e-8])
@@ -963,7 +969,7 @@ class TestProject:
 
     def test_load_all_experiments_from_file_sets_pointwise_when_sqz_present(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.models = ModelCollection(Model())
         fpath = os.path.join(PATH_STATIC, 'test_example2.ort')
@@ -978,7 +984,7 @@ class TestProject:
 
     def test_experimental_data_at_index(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.models = ModelCollection(Model())
         fpath = os.path.join(PATH_STATIC, 'example.ort')
@@ -998,7 +1004,7 @@ class TestProject:
 
     def test_q(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
 
         # Then
@@ -1052,7 +1058,7 @@ class TestProject:
         assert any(parameter is project.models[0].total_thickness for parameter in parameters)
 
     def test_parameters_enabled_flags(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1069,7 +1075,7 @@ class TestProject:
         assert getattr(middle_layer.roughness, 'enabled', True) is True
 
     def test_parameters_read_does_not_overwrite_enabled_flag(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1081,7 +1087,7 @@ class TestProject:
         assert parameter.enabled is True
 
     def test_current_experiment_index_getter_and_setter(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         # Default value should be 0
         assert project.current_experiment_index == 0
@@ -1099,7 +1105,7 @@ class TestProject:
         assert project.current_experiment_index == 0
 
     def test_current_experiment_index_setter_out_of_range(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         # Add one experiment
         project._experiments[0] = DataSet1D(name='exp0', x=[], y=[], ye=[], xe=[], model=None)
@@ -1114,7 +1120,7 @@ class TestProject:
 
     def test_get_materials_from_model(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         material_1 = Material(sld=2.07, isld=0.0, name='Material 1')
         material_2 = Material(sld=3.47, isld=0.0, name='Material 2')
@@ -1138,7 +1144,7 @@ class TestProject:
 
     def test_get_materials_from_model_duplicate_materials(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         # Use the same material in multiple layers
         shared_material = Material(sld=2.07, isld=0.0, name='Shared Material')
@@ -1161,7 +1167,7 @@ class TestProject:
 
     def test_add_sample_from_orso(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1189,7 +1195,7 @@ class TestProject:
 
     def test_add_sample_from_orso_multiple_additions(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
 
         material_1 = Material(sld=2.0, isld=0.0, name='Material A')
@@ -1219,7 +1225,7 @@ class TestProject:
 
     def test_add_sample_from_orso_with_shared_materials(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
 
         # Create first sample with a material
@@ -1247,7 +1253,7 @@ class TestProject:
         """Test that replace_models_from_orso replaces all existing
         models with a single new model."""
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1290,7 +1296,7 @@ class TestProject:
 
     def test_replace_models_from_orso_rebinds_loaded_experiments(self):
         """An experiment loaded before the models are replaced follows the new model and can be fitted."""
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         project.load_new_experiment(os.path.join(PATH_STATIC, 'Ni_example.ort'))
@@ -1303,7 +1309,7 @@ class TestProject:
 
     def test_is_default_model_true(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1312,7 +1318,7 @@ class TestProject:
 
     def test_is_default_model_false_non_default_sample(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         material = Material(sld=4.0, isld=0.0, name='Custom Material')
         layer = Layer(material=material, thickness=50, roughness=1, name='Custom Layer')
@@ -1325,7 +1331,7 @@ class TestProject:
 
     def test_is_default_model_index_out_of_range(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1336,7 +1342,7 @@ class TestProject:
 
     def test_is_default_model_multiple_models(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a custom model
@@ -1352,7 +1358,7 @@ class TestProject:
 
     def test_remove_model_at_index(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a second model
@@ -1372,7 +1378,7 @@ class TestProject:
 
     def test_remove_model_at_index_adjusts_current_index(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a second model
@@ -1395,7 +1401,7 @@ class TestProject:
 
     def test_remove_model_at_index_resets_indices_when_at_end(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a second model
@@ -1416,7 +1422,7 @@ class TestProject:
 
     def test_remove_model_at_index_removes_its_experiments_on_request(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a second model
@@ -1447,7 +1453,7 @@ class TestProject:
 
     def test_remove_model_at_index_rekeys_the_remaining_experiments(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
 
@@ -1478,7 +1484,7 @@ class TestProject:
 
     def test_remove_model_at_index_raises_for_last_model(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         assert len(project._models) == 1
@@ -1489,7 +1495,7 @@ class TestProject:
 
     def test_remove_model_at_index_raises_for_invalid_index(self):
         # When
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         # Add a second model so we have 2

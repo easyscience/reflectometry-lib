@@ -8,9 +8,9 @@ from typing import Any
 from typing import List
 from typing import Optional
 
+from easyscience.base_classes import EasyBase
 from easyscience.base_classes import EasyList
-from easyscience.base_classes.new_base import NewBase
-from easyscience.io import SerializerBase
+from easyscience.base_classes import SerializerBase
 from easyscience.variable import Parameter
 
 from easyreflectometry.sample import references
@@ -39,6 +39,11 @@ class BaseCollection(EasyList):
     additional configuration as kwargs.
     """
 
+    # The constructor fields a collection writes (core's encoder reads an
+    # object's `_arg_spec`). Without it, core 3 would also write every
+    # keyword-only argument, including the `populate_if_none` control flag.
+    _arg_spec = ['name']
+
     def __init__(
         self,
         name: str,
@@ -66,9 +71,8 @@ class BaseCollection(EasyList):
         if extra_items:
             args = tuple(args) + tuple(extra_items)
         super().__init__(*args, unique_name=unique_name, **kwargs)
-        # `populate_if_none` is a control flag, not state. It is serialized so
-        # `from_dict` knows whether the original construction filled in
-        # defaults; the value should be `False` once the data is restored.
+        # `populate_if_none` is a construction-time control flag, not state, and
+        # is not serialized; `from_dict` always builds with it off.
         self.populate_if_none = populate_if_none
 
         # Assign interface LAST — propagates to all contained items.
@@ -137,7 +141,7 @@ class BaseCollection(EasyList):
         The type check from `EasyList.insert` is bypassed: each subclass
         accepts a single item type (Layer / Material / BaseAssembly / Model)
         and enforces it elsewhere, while the EasyList check would require
-        every item to be a `NewBase` subclass — which was historically not
+        every item to be a `EasyBase` subclass — which was historically not
         guaranteed and forces an extra coupling we don't need.
         """
         if not isinstance(index, int):
@@ -193,10 +197,6 @@ class BaseCollection(EasyList):
 
     # ----- compatibility shims (kept until call sites migrate) -----
 
-    def get_parameters(self) -> List[Parameter]:
-        """Compatibility alias for legacy callers; prefer `get_all_parameters`."""
-        return self.get_all_parameters()
-
     def get_all_variables(self) -> List:
         """Flat list of every Parameter/Descriptor across all items.
 
@@ -226,10 +226,6 @@ class BaseCollection(EasyList):
 
     def get_free_parameters(self) -> List[Parameter]:
         return [p for p in self.get_all_parameters() if p.independent and not p.fixed]
-
-    def get_fit_parameters(self) -> List[Parameter]:
-        """Alias kept for the minimizer; matches `ModelBase.get_fit_parameters`."""
-        return self.get_free_parameters()
 
     def _get_linkable_attributes(self) -> List[Parameter]:
         """Bridge for `easyscience.fitting.calculators.interface_factory.generate_bindings`."""
@@ -262,10 +258,10 @@ class BaseCollection(EasyList):
         """
         if skip is None:
             skip = []
-        if self._protected_types != [NewBase] and 'protected_types' not in d:
+        if self._protected_types != [EasyBase] and 'protected_types' not in d:
             d['protected_types'] = [{'@module': c.__module__, '@class': c.__name__} for c in self._protected_types]
         # Encode each item. Defer to the encoder's recursive walk so nested
-        # ModelBase / NewBase items get properly serialized.
+        # ModelBase / EasyBase items get properly serialized.
         item_skip = list(skip)
         items: list = []
         for item in self._data:
@@ -289,12 +285,8 @@ class BaseCollection(EasyList):
         so existing callers (`Project`, `Model.as_dict`, etc.) can keep
         passing `skip=['unique_name']` or similar.
 
-        ``NewBase.to_dict`` mutates the ``skip`` list in-place (e.g. it
-        appends ``'unique_name'`` when the collection's own unique_name is
-        default-generated). We therefore pass a *copy* to it, otherwise the
-        mutation would leak into the per-item serialization below and force
-        every item Parameter dict to drop its ``unique_name`` — breaking the
-        from_dict round-trip.
+        ``skip`` is passed on as a copy, so nothing done to it while encoding
+        the collection itself leaks into the per-item serialization below.
         """
         skip = list(skip or [])
         if 'interface' not in skip:
@@ -308,8 +300,8 @@ class BaseCollection(EasyList):
         # The items this encodes (through `_convert_to_dict`) are replaced
         # below, so they must not be registered as shared-object occurrences.
         with references.suspended():
-            dict_repr = NewBase.to_dict(self, skip=list(skip))
-        if self._protected_types != [NewBase]:
+            dict_repr = EasyBase.to_dict(self, skip=list(skip))
+        if self._protected_types != [EasyBase]:
             dict_repr['protected_types'] = [{'@module': c.__module__, '@class': c.__name__} for c in self._protected_types]
         dict_repr['data'] = []
         for item in self._data:
@@ -357,12 +349,14 @@ class BaseCollection(EasyList):
         raw_items = temp_dict.pop('data', [])
         kwargs = SerializerBase.deserialize_dict(temp_dict)
         data = [references.deserialize(item) for item in raw_items]
-        return cls(data, protected_types=protected_types, **kwargs)
+        # The saved items are the whole content: a collection saved empty loads
+        # empty instead of being filled with defaults.
+        return cls(data, protected_types=protected_types, populate_if_none=False, **kwargs)
 
     def __deepcopy__(self, memo):
         """Round-trip via dict-skip-unique to get a fresh copy.
 
-        `NewBase.__copy__` already does this; the override is kept (rather
+        `EasyBase.__copy__` already does this; the override is kept (rather
         than deleted) to mirror the legacy `BaseCollection.__deepcopy__`
         semantics — callers that relied on `copy.deepcopy(collection)` still
         get a clone built from `from_dict(as_dict(skip=['unique_name']))`.

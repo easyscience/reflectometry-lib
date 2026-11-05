@@ -4,17 +4,60 @@
 __author__ = 'github.com/wardsimon'
 from typing import Callable
 
-from easyscience.fitting.calculators.interface_factory import InterfaceFactoryTemplate
-
 from easyreflectometry.calculators import CalculatorBase
 
 from .polarization import PolarizationChannel
 
 
-class CalculatorFactory(InterfaceFactoryTemplate):
+class CalculatorFactory:
+    """Creates the calculators and switches between them.
+
+    Calling the factory returns the active calculator. Every calculator class
+    registers itself in ``CalculatorBase._calculators``; the first one is the
+    default.
+    """
+
     def __init__(self):
         """Init function."""
-        super().__init__(interface_list=CalculatorBase._calculators)
+        self._interfaces = CalculatorBase._calculators
+        if not self._interfaces:
+            raise NotImplementedError('No calculator is available.')
+        self._current_interface = self._interfaces[0]
+        self._calculator = self._current_interface()
+
+    @property
+    def available_interfaces(self) -> list[str]:
+        """Names of the calculators that can be switched to."""
+        return [interface.name for interface in self._interfaces]
+
+    @property
+    def current_interface(self) -> type[CalculatorBase]:
+        """Class of the active calculator."""
+        return self._current_interface
+
+    @property
+    def current_interface_name(self) -> str:
+        """Name of the active calculator."""
+        return self._current_interface.name
+
+    def switch(self, new_interface: str) -> None:
+        """Make a fresh instance of the calculator *new_interface* the active one.
+
+        Nothing carries over: the caller binds its models again (see
+        ``Project.calculator``).
+        """
+        if new_interface not in self.available_interfaces:
+            raise AttributeError('The user supplied interface is not valid.')
+        self._current_interface = self._interfaces[self.available_interfaces.index(new_interface)]
+        self._calculator = self._current_interface()
+
+    def __call__(self) -> CalculatorBase:
+        """The active calculator."""
+        return self._calculator
+
+    def generate_bindings(self, model) -> None:
+        """Bind *model* (one object of a sample tree) to the active calculator."""
+        self._calculator.bind(model)
 
     def reset_storage(self) -> None:
         """Reset storage."""

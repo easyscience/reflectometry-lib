@@ -206,19 +206,6 @@ refl1d is exercised mainly through polarized/magnetism tests and
 
 ## 5. Repository hygiene
 
-### Stale build files
-
-**Issue:** `Makefile` references `setup.py`, `flake8`, Sphinx and an
-`EasyReflectometry/` directory; `.coveragerc` points at
-`EasyReflectometry/`. Neither reflects hatchling/ruff/MkDocs/`src/`.
-
-**Files:** `Makefile`, `.coveragerc`
-
-**Impact:** Low. Confusing for new contributors.
-
-**Fix approach:** Delete both (pixi tasks cover everything) or rewrite
-to call `pixi run`.
-
 ### Duplicate CI matrices
 
 **Issue:** `python-ci.yml` and `python-package.yml` (pip-based, run on

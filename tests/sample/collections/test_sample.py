@@ -236,7 +236,7 @@ class TestSample:
         repeating = RepeatingMultilayer()
         p.append(repeating)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = Sample.from_dict(p_dict)

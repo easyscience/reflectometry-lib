@@ -12,8 +12,8 @@ import warnings
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import DataSet1D
@@ -31,14 +31,14 @@ STATIC = os.path.join(os.path.dirname(__file__), '..', '..', '_static')
 PATHS = {'example': os.path.join(STATIC, 'example.ort'), 'e361': os.path.join(STATIC, 'e361r.txt')}
 #: Classical chi2 references, see reference.md.
 REFERENCE = {('example', 'model'): 1262.352, ('example', 'pointwise'): 1008.59, ('e361', 'model'): 380.506}
-LEAST_SQUARES = [AvailableMinimizers.LMFit_leastsq, AvailableMinimizers.LMFit_scipy_least_squares]
+LEAST_SQUARES = [Minimizers.LMFit_leastsq, Minimizers.LMFit_scipy_least_squares]
 
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def film_model(case: str) -> Model:
@@ -102,7 +102,7 @@ class TestSyntheticRecovery:
     def _problem(self):
         model = film_model('e361')
         film_layer = model.sample[2].layers[0]
-        for parameter in model.get_fit_parameters():
+        for parameter in model.get_free_parameters():
             parameter.fixed = True
         truth = [film_layer.thickness, film_layer.material.sld, film_layer.roughness]
         for parameter, value, (low, high) in zip(truth, self.TRUTH.values(), [(100, 250), (1, 5), (1, 10)]):
@@ -166,7 +166,7 @@ def test_every_free_parameter_reaches_the_calculator(case):
     model = film_model(case)
     q = np.linspace(0.01, 0.25, 200)
     base = model.interface.fit_func(q, model.unique_name)
-    for parameter in model.get_fit_parameters():
+    for parameter in model.get_free_parameters():
         value = parameter.value
         step = max(1e-6 * abs(value), 1e-9)
         parameter.value = value + step if value + step <= parameter.max else value - step
@@ -182,7 +182,7 @@ def test_leastsq_warns_when_a_parameter_starts_on_a_bound():
     fitter = MultiFitter(model)
     with pytest.warns(UserWarning, match='start on a bound'):
         fitter.prepare(fitter._datagroup_inputs(load(PATHS['e361']))[1])
-    fitter.switch_minimizer(AvailableMinimizers.LMFit_scipy_least_squares)
+    fitter.switch_minimizer(Minimizers.LMFit_scipy_least_squares)
     with warnings.catch_warnings():
         warnings.simplefilter('error')
         fitter.prepare(fitter._datagroup_inputs(load(PATHS['e361']))[1])
@@ -222,6 +222,6 @@ class TestRealData:
         parameter = model.sample[2].layers[0].thickness
         parameter.value = parameter.max
         fitter = MultiFitter(model)
-        fitter.switch_minimizer(AvailableMinimizers.LMFit_scipy_least_squares)
+        fitter.switch_minimizer(Minimizers.LMFit_scipy_least_squares)
         fitter.fit(load(PATHS[case]))
         assert classical_cost(model, load_as_dataset(PATHS[case])) <= 1.10 * REFERENCE[(case, 'model')]

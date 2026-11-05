@@ -31,9 +31,9 @@ Q = np.linspace(0.01, 0.3, 40)
 
 @pytest.fixture(autouse=True)
 def _isolated_global_object():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _film_model(name: str, interface, magnetism: LayerMagnetism | None = None) -> Model:

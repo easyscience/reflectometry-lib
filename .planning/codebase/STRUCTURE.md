@@ -78,8 +78,7 @@ reflectometry-lib/
 ├── .github/workflows/                  # 24 workflows (see INTEGRATIONS.md)
 ├── pyproject.toml, pixi.toml, pixi.lock
 ├── CHANGELOG.md                        # "Unreleased" section is the develop delta since 1.8.0
-├── .copier-answers.yml                 # scaffold from gh:easyscience/templates
-└── Makefile, .coveragerc               # stale (reference setup.py / EasyReflectometry/ dir)
+└── .copier-answers.yml                 # scaffold from gh:easyscience/templates
 ```
 
 Untracked in the working copy (not on `develop`): `.planning/`,

@@ -150,7 +150,7 @@ class Model(BaseCore):
         # Rebuilt by every constructor call — including `from_dict` — and
         # deliberately *not* serialized: it is a function of the layers.
         self._total_thickness = Parameter(
-            name='total_thickness',
+            display_name='total_thickness',
             value=0.0,
             unit='angstrom',
             fixed=True,

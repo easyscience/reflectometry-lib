@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
-from easyscience.fitting.minimizers.minimizer_base import MINIMIZER_PARAMETER_PREFIX
+from easyscience.fitting.engine_base import PARAMETER_PREFIX
 
 if TYPE_CHECKING:
     from easyreflectometry.model import ResolutionFunction
@@ -1120,14 +1120,14 @@ def credible_intervals(
 
 
 def _save_parameter_state(model) -> dict:
-    """Save the current values and errors of all free parameters in a model.
+    """Save the current values and errors of all independent parameters in a model.
 
-    :param model: A reflectometry model with ``get_parameters()``.
+    :param model: A reflectometry model with ``get_all_parameters()``.
     :return: Dictionary mapping ``unique_name`` to ``(value, error)``.
     :rtype: dict
     """
     state = {}
-    for param in model.get_parameters():
+    for param in model.get_all_parameters():
         # Dependent parameters (constraints, `Model.total_thickness`) are derived
         # from the others: they cannot be written back, and restoring the
         # parameters they follow already restores them.
@@ -1139,10 +1139,10 @@ def _save_parameter_state(model) -> dict:
 def _restore_parameter_state(model, state: dict) -> None:
     """Restore parameter values and errors from a saved state.
 
-    :param model: A reflectometry model with ``get_parameters()``.
+    :param model: A reflectometry model with ``get_all_parameters()``.
     :param state: Dictionary mapping ``unique_name`` to ``(value, error)``.
     """
-    for param in model.get_parameters():
+    for param in model.get_all_parameters():
         if param.unique_name in state:
             param.value = state[param.unique_name][0]
             param.error = state[param.unique_name][1]
@@ -1155,12 +1155,12 @@ def _apply_draw(model, draws: np.ndarray, param_names: list[str], row: int) -> N
     removing the minimizer prefix, which avoids collisions when repeated models
     or multi-contrast fits contain similarly named parameters.
 
-    :param model: A reflectometry model with ``get_parameters()``.
+    :param model: A reflectometry model with ``get_all_parameters()``.
     :param draws: Posterior samples array.
     :param param_names: Parameter names matching the columns of ``draws``.
     :param row: Index of the draw to apply.
     """
-    param_lookup = {p.unique_name: p for p in model.get_parameters()}
+    param_lookup = {p.unique_name: p for p in model.get_all_parameters()}
     for j, name in enumerate(param_names):
         if name in param_lookup:
             param_lookup[name].value = float(draws[row, j])
@@ -1399,10 +1399,7 @@ def load_posterior(path: str, skip: int = 0) -> 'PosteriorResults':
 
     if param_names is None:
         # Fallback: strip BUMPS 'p' prefix from state.labels
-        param_names = [
-            lbl[len(MINIMIZER_PARAMETER_PREFIX) :] if lbl.startswith(MINIMIZER_PARAMETER_PREFIX) else lbl
-            for lbl in state.labels
-        ]
+        param_names = [lbl[len(PARAMETER_PREFIX) :] if lbl.startswith(PARAMETER_PREFIX) else lbl for lbl in state.labels]
 
     return PosteriorResults(
         draws=draws,

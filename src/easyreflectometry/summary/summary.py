@@ -12,7 +12,7 @@ from urllib.parse import quote
 
 import matplotlib.pyplot as plt
 import numpy as np
-from easyscience.fitting import AvailableMinimizers
+from easyscience import Minimizers
 from easyscience.variable import DescriptorNumber
 from easyscience.variable import Parameter
 from xhtml2pdf import pisa
@@ -138,7 +138,7 @@ def _named_parameters(project: Project):
     for key, (parameter, owner_name) in found.items():
         model_names = '+'.join(owners[key])
         # A model's own parameter (scale) has the model as its owner: name it once.
-        yield ' '.join(dict.fromkeys([model_names, owner_name, parameter.name])), parameter
+        yield ' '.join(dict.fromkeys([model_names, owner_name, parameter.display_name])), parameter
 
 
 def _truncate_name(name: str, max_len: int = _NAME_MAX_LEN) -> str:
@@ -500,7 +500,7 @@ class Summary:
             minimizer_name, minimizer_package = self._project.minimizer.name, self._project.minimizer.package
             fit_free_params = 'N/A'
         else:
-            member = AvailableMinimizers.__members__.get(run.minimizer)
+            member = Minimizers.__members__.get(run.minimizer)
             minimizer_name, minimizer_package = run.minimizer, member.package if member else None
             fit_free_params = f'{run.n_free_parameters}' if run.status == 'completed' else 'N/A'
 

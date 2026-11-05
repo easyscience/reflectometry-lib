@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import weakref
 from abc import ABCMeta
+from typing import Callable
 
 import numpy as np
-from easyscience.fitting.calculators.interface_factory import ItemContainer
-from easyscience.io import SerializerComponent
 
 # if TYPE_CHECKING:
 from easyreflectometry.model import Model
@@ -22,7 +21,7 @@ from easyreflectometry.sample import Multilayer
 from .wrapper_base import WrapperBase
 
 
-class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
+class CalculatorBase(metaclass=ABCMeta):
     """This class is a template and defines all properties that a calculator should have."""
 
     _calculators: list[CalculatorBase] = []  # class variable to store all calculators
@@ -54,11 +53,39 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         # like the wrapper storage (``(kind, unique_name)``). Weak so the
         # calculator keeps nothing alive. See `_claim`.
         self._owners: dict[tuple[str, str], weakref.ReferenceType] = {}
+        self._links: dict[str, dict[str, tuple[weakref.ReferenceType, str, Callable]]] = {}
 
     def reset_storage(self) -> None:
         r"""Reset the storage area of the calculator."""
         self._wrapper.reset_storage()
         self._owners = {}
+        self._links = {}
+
+    def bind(self, model: Material | MaterialMixture | Layer | BaseAssembly | Model) -> None:
+        """Create the backend entry of *model* and link its parameters to it.
+        """
+        for key, conversion, setter in self.create(model):
+            parameters = {}
+            for parameter in model._get_linkable_attributes():
+                parameters.setdefault(parameter.display_name, parameter)
+            links = {}
+            for label, backend_key in conversion.items():
+                if label in parameters:
+                    links[label] = (weakref.ref(parameters[label]), backend_key, setter)
+            self._links[key] = links
+            self._push(key, links)
+
+    def _push_values(self) -> None:
+        """Write the current value of every linked parameter into the backend."""
+        for key, links in self._links.items():
+            self._push(key, links)
+
+    @staticmethod
+    def _push(key: str, links: dict[str, tuple[weakref.ReferenceType, str, Callable]]) -> None:
+        for parameter_ref, backend_key, setter in links.values():
+            parameter = parameter_ref()
+            if parameter is not None:
+                setter(key, **{backend_key: parameter.value})
 
     def _claim(self, kind: str, model: Material | Layer | Multilayer | Model) -> None:
         """Make *model* the owner of its backend entry, discarding a stale one first.
@@ -83,7 +110,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             getattr(self._wrapper, f'remove_{kind}')(key)
         self._owners[(kind, key)] = weakref.ref(model)
 
-    def create(self, model: Material | Layer | Multilayer | Model) -> list[ItemContainer]:
+    def create(self, model: Material | Layer | Multilayer | Model) -> list[tuple[str, dict[str, str], Callable]]:
         """Creation function.
 
         Parameters
@@ -98,52 +125,24 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             self._claim('material', model)
             if key not in self._wrapper.storage['material'].keys():
                 self._wrapper.create_material(key)
-            r_list.append(
-                ItemContainer(
-                    key,
-                    self._material_link,
-                    self._wrapper.get_material_value,
-                    self._wrapper.update_material,
-                )
-            )
+            r_list.append((key, self._material_link, self._wrapper.update_material))
         elif issubclass(t_, MaterialMixture):
             key = model.unique_name
             self._claim('material', model)
             if key not in self._wrapper.storage['material'].keys():
                 self._wrapper.create_material(key)
-            r_list.append(
-                ItemContainer(
-                    key,
-                    self._material_link,
-                    self._wrapper.get_material_value,
-                    self._wrapper.update_material,
-                )
-            )
+            r_list.append((key, self._material_link, self._wrapper.update_material))
         elif issubclass(t_, Layer):
             key = model.unique_name
             self._claim('layer', model)
             if key not in self._wrapper.storage['layer'].keys():
                 self._wrapper.create_layer(key)
-            r_list.append(
-                ItemContainer(
-                    key,
-                    self._layer_link,
-                    self._wrapper.get_layer_value,
-                    self._wrapper.update_layer,
-                )
-            )
+            r_list.append((key, self._layer_link, self._wrapper.update_layer))
             self.assign_material_to_layer(model.material.unique_name, key)
         elif issubclass(t_, BaseAssembly):
             key = model.unique_name
             self._wrapper.create_item(key)
-            r_list.append(
-                ItemContainer(
-                    key,
-                    self._item_link,
-                    self._wrapper.get_item_value,
-                    self._wrapper.update_item,
-                )
-            )
+            r_list.append((key, self._item_link, self._wrapper.update_item))
             for i in model.layers:
                 self.add_layer_to_item(i.unique_name, model.unique_name)
         elif issubclass(t_, Model):
@@ -152,14 +151,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             # kept under the name (resolution function, cached cross-sections).
             self._claim('model', model)
             self._wrapper.create_model(key)
-            r_list.append(
-                ItemContainer(
-                    key,
-                    self._model_link,
-                    self._wrapper.get_model_value,
-                    self._wrapper.update_model,
-                )
-            )
+            r_list.append((key, self._model_link, self._wrapper.update_model))
             for i in model.sample:
                 self.add_item_to_model(i.unique_name, key)
         return r_list
@@ -242,6 +234,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
             Resolution to smear with; by default the one registered for the
             model through :meth:`set_resolution_function`.
         """
+        self._push_values()
         return self._wrapper.calculate(x_array, model_id, resolution_function=resolution_function)
 
     def reflectivity_profile_channel(
@@ -273,6 +266,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         np.ndarray
             Reflectivity of the requested channel at q.
         """
+        self._push_values()
         return self._wrapper.calculate_channel(x_array, model_id, channel, resolution_function=resolution_function)
 
     def polarized_reflectivity_profiles(
@@ -299,6 +293,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         dict[str, np.ndarray]
             Reflectivity per spin channel, keyed 'pp', 'pm', 'mp', 'mm' (in that order).
         """
+        self._push_values()
         return self._wrapper.calculate_polarized(x_array, model_id, resolution_function=resolution_function)
 
     def sld_profile(self, model_id: str) -> tuple[np.ndarray, np.ndarray]:
@@ -314,6 +309,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         tuple[np.ndarray, np.ndarray]
             z and sld(z).
         """
+        self._push_values()
         return self._wrapper.sld_profile(model_id)
 
     def magnetic_sld_profile(self, model_id: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -331,6 +327,7 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
             z, sld(z), magnetic sld rhoM(z) and magnetic angle thetaM(z).
         """
+        self._push_values()
         return self._wrapper.magnetic_sld_profile(model_id)
 
     def set_resolution_function(self, resolution_function: ResolutionFunction, model_id: str | None = None) -> None:
@@ -364,6 +361,8 @@ class CalculatorBase(SerializerComponent, metaclass=ABCMeta):
         layer_id : str
             The layer id.
         """
+        self._links.get(layer_id, {}).pop('rho_m', None)
+        self._links.get(layer_id, {}).pop('theta_m', None)
         self._wrapper.remove_layer_magnetism(layer_id)
 
     @property

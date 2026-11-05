@@ -191,7 +191,7 @@ class TestRepeatingMultilayer(unittest.TestCase):
     def test_dict_round_trip(self):
         p = RepeatingMultilayer(populate_if_none=True)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = RepeatingMultilayer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())
@@ -203,7 +203,7 @@ class TestRepeatingMultilayer(unittest.TestCase):
         p = RepeatingMultilayer(layers, 8, conformal_roughness=True)
         p_dict = p.as_dict()
         assert p_dict['conformal_roughness'] is True
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = RepeatingMultilayer.from_dict(p_dict)
         assert q.conformal_roughness is True

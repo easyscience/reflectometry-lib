@@ -7,12 +7,14 @@ Tests for the BUMPS inequality-constraints enforcement
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from easyscience.fitting.minimizers import minimizer_bumps
+from easyscience.fitting.samplers import sampler_bumps
 
 from easyreflectometry import _bumps_constraints
 from easyreflectometry.data import DataSet1D
+from easyreflectometry.fitting import MultiFitter
 from easyreflectometry.inequality_constraints import InequalitySpec
 from easyreflectometry.model import Model
 from easyreflectometry.project import Project
@@ -24,9 +26,9 @@ from easyreflectometry.sample import Sample
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _two_layer_project():
@@ -55,7 +57,7 @@ def unpatched_modules():
     BUMPS' own driver, and puts that state back afterwards.
     """
     originals = []
-    for module in (minimizer_bumps,):
+    for module in (minimizer_bumps, sampler_bumps):
         driver = module.FitDriver
         while getattr(driver, '_easyreflectometry_shim', False):
             driver = driver.__wrapped__
@@ -68,16 +70,17 @@ def unpatched_modules():
 
 @pytest.mark.usefixtures('unpatched_modules')
 class TestInstall:
-    def test_patches_the_consumer_namespace_and_is_idempotent(self, monkeypatch):
-        """The consumer binds ``FitDriver`` at import, so its namespace is patched."""
-        monkeypatch.setattr(minimizer_bumps, 'FitDriver', minimizer_bumps.FitDriver)
+    @pytest.mark.parametrize('module', [minimizer_bumps, sampler_bumps], ids=['fitting', 'sampling'])
+    def test_patches_each_consumer_namespace_and_is_idempotent(self, monkeypatch, module):
+        """Fitting and sampling each bind ``FitDriver`` at import, so both namespaces are patched."""
+        monkeypatch.setattr(module, 'FitDriver', module.FitDriver)
 
         _bumps_constraints.install()
-        patched = minimizer_bumps.FitDriver
+        patched = module.FitDriver
         assert getattr(patched, '_easyreflectometry_shim', False)
 
         _bumps_constraints.install()
-        assert minimizer_bumps.FitDriver is patched
+        assert module.FitDriver is patched
 
 
 @pytest.mark.slow
@@ -85,7 +88,7 @@ class TestShimAgainstARealFit:
     def test_the_patched_entry_point_is_the_one_a_fit_calls(self):
         """A signature check would not catch patching the wrong namespace."""
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.Bumps
+        project.minimizer = Minimizers.Bumps
         layers = [layer for assembly in model.sample for layer in assembly.layers]
         q = np.linspace(0.01, 0.3, 50)
         reflectivity = model.interface.fit_func(q, model.unique_name)
@@ -106,10 +109,49 @@ class TestShimAgainstARealFit:
         assert len(calls) == 1
         assert any(name.startswith('p') for name in calls[0])
 
+    def test_sampling_applies_the_constraints_to_both_datasets(self, monkeypatch):
+        """DREAM builds its problem in its own namespace; without that patch sampling is unconstrained."""
+        from easyscience.fitting.samplers.sampler_bumps import DreamSampler
+
+        project, model = _two_layer_project()
+        layers = [layer for assembly in model.sample for layer in assembly.layers]
+        for parameter in project.parameters:
+            if parameter.independent:
+                parameter.fixed = True
+        layers[1].thickness.fixed = False
+        layers[1].thickness.min, layers[1].thickness.max = 20.0, 60.0
+        q = np.linspace(0.01, 0.3, 30)
+        reflectivity = model.interface.fit_func(q, model.unique_name)
+        datasets = [
+            DataSet1D(name=name, x=q, y=reflectivity, ye=(0.05 * reflectivity) ** 2, model=model) for name in ('a', 'b')
+        ]
+        fitter = MultiFitter.for_experiments(datasets)
+        fitter.switch_minimizer(Minimizers.Bumps)
+
+        evaluated = []
+
+        class Penalty:
+            def __float__(self):
+                evaluated.append(True)
+                return 0.0
+
+        seen = {}
+        original_run = DreamSampler.run
+
+        def run(self, *args, **kwargs):
+            seen['points'] = np.size(kwargs['x'])
+            return original_run(self, *args, **kwargs)
+
+        monkeypatch.setattr(DreamSampler, 'run', run)
+        fitter.mcmc_sample(samples=50, burn=5, thin=1, constraints_factory=lambda pars: [Penalty()])
+
+        assert seen['points'] == 2 * q.size
+        assert evaluated
+
     def test_infeasible_start_point_warns(self):
         """This is what `model_reset()` in the shim buys; without it there is no warning."""
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.Bumps
+        project.minimizer = Minimizers.Bumps
         layers = [layer for assembly in model.sample for layer in assembly.layers]
         thickness_a, thickness_b = layers[1].thickness, layers[2].thickness
         q = np.linspace(0.01, 0.3, 50)
@@ -131,7 +173,7 @@ class TestShimAgainstARealFit:
     def test_tolerates_a_model_with_no_free_parameters(self):
         """`curve.pars` is empty then; the shim must not be the thing that breaks."""
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.Bumps
+        project.minimizer = Minimizers.Bumps
         for parameter in project.parameters:
             if parameter.independent:
                 parameter.fixed = True
@@ -189,7 +231,7 @@ class TestEngineRejection:
     def test_non_bumps_engine_is_rejected(self):
         """The message is also printed in the constraints tutorial; keep it verbatim."""
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.LMFit
+        project.minimizer = Minimizers.LMFit
         q = np.linspace(0.01, 0.3, 50)
         reflectivity = model.interface.fit_func(q, model.unique_name)
         dataset = DataSet1D(name='sim', x=q, y=reflectivity, ye=(0.05 * reflectivity) ** 2)
@@ -219,7 +261,7 @@ class TestTheCoreIsNeverHandedTheKeyword:
 
     def test_a_constrained_fit_does_not_pass_it_down(self, monkeypatch):
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.Bumps
+        project.minimizer = Minimizers.Bumps
         layers = [layer for assembly in model.sample for layer in assembly.layers]
         thickness = layers[1].thickness
         q = np.linspace(0.01, 0.3, 50)
@@ -268,7 +310,7 @@ class TestExplicitFactoryOnTheRawFitter:
         model.scale.fixed = model.background.fixed = True
         dataset = DataSet1D(name='sim', x=q, y=reflectivity, ye=(0.05 * reflectivity) ** 2, model=model, auto_background=False)
         fitter = MultiFitter.for_experiments([dataset])
-        fitter.easy_science_multi_fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        fitter.easy_science_multi_fitter.switch_minimizer(Minimizers.Bumps)
         weights = 1.0 / np.sqrt(np.asarray(dataset.ye))
         return fitter, ([np.asarray(dataset.x)], [np.asarray(dataset.y)], [weights])
 
