@@ -951,7 +951,7 @@ class Project:
         """Whether the active calculator can model magnetic samples.
 
         The GUI uses this to gate magnetism-related controls (e.g. when the
-        refnx or bornagain backend is selected).
+        refnx backend is selected).
         """
         return self._calculator().supports_magnetism
 

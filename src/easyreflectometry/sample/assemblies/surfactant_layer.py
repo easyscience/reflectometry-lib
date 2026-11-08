@@ -199,7 +199,6 @@ class SurfactantLayer(BaseAssembly):
         """
         if not self.conformal_roughness:
             raise ValueError('Roughness must be conformal to use this function.')
-        solvent_roughness.value = self.tail_layer.roughness.value
         solvent_roughness.make_dependent_on(dependency_expression='a', dependency_map={'a': self.tail_layer.roughness})
 
     def constrain_multiple_contrast(

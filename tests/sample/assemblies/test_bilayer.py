@@ -407,6 +407,21 @@ def test_constrain_solvent_roughness():
     assert layer.roughness.value == 5.0
 
 
+def test_a_constrained_solvent_roughness_can_follow_another_bilayer():
+    # One solvent layer shared by two contrasts: the second call rewires it.
+    first, second = Bilayer(conformal_roughness=True), Bilayer(conformal_roughness=True)
+    first.front_head_layer.roughness.value = 2.0
+    second.front_head_layer.roughness.value = 5.0
+    solvent = Layer()
+    first.constrain_solvent_roughness(solvent.roughness)
+
+    second.constrain_solvent_roughness(solvent.roughness)
+
+    assert solvent.roughness.value == 5.0
+    second.front_head_layer.roughness.value = 6.0
+    assert solvent.roughness.value == 6.0
+
+
 def test_constrain_solvent_roughness_error():
     """Test error when constraining solvent roughness without conformal roughness."""
     import pytest

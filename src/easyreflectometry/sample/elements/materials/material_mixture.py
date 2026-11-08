@@ -122,8 +122,6 @@ class MaterialMixture(BaseCore):
     def material_a(self, new_material_a: Material) -> None:
         self._material_a = new_material_a
         self._materials_constraints()
-        if self.interface is not None:
-            self.interface.generate_bindings(self)
         self._update_name()
 
     @property
@@ -134,8 +132,6 @@ class MaterialMixture(BaseCore):
     def material_b(self, new_material_b: Material) -> None:
         self._material_b = new_material_b
         self._materials_constraints()
-        if self.interface is not None:
-            self.interface.generate_bindings(self)
         self._update_name()
 
     @property

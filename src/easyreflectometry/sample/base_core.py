@@ -100,9 +100,8 @@ class BaseCore(ModelBase):
         """Propagate the interface to child objects, then bind via the calculator.
 
         We propagate to any child whose class advertises an ``interface`` property
-        with a setter. That includes both the new `BaseCore`-based children and
-        legacy `BasedBase`-derived collections (which extend `SerializerComponent`,
-        not `EasyBase`).
+        with a setter (`BaseCore` children and the `BaseCollection`s). The
+        calculator keeps only models; for every other object binding is a no-op.
         """
         if self._interface is None:
             raise AttributeError('Interface error for generating bindings. `interface` has to be set.')

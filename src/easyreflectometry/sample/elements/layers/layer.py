@@ -125,7 +125,7 @@ class Layer(BaseCore):
         """Turn on magnetism on the attached calculator.
 
         Raises `NotImplementedError` when the active calculator cannot model
-        magnetic samples (e.g. refnx or bornagain).
+        magnetic samples (e.g. refnx).
         """
         self.interface().include_magnetism = True
 
