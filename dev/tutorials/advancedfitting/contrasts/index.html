@@ -4024,7 +4024,7 @@ The structural parameters are free once, in the reference; the contrasts share o
 <span class="n">film_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">3.0</span>
 
 <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">project</span><span class="o">.</span><span class="n">models</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_fit_parameters</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_free_parameters</span><span class="p">():</span>
         <span class="n">parameter</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">model</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">model</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span>
@@ -4057,7 +4057,7 @@ film.sld.value = 1.0
 film_layer.roughness.value = 3.0
 
 for model in project.models:
-    for parameter in model.get_fit_parameters():
+    for parameter in model.get_free_parameters():
         parameter.fixed = True
     model.scale.fixed = False
     model.scale.min, model.scale.max = 0.5, 1.5
@@ -4091,13 +4091,6 @@ print('scales:', [round(float(model.scale.value), 3) for model in project.models
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
@@ -4163,7 +4156,7 @@ ax.legend()</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;matplotlib.legend.Legend at 0x7f2ce4a31940&gt;</pre>
+<pre>&lt;matplotlib.legend.Legend at 0x752d6c793cb0&gt;</pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -4710,7 +4703,7 @@ CMSi film roughness follows the reference: True
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">project_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()))</span>
 
-<span class="n">global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>  <span class="c1"># simulate a fresh Python session</span>
+<span class="n">global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># simulate a fresh Python session</span>
 <span class="n">reloaded</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
 <span class="n">reloaded</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">project_dict</span><span class="p">)</span>
 
@@ -4720,7 +4713,7 @@ CMSi film roughness follows the reference: True
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-18">project_dict = json.loads(json.dumps(project.as_dict()))
 
-global_object.map._clear()  # simulate a fresh Python session
+global_object.registry.clear()  # simulate a fresh Python session
 reloaded = Project()
 reloaded.from_dict(project_dict)
 
@@ -4735,13 +4728,6 @@ print('H2O shares the oxide and film:', reloaded.models[1].sample[1] is reloaded
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">

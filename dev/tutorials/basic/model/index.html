@@ -2884,13 +2884,6 @@ left behind, so review and reset the bounds before fitting.</p>
   not Python keywords. An unmapped name that happens to match a
   mathematical builtin (<code>e</code>, <code>pi</code>, <code>sin</code>, ...) evaluates silently
   instead of raising an error.</li>
-<li>If the model is already attached to a calculator, regenerate the
-  bindings after changing constraints so the calculator picks up the new
-  dependency graph:</li>
-</ul>
-<div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
-</code></pre></div>
-<ul>
 <li>Constraints applied with <code>constrain</code>, <code>constrain_equal</code> and
   <code>constrain_to_sum</code> are preserved when a project is saved and reloaded.
   Dependencies created by calling <code>make_dependent_on</code> directly are not,

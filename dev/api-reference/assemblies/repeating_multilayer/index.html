@@ -3686,14 +3686,7 @@
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3779,7 +3772,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on magnetism on the attached calculator.</span>
 
 <span class="sd">        Raises `NotImplementedError` when the active calculator cannot model</span>
-<span class="sd">        magnetic samples (e.g. refnx or bornagain).</span>
+<span class="sd">        magnetic samples (e.g. refnx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">include_magnetism</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -3817,28 +3810,23 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach or remove the magnetic properties of this layer.</span>
 
-<span class="sd">        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become</span>
-<span class="sd">        live on the backend; removing drops the layer&#39;s magnetic state from the</span>
-<span class="sd">        backend (and switches calculator magnetism off entirely when this was the</span>
-<span class="sd">        last magnetic layer).</span>
+<span class="sd">        Attaching switches calculator magnetism on and passes the calculator on</span>
+<span class="sd">        to the magnetism; removing lets the calculator switch magnetism off when</span>
+<span class="sd">        this was the last magnetic layer it serves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
-        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
-            <span class="c1"># The detached object must not follow the material any more...</span>
-            <span class="k">if</span> <span class="n">coupled</span><span class="p">:</span>
-                <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
-            <span class="c1"># ...and its value changes must no longer reach the backend.</span>
-            <span class="c1"># `property()` (fget/fset/fdel all None) is easyscience&#39;s own &quot;no</span>
-            <span class="c1"># callback&quot; sentinel -- `Parameter.__copy__` sets it the same way --</span>
-            <span class="c1"># so a later `fset` guard in `Parameter` cleanly no-ops.</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">theta_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
+        <span class="c1"># The detached object must not follow the material any more.</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">coupled</span><span class="p">:</span>
+            <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># After the assignment: the calculator looks at the updated tree.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
 
@@ -3920,8 +3908,6 @@
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
@@ -4415,19 +4401,17 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/layers/layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
 
 <span class="sd">    Parameters</span>
@@ -4438,8 +4422,6 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4611,11 +4593,7 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Multilayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Multilayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A multi layer is build from a single or a list of `Layer` or `LayerCollection`.</span>
 
 <span class="sd">    The multi layer will arrange the layers as slabs, allowing the reflectometry to be determined from them.</span>
@@ -4672,7 +4650,7 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">layers</span> <span class="o">=</span> <span class="n">LayerCollection</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]))</span>
         <span class="c1"># Needed to ensure an empty list is created when saving and instatiating the object as_dict -&gt; from_dict</span>
-        <span class="c1"># Else collisions might occur in global_object.map</span>
+        <span class="c1"># Else collisions might occur in global_object.registry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_if_none</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -4698,8 +4676,6 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Layer</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">add_layer_to_item</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Duplicate a given layer.</span>
@@ -4726,8 +4702,6 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
 <span class="sd">        idx : int</span>
 <span class="sd">            Index of layer to remove.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_from_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
     <span class="c1"># Representation</span>
@@ -5048,7 +5022,7 @@ persistent. By default, False.</p>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="n">LayerCollection</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]))</span>
     <span class="c1"># Needed to ensure an empty list is created when saving and instatiating the object as_dict -&gt; from_dict</span>
-    <span class="c1"># Else collisions might occur in global_object.map</span>
+    <span class="c1"># Else collisions might occur in global_object.registry</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">populate_if_none</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -5131,9 +5105,7 @@ persistent. By default, False.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Layer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Layer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a layer to the multi layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -5144,8 +5116,6 @@ persistent. By default, False.</p>
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Layer</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">add_layer_to_item</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5205,7 +5175,9 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
@@ -5218,9 +5190,7 @@ persistent. By default, False.</p>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Duplicate a given layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -5295,17 +5265,15 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a layer from the item.</span>
 
 <span class="sd">    Parameters</span>
@@ -5313,8 +5281,6 @@ persistent. By default, False.</p>
 <span class="sd">    idx : int</span>
 <span class="sd">        Index of layer to remove.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_from_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5345,11 +5311,11 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multilayer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Multilayer from a dictionary.&quot;&quot;&quot;</span>
     <span class="n">multilayer</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -5960,7 +5926,7 @@ reflectometry engines as the operation can be performed for a single
     If the value is a number, a parameter is created with this value and metadata from the dictionary.
     If the value is None, a parameter is created with the default value and metadata from the dictionary.</p>
 <div class="language-text highlight"><pre><span></span><code>param value: The value to use for the parameter.  If None, the default value in the dictionary is used.
-param name: The name of the parameter
+param name: The display name of the parameter (core&#39;s `display_name`)
 param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter
 </code></pre></div>
 <!-- prettier-ignore-start -->
@@ -6024,7 +5990,7 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 <span class="sd">        If the value is None, a parameter is created with the default value and metadata from the dictionary.</span>
 
 <span class="sd">        param value: The value to use for the parameter.  If None, the default value in the dictionary is used.</span>
-<span class="sd">        param name: The name of the parameter</span>
+<span class="sd">        param name: The display name of the parameter (core&#39;s `display_name`)</span>
 <span class="sd">        param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This is a parameter, return it</span>
@@ -6044,11 +6010,11 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Create a default parameter using both value and metadata from dictionary</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
         <span class="c1"># Create a parameter using provided value and metadata from dictionary</span>
         <span class="k">del</span> <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> must be a Parameter, a number, or None.&#39;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

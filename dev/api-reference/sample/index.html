@@ -1997,32 +1997,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_all_variables" class="md-nav__link">
     <span class="md-ellipsis">
       
         get_all_variables
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_fit_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_fit_parameters
       
     </span>
   </a>
@@ -3651,32 +3629,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_all_variables" class="md-nav__link">
     <span class="md-ellipsis">
       
         get_all_variables
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.collections.sample.BaseCollection.get_fit_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_fit_parameters
       
     </span>
   </a>
@@ -4619,11 +4575,7 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Multilayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Multilayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A multi layer is build from a single or a list of `Layer` or `LayerCollection`.</span>
 
 <span class="sd">    The multi layer will arrange the layers as slabs, allowing the reflectometry to be determined from them.</span>
@@ -4680,7 +4632,7 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">layers</span> <span class="o">=</span> <span class="n">LayerCollection</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]))</span>
         <span class="c1"># Needed to ensure an empty list is created when saving and instatiating the object as_dict -&gt; from_dict</span>
-        <span class="c1"># Else collisions might occur in global_object.map</span>
+        <span class="c1"># Else collisions might occur in global_object.registry</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_if_none</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -4706,8 +4658,6 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Layer</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">add_layer_to_item</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Duplicate a given layer.</span>
@@ -4734,8 +4684,6 @@ The front layer is where the neutron beam starts in, it has an index of 0.</p>
 <span class="sd">        idx : int</span>
 <span class="sd">            Index of layer to remove.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_from_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
     <span class="c1"># Representation</span>
@@ -5056,7 +5004,7 @@ persistent. By default, False.</p>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="n">LayerCollection</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]))</span>
     <span class="c1"># Needed to ensure an empty list is created when saving and instatiating the object as_dict -&gt; from_dict</span>
-    <span class="c1"># Else collisions might occur in global_object.map</span>
+    <span class="c1"># Else collisions might occur in global_object.registry</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">populate_if_none</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -5139,9 +5087,7 @@ persistent. By default, False.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Layer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Layer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a layer to the multi layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -5152,8 +5098,6 @@ persistent. By default, False.</p>
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Layer</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">add_layer_to_item</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5213,7 +5157,9 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
@@ -5226,9 +5172,7 @@ persistent. By default, False.</p>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Duplicate a given layer.</span>
 
 <span class="sd">    Parameters</span>
@@ -5303,17 +5247,15 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a layer from the item.</span>
 
 <span class="sd">    Parameters</span>
@@ -5321,8 +5263,6 @@ persistent. By default, False.</p>
 <span class="sd">    idx : int</span>
 <span class="sd">        Index of layer to remove.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_from_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5353,11 +5293,11 @@ persistent. By default, False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/multilayer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multilayer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Multilayer from a dictionary.&quot;&quot;&quot;</span>
     <span class="n">multilayer</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -6241,8 +6181,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A surfactant layer constructs a series of layers representing the</span>
 <span class="sd">    head and tail groups of a surfactant.</span>
 <span class="sd">    This assembly allows the definition of a surfactant or lipid using the chemistry</span>
@@ -6425,7 +6364,6 @@ or area per molecule more straight forward.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conformal_roughness</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Roughness must be conformal to use this function.&#39;</span><span class="p">)</span>
-        <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span>
         <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
@@ -7035,8 +6973,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the constraint to the solvent roughness.</span>
 
 <span class="sd">    Parameters</span>
@@ -7046,7 +6983,6 @@ or area per molecule more straight forward.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conformal_roughness</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Roughness must be conformal to use this function.&#39;</span><span class="p">)</span>
-    <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span>
     <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="p">})</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7221,7 +7157,8 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+<span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -7265,8 +7202,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">another_contrast</span><span class="p">:</span> <span class="n">SurfactantLayer</span><span class="p">,</span>
     <span class="n">head_layer_thickness</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -7338,13 +7274,13 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
+<span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">269</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, dropping the derived ``layers`` field (it is rebuilt</span>
 <span class="sd">    from ``tail_layer`` and ``head_layer`` in ``__init__``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7627,14 +7563,7 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7720,7 +7649,7 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on magnetism on the attached calculator.</span>
 
 <span class="sd">        Raises `NotImplementedError` when the active calculator cannot model</span>
-<span class="sd">        magnetic samples (e.g. refnx or bornagain).</span>
+<span class="sd">        magnetic samples (e.g. refnx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">include_magnetism</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -7758,28 +7687,23 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach or remove the magnetic properties of this layer.</span>
 
-<span class="sd">        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become</span>
-<span class="sd">        live on the backend; removing drops the layer&#39;s magnetic state from the</span>
-<span class="sd">        backend (and switches calculator magnetism off entirely when this was the</span>
-<span class="sd">        last magnetic layer).</span>
+<span class="sd">        Attaching switches calculator magnetism on and passes the calculator on</span>
+<span class="sd">        to the magnetism; removing lets the calculator switch magnetism off when</span>
+<span class="sd">        this was the last magnetic layer it serves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
-        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
-            <span class="c1"># The detached object must not follow the material any more...</span>
-            <span class="k">if</span> <span class="n">coupled</span><span class="p">:</span>
-                <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
-            <span class="c1"># ...and its value changes must no longer reach the backend.</span>
-            <span class="c1"># `property()` (fget/fset/fdel all None) is easyscience&#39;s own &quot;no</span>
-            <span class="c1"># callback&quot; sentinel -- `Parameter.__copy__` sets it the same way --</span>
-            <span class="c1"># so a later `fset` guard in `Parameter` cleanly no-ops.</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">theta_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
+        <span class="c1"># The detached object must not follow the material any more.</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">coupled</span><span class="p">:</span>
+            <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># After the assignment: the calculator looks at the updated tree.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
 
@@ -7861,8 +7785,6 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
@@ -8356,19 +8278,17 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/layers/layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
 
 <span class="sd">    Parameters</span>
@@ -8379,8 +8299,6 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9367,22 +9285,7 @@ additional configuration as kwargs.</p>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCollection</span><span class="p">(</span><span class="n">EasyList</span><span class="p">):</span>
+<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCollection</span><span class="p">(</span><span class="n">EasyList</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local base for sample-tree collections (Material/Layer/Assembly/Model collections).</span>
 
 <span class="sd">    Built on top of `easyscience.base_classes.EasyList` (the replacement for</span>
@@ -9403,6 +9306,11 @@ additional configuration as kwargs.</p>
 <span class="sd">    `name` and `interface` positionally to this class, items as `*args`, and</span>
 <span class="sd">    additional configuration as kwargs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># The constructor fields a collection writes (core&#39;s encoder reads an</span>
+    <span class="c1"># object&#39;s `_arg_spec`). Without it, core 3 would also write every</span>
+    <span class="c1"># keyword-only argument, including the `populate_if_none` control flag.</span>
+    <span class="n">_arg_spec</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -9431,9 +9339,8 @@ additional configuration as kwargs.</p>
         <span class="k">if</span> <span class="n">extra_items</span><span class="p">:</span>
             <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">extra_items</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># `populate_if_none` is a control flag, not state. It is serialized so</span>
-        <span class="c1"># `from_dict` knows whether the original construction filled in</span>
-        <span class="c1"># defaults; the value should be `False` once the data is restored.</span>
+        <span class="c1"># `populate_if_none` is a construction-time control flag, not state, and</span>
+        <span class="c1"># is not serialized; `from_dict` always builds with it off.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populate_if_none</span> <span class="o">=</span> <span class="n">populate_if_none</span>
 
         <span class="c1"># Assign interface LAST — propagates to all contained items.</span>
@@ -9461,15 +9368,10 @@ additional configuration as kwargs.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="o">=</span> <span class="n">new_interface</span>
         <span class="k">if</span> <span class="n">new_interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="c1"># Propagate to existing items.</span>
+        <span class="c1"># Propagate to existing items; the calculator binds the models among them.</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_interface_setter</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)):</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">new_interface</span>
-        <span class="c1"># Tell the calculator to bind to self (matches the legacy CollectionBase</span>
-        <span class="c1"># behavior which called `interface.generate_bindings(self)` once per</span>
-        <span class="c1"># collection).</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">new_interface</span><span class="p">,</span> <span class="s1">&#39;generate_bindings&#39;</span><span class="p">):</span>
-            <span class="n">new_interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the item&#39;s `name` for string-indexed lookups.</span>
@@ -9502,7 +9404,7 @@ additional configuration as kwargs.</p>
 <span class="sd">        The type check from `EasyList.insert` is bypassed: each subclass</span>
 <span class="sd">        accepts a single item type (Layer / Material / BaseAssembly / Model)</span>
 <span class="sd">        and enforces it elsewhere, while the EasyList check would require</span>
-<span class="sd">        every item to be a `NewBase` subclass — which was historically not</span>
+<span class="sd">        every item to be a `EasyBase` subclass — which was historically not</span>
 <span class="sd">        guaranteed and forces an extra coupling we don&#39;t need.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -9558,10 +9460,6 @@ additional configuration as kwargs.</p>
 
     <span class="c1"># ----- compatibility shims (kept until call sites migrate) -----</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility alias for legacy callers; prefer `get_all_parameters`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flat list of every Parameter/Descriptor across all items.</span>
 
@@ -9592,14 +9490,6 @@ additional configuration as kwargs.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_free_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">independent</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">fixed</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_fit_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias kept for the minimizer; matches `ModelBase.get_fit_parameters`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_free_parameters</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_linkable_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bridge for `easyscience.fitting.calculators.interface_factory.generate_bindings`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_variables</span><span class="p">()</span>
-
     <span class="c1"># ----- repr -----</span>
 
     <span class="nd">@property</span>
@@ -9627,10 +9517,10 @@ additional configuration as kwargs.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">NewBase</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;protected_types&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">EasyBase</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;protected_types&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="s1">&#39;protected_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span><span class="p">]</span>
         <span class="c1"># Encode each item. Defer to the encoder&#39;s recursive walk so nested</span>
-        <span class="c1"># ModelBase / NewBase items get properly serialized.</span>
+        <span class="c1"># ModelBase / EasyBase items get properly serialized.</span>
         <span class="n">item_skip</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span>
         <span class="n">items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
@@ -9654,12 +9544,8 @@ additional configuration as kwargs.</p>
 <span class="sd">        so existing callers (`Project`, `Model.as_dict`, etc.) can keep</span>
 <span class="sd">        passing `skip=[&#39;unique_name&#39;]` or similar.</span>
 
-<span class="sd">        ``NewBase.to_dict`` mutates the ``skip`` list in-place (e.g. it</span>
-<span class="sd">        appends ``&#39;unique_name&#39;`` when the collection&#39;s own unique_name is</span>
-<span class="sd">        default-generated). We therefore pass a *copy* to it, otherwise the</span>
-<span class="sd">        mutation would leak into the per-item serialization below and force</span>
-<span class="sd">        every item Parameter dict to drop its ``unique_name`` — breaking the</span>
-<span class="sd">        from_dict round-trip.</span>
+<span class="sd">        ``skip`` is passed on as a copy, so nothing done to it while encoding</span>
+<span class="sd">        the collection itself leaks into the per-item serialization below.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span> <span class="ow">or</span> <span class="p">[])</span>
         <span class="k">if</span> <span class="s1">&#39;interface&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
@@ -9673,8 +9559,8 @@ additional configuration as kwargs.</p>
         <span class="c1"># The items this encodes (through `_convert_to_dict`) are replaced</span>
         <span class="c1"># below, so they must not be registered as shared-object occurrences.</span>
         <span class="k">with</span> <span class="n">references</span><span class="o">.</span><span class="n">suspended</span><span class="p">():</span>
-            <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">NewBase</span><span class="p">]:</span>
+            <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">EasyBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">EasyBase</span><span class="p">]:</span>
             <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;protected_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span><span class="p">]</span>
         <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
@@ -9722,12 +9608,14 @@ additional configuration as kwargs.</p>
         <span class="n">raw_items</span> <span class="o">=</span> <span class="n">temp_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">references</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># The saved items are the whole content: a collection saved empty loads</span>
+        <span class="c1"># empty instead of being filled with defaults.</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="n">populate_if_none</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Round-trip via dict-skip-unique to get a fresh copy.</span>
 
-<span class="sd">        `NewBase.__copy__` already does this; the override is kept (rather</span>
+<span class="sd">        `EasyBase.__copy__` already does this; the override is kept (rather</span>
 <span class="sd">        than deleted) to mirror the legacy `BaseCollection.__deepcopy__`</span>
 <span class="sd">        semantics — callers that relied on `copy.deepcopy(collection)` still</span>
 <span class="sd">        get a clone built from `from_dict(as_dict(skip=[&#39;unique_name&#39;]))`.</span>
@@ -9820,7 +9708,7 @@ after the collection's interface was already set.</p>
 <p>The type check from <code>EasyList.insert</code> is bypassed: each subclass
 accepts a single item type (Layer / Material / BaseAssembly / Model)
 and enforces it elsewhere, while the EasyList check would require
-every item to be a <code>NewBase</code> subclass — which was historically not
+every item to be a <code>EasyBase</code> subclass — which was historically not
 guaranteed and forces an extra coupling we don't need.</p>
 <!-- prettier-ignore-start -->
 
@@ -9829,7 +9717,8 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
+<span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -9853,8 +9742,7 @@ guaranteed and forces an extra coupling we don't need.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert and (if an interface is set) propagate it to the new item.</span>
 
 <span class="sd">    Legacy `CollectionBase.insert` did `value.interface = self.interface`</span>
@@ -9865,7 +9753,7 @@ guaranteed and forces an extra coupling we don't need.</p>
 <span class="sd">    The type check from `EasyList.insert` is bypassed: each subclass</span>
 <span class="sd">    accepts a single item type (Layer / Material / BaseAssembly / Model)</span>
 <span class="sd">    and enforces it elsewhere, while the EasyList check would require</span>
-<span class="sd">    every item to be a `NewBase` subclass — which was historically not</span>
+<span class="sd">    every item to be a `EasyBase` subclass — which was historically not</span>
 <span class="sd">    guaranteed and forces an extra coupling we don&#39;t need.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -9905,11 +9793,11 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
+<span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Move the element at the given index up in the collection.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
@@ -9939,11 +9827,11 @@ guaranteed and forces an extra coupling we don't need.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+<span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">move_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Move the element at the given index down in the collection.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span>
@@ -9977,15 +9865,15 @@ standard <code>remove(value)</code> is still available with its usual semantics.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
+<span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove the item at *index* from the collection.</span>
 
 <span class="sd">    Renamed from the legacy `BaseCollection.remove(index)` which shadowed</span>
@@ -9994,36 +9882,6 @@ standard <code>remove(value)</code> is still available with its usual semantics.
 <span class="sd">    standard `remove(value)` is still available with its usual semantics.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="easyreflectometry.sample.collections.sample.BaseCollection.get_parameters" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_parameters</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compatibility alias for legacy callers; prefer <code>get_all_parameters</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for legacy callers; prefer `get_all_parameters`.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -10053,7 +9911,12 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -10070,12 +9933,7 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flat list of every Parameter/Descriptor across all items.</span>
 
 <span class="sd">    Walks each item in the collection and unions whatever each item</span>
@@ -10107,36 +9965,6 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="easyreflectometry.sample.collections.sample.BaseCollection.get_fit_parameters" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_fit_parameters</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Alias kept for the minimizer; matches <code>ModelBase.get_fit_parameters</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_fit_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias kept for the minimizer; matches `ModelBase.get_fit_parameters`.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_free_parameters</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
 <h3 id="easyreflectometry.sample.collections.sample.BaseCollection.to_dict" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
@@ -10150,12 +9978,8 @@ unions any direct <code>DescriptorBase</code> attributes.</p>
 to dump <code>data</code> plus the parent's <code>_arg_spec</code> view. We reimplement here
 so existing callers (<code>Project</code>, <code>Model.as_dict</code>, etc.) can keep
 passing <code>skip=['unique_name']</code> or similar.</p>
-<p><code>NewBase.to_dict</code> mutates the <code>skip</code> list in-place (e.g. it
-appends <code>'unique_name'</code> when the collection's own unique_name is
-default-generated). We therefore pass a <em>copy</em> to it, otherwise the
-mutation would leak into the per-item serialization below and force
-every item Parameter dict to drop its <code>unique_name</code> — breaking the
-from_dict round-trip.</p>
+<p><code>skip</code> is passed on as a copy, so nothing done to it while encoding
+the collection itself leaks into the per-item serialization below.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10163,7 +9987,20 @@ from_dict round-trip.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
@@ -10187,24 +10024,7 @@ from_dict round-trip.</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize with `skip` support; `interface` excluded by default.</span>
 
 <span class="sd">    `EasyList.to_dict` doesn&#39;t accept a `skip` argument and is hard-wired</span>
@@ -10212,12 +10032,8 @@ from_dict round-trip.</p>
 <span class="sd">    so existing callers (`Project`, `Model.as_dict`, etc.) can keep</span>
 <span class="sd">    passing `skip=[&#39;unique_name&#39;]` or similar.</span>
 
-<span class="sd">    ``NewBase.to_dict`` mutates the ``skip`` list in-place (e.g. it</span>
-<span class="sd">    appends ``&#39;unique_name&#39;`` when the collection&#39;s own unique_name is</span>
-<span class="sd">    default-generated). We therefore pass a *copy* to it, otherwise the</span>
-<span class="sd">    mutation would leak into the per-item serialization below and force</span>
-<span class="sd">    every item Parameter dict to drop its ``unique_name`` — breaking the</span>
-<span class="sd">    from_dict round-trip.</span>
+<span class="sd">    ``skip`` is passed on as a copy, so nothing done to it while encoding</span>
+<span class="sd">    the collection itself leaks into the per-item serialization below.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">skip</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span> <span class="ow">or</span> <span class="p">[])</span>
     <span class="k">if</span> <span class="s1">&#39;interface&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
@@ -10231,8 +10047,8 @@ from_dict round-trip.</p>
     <span class="c1"># The items this encodes (through `_convert_to_dict`) are replaced</span>
     <span class="c1"># below, so they must not be registered as shared-object occurrences.</span>
     <span class="k">with</span> <span class="n">references</span><span class="o">.</span><span class="n">suspended</span><span class="p">():</span>
-        <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">NewBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">NewBase</span><span class="p">]:</span>
+        <span class="n">dict_repr</span> <span class="o">=</span> <span class="n">EasyBase</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span> <span class="o">!=</span> <span class="p">[</span><span class="n">EasyBase</span><span class="p">]:</span>
         <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;protected_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;@module&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s1">&#39;@class&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_protected_types</span><span class="p">]</span>
     <span class="n">dict_repr</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
@@ -10271,9 +10087,9 @@ from_dict round-trip.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -10311,7 +10127,24 @@ this mirrors <code>EasyList.from_dict</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
@@ -10325,22 +10158,7 @@ this mirrors <code>EasyList.from_dict</code>.</p>
 <span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCollection</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rebuild the collection, each item through its own class&#39;s ``from_dict``.</span>
 
@@ -10369,7 +10187,9 @@ this mirrors <code>EasyList.from_dict</code>.</p>
     <span class="n">raw_items</span> <span class="o">=</span> <span class="n">temp_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">kwargs</span> <span class="o">=</span> <span class="n">SerializerBase</span><span class="o">.</span><span class="n">deserialize_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">references</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">raw_items</span><span class="p">]</span>
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># The saved items are the whole content: a collection saved empty loads</span>
+    <span class="c1"># empty instead of being filled with defaults.</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">protected_types</span><span class="o">=</span><span class="n">protected_types</span><span class="p">,</span> <span class="n">populate_if_none</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -10388,7 +10208,7 @@ this mirrors <code>EasyList.from_dict</code>.</p>
     <div class="doc doc-contents ">
 
         <p>Round-trip via dict-skip-unique to get a fresh copy.</p>
-<p><code>NewBase.__copy__</code> already does this; the override is kept (rather
+<p><code>EasyBase.__copy__</code> already does this; the override is kept (rather
 than deleted) to mirror the legacy <code>BaseCollection.__deepcopy__</code>
 semantics — callers that relied on <code>copy.deepcopy(collection)</code> still
 get a clone built from <code>from_dict(as_dict(skip=['unique_name']))</code>.</p>
@@ -10399,18 +10219,18 @@ get a clone built from <code>from_dict(as_dict(skip=['unique_name']))</code>.</p
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/collections/base_collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Round-trip via dict-skip-unique to get a fresh copy.</span>
 
-<span class="sd">    `NewBase.__copy__` already does this; the override is kept (rather</span>
+<span class="sd">    `EasyBase.__copy__` already does this; the override is kept (rather</span>
 <span class="sd">    than deleted) to mirror the legacy `BaseCollection.__deepcopy__`</span>
 <span class="sd">    semantics — callers that relied on `copy.deepcopy(collection)` still</span>
 <span class="sd">    get a clone built from `from_dict(as_dict(skip=[&#39;unique_name&#39;]))`.</span>

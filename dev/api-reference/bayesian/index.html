@@ -7412,8 +7412,8 @@ are drawn as full-height traces, reach the top of the panel.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Save the current values and errors of all free parameters in a model.</p>
-<p>:param model: A reflectometry model with <code>get_parameters()</code>.
+        <p>Save the current values and errors of all independent parameters in a model.</p>
+<p>:param model: A reflectometry model with <code>get_all_parameters()</code>.
 :return: Dictionary mapping <code>unique_name</code> to <code>(value, error)</code>.
 :rtype: dict</p>
 <!-- prettier-ignore-start -->
@@ -7438,14 +7438,14 @@ are drawn as full-height traces, reach the top of the panel.</p>
 <span class="normal">1134</span>
 <span class="normal">1135</span>
 <span class="normal">1136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_save_parameter_state</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the current values and errors of all free parameters in a model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the current values and errors of all independent parameters in a model.</span>
 
-<span class="sd">    :param model: A reflectometry model with ``get_parameters()``.</span>
+<span class="sd">    :param model: A reflectometry model with ``get_all_parameters()``.</span>
 <span class="sd">    :return: Dictionary mapping ``unique_name`` to ``(value, error)``.</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">state</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">():</span>
         <span class="c1"># Dependent parameters (constraints, `Model.total_thickness`) are derived</span>
         <span class="c1"># from the others: they cannot be written back, and restoring the</span>
         <span class="c1"># parameters they follow already restores them.</span>
@@ -7470,7 +7470,7 @@ are drawn as full-height traces, reach the top of the panel.</p>
     <div class="doc doc-contents ">
 
         <p>Restore parameter values and errors from a saved state.</p>
-<p>:param model: A reflectometry model with <code>get_parameters()</code>.
+<p>:param model: A reflectometry model with <code>get_all_parameters()</code>.
 :param state: Dictionary mapping <code>unique_name</code> to <code>(value, error)</code>.</p>
 <!-- prettier-ignore-start -->
 
@@ -7491,10 +7491,10 @@ are drawn as full-height traces, reach the top of the panel.</p>
 <span class="normal">1148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_restore_parameter_state</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore parameter values and errors from a saved state.</span>
 
-<span class="sd">    :param model: A reflectometry model with ``get_parameters()``.</span>
+<span class="sd">    :param model: A reflectometry model with ``get_all_parameters()``.</span>
 <span class="sd">    :param state: Dictionary mapping ``unique_name`` to ``(value, error)``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">unique_name</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
             <span class="n">param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">param</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
@@ -7519,7 +7519,7 @@ are drawn as full-height traces, reach the top of the panel.</p>
 <p>Parameter lookup uses <code>unique_name</code>, matching the BUMPS names after
 removing the minimizer prefix, which avoids collisions when repeated models
 or multi-contrast fits contain similarly named parameters.</p>
-<p>:param model: A reflectometry model with <code>get_parameters()</code>.
+<p>:param model: A reflectometry model with <code>get_all_parameters()</code>.
 :param draws: Posterior samples array.
 :param param_names: Parameter names matching the columns of <code>draws</code>.
 :param row: Index of the draw to apply.</p>
@@ -7552,12 +7552,12 @@ or multi-contrast fits contain similarly named parameters.</p>
 <span class="sd">    removing the minimizer prefix, which avoids collisions when repeated models</span>
 <span class="sd">    or multi-contrast fits contain similarly named parameters.</span>
 
-<span class="sd">    :param model: A reflectometry model with ``get_parameters()``.</span>
+<span class="sd">    :param model: A reflectometry model with ``get_all_parameters()``.</span>
 <span class="sd">    :param draws: Posterior samples array.</span>
 <span class="sd">    :param param_names: Parameter names matching the columns of ``draws``.</span>
 <span class="sd">    :param row: Index of the draw to apply.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">param_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">unique_name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()}</span>
+    <span class="n">param_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">unique_name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()}</span>
     <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param_lookup</span><span class="p">:</span>
             <span class="n">param_lookup</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">draws</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
@@ -8172,10 +8172,7 @@ to extend the chain.</p>
 <span class="normal">1406</span>
 <span class="normal">1407</span>
 <span class="normal">1408</span>
-<span class="normal">1409</span>
-<span class="normal">1410</span>
-<span class="normal">1411</span>
-<span class="normal">1412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_posterior</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">:</span>
+<span class="normal">1409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_posterior</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;PosteriorResults&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reload a trace saved by :func:`save_posterior` into a</span>
 <span class="sd">    :class:`PosteriorResults`.</span>
 
@@ -8211,10 +8208,7 @@ to extend the chain.</p>
 
     <span class="k">if</span> <span class="n">param_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Fallback: strip BUMPS &#39;p&#39; prefix from state.labels</span>
-        <span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">lbl</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">MINIMIZER_PARAMETER_PREFIX</span><span class="p">)</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">lbl</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">MINIMIZER_PARAMETER_PREFIX</span><span class="p">)</span> <span class="k">else</span> <span class="n">lbl</span>
-            <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">labels</span>
-        <span class="p">]</span>
+        <span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">lbl</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">PARAMETER_PREFIX</span><span class="p">)</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">lbl</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PARAMETER_PREFIX</span><span class="p">)</span> <span class="k">else</span> <span class="n">lbl</span> <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">labels</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">PosteriorResults</span><span class="p">(</span>
         <span class="n">draws</span><span class="o">=</span><span class="n">draws</span><span class="p">,</span>

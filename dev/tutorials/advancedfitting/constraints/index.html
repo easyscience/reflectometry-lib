@@ -3629,7 +3629,6 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyscience</span><span class="w"> </span><span class="kn">import</span> <span class="n">global_object</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easyscience.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">AvailableMinimizers</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">InequalitySpec</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
@@ -3642,6 +3641,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">restore_sum_partners</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">unconstrain</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSet1D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">Layer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">Material</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">Multilayer</span>
@@ -3651,7 +3651,6 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 import matplotlib.pyplot as plt
 import numpy as np
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry import InequalitySpec
 from easyreflectometry import Project
@@ -3664,6 +3663,7 @@ from easyreflectometry import is_constrained_to_sum
 from easyreflectometry import restore_sum_partners
 from easyreflectometry import unconstrain
 from easyreflectometry.data import DataSet1D
+from easyreflectometry.fitting import Minimizers
 from easyreflectometry.sample import Layer
 from easyreflectometry.sample import Material
 from easyreflectometry.sample import Multilayer</div>
@@ -4848,13 +4848,13 @@ Selecting LMFit with active inequalities raises immediately — physics constrai
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">AvailableMinimizers</span><span class="o">.</span><span class="n">LMFit</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">Minimizers</span><span class="o">.</span><span class="n">LMFit</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">project</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit_single_data_set_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-19">project.minimizer = AvailableMinimizers.LMFit
+<div class="clipboard-copy-txt" id="cell-19">project.minimizer = Minimizers.LMFit
 try:
     project.fitter.fit_single_data_set_1d(dataset)
 except ValueError as error:
@@ -4867,20 +4867,6 @@ except ValueError as error:
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
@@ -4921,14 +4907,14 @@ except ValueError as error:
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">AvailableMinimizers</span><span class="o">.</span><span class="n">Bumps</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">Minimizers</span><span class="o">.</span><span class="n">Bumps</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit_single_data_set_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'success = </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">'truth (outside the budget):  t_A = 45.00, t_B = 55.00,  sum = 100.00'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'constrained fit:             t_A = </span><span class="si">{</span><span class="n">t_a</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">, t_B = </span><span class="si">{</span><span class="n">t_b</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">,  sum = </span><span class="si">{</span><span class="n">t_a</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">t_b</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-20">project.minimizer = AvailableMinimizers.Bumps
+<div class="clipboard-copy-txt" id="cell-20">project.minimizer = Minimizers.Bumps
 result = project.fitter.fit_single_data_set_1d(dataset)
 
 print(f'success = {result.success}')
@@ -4942,13 +4928,6 @@ print(f'constrained fit:             t_A = {t_a.value:.2f}, t_B = {t_b.value:.2f
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
@@ -5104,7 +5083,7 @@ We serialize the project to a plain dictionary (this is exactly what <code>save_
 
 <span class="n">project_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()))</span>
 
-<span class="n">global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>  <span class="c1"># simulate a fresh Python session</span>
+<span class="n">global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># simulate a fresh Python session</span>
 <span class="n">reloaded</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
 <span class="n">reloaded</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">project_dict</span><span class="p">)</span>
 <span class="n">reloaded_model</span> <span class="o">=</span> <span class="n">reloaded</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -5121,7 +5100,7 @@ We serialize the project to a plain dictionary (this is exactly what <code>save_
 
 project_dict = json.loads(json.dumps(project.as_dict()))
 
-global_object.map._clear()  # simulate a fresh Python session
+global_object.registry.clear()  # simulate a fresh Python session
 reloaded = Project()
 reloaded.from_dict(project_dict)
 reloaded_model = reloaded.models[0]
@@ -5141,13 +5120,6 @@ print(f'derived      : total_thickness = {reloaded_model.total_thickness.value:g
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">

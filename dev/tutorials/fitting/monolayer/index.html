@@ -4208,13 +4208,13 @@ dspc.head_layer.solvent_fraction_parameter.max = 0.7</div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">calculator</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">calculator</span>
 <span class="n">fitter</span> <span class="o">=</span> <span class="n">MultiFitter</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="c1"># fitter.switch_minimizer(AvailableMinimizers.LMFit_differential_evolution)</span>
+<span class="c1"># fitter.switch_minimizer(Minimizers.LMFit_differential_evolution)</span>
 <span class="n">analysed</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-15">calculator = CalculatorFactory()
 model.interface = calculator
 fitter = MultiFitter(model)
-# fitter.switch_minimizer(AvailableMinimizers.LMFit_differential_evolution)
+# fitter.switch_minimizer(Minimizers.LMFit_differential_evolution)
 analysed = fitter.fit(data)</div>
 </div>
 </div>
@@ -4224,13 +4224,6 @@ analysed = fitter.fit(data)</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">

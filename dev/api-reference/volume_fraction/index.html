@@ -3976,7 +3976,7 @@ of <code>refnx.reflect.create_occupancy</code>.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../calculators/#easyreflectometry.calculators.calculator_base.BaseAssembly">BaseAssembly</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../model/#easyreflectometry.model.model.BaseAssembly">BaseAssembly</a></code></p>
 
 
 
@@ -5641,25 +5641,7 @@ reflectometry engines as the operation can be performed for a single
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialMixture</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialMixture</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material_a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5754,8 +5736,6 @@ reflectometry engines as the operation can be performed for a single
     <span class="k">def</span><span class="w"> </span><span class="nf">material_a</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_material_a</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span> <span class="o">=</span> <span class="n">new_material_a</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -5766,8 +5746,6 @@ reflectometry engines as the operation can be performed for a single
     <span class="k">def</span><span class="w"> </span><span class="nf">material_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_material_b</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span> <span class="o">=</span> <span class="n">new_material_b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -5795,20 +5773,6 @@ reflectometry engines as the operation can be performed for a single
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isld</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span>
-
-    <span class="c1"># ----- calculator binding -----</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_linkable_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the *mixed* sld / isld parameters for calculator binding.</span>
-
-<span class="sd">        Override of the inherited `BaseCore._get_linkable_attributes`, which</span>
-<span class="sd">        walks `get_all_variables()` and would otherwise expose the **child**</span>
-<span class="sd">        materials&#39; sld/isld (because our own `sld` / `isld` are floats, not</span>
-<span class="sd">        Parameters). The calculator&#39;s `InterfaceFactoryTemplate.generate_bindings`</span>
-<span class="sd">        matches by parameter `name`; without this override it binds to</span>
-<span class="sd">        `material_a.sld` and reflectivity is computed off the wrong SLD.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">]</span>
 
     <span class="c1"># ----- internal helpers -----</span>
 
@@ -6266,22 +6230,22 @@ here points the graph at the live objects.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_mixture.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialMixture&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
 <span class="sd">    the saved ``_fraction`` Parameter.</span>
@@ -6817,7 +6781,7 @@ here points the graph at the live objects.</p>
                 <code>*assemblies</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../calculators/#easyreflectometry.calculators.calculator_base.BaseAssembly">BaseAssembly</a>]]</code>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../model/#easyreflectometry.model.model.BaseAssembly">BaseAssembly</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7006,7 +6970,7 @@ here points the graph at the live objects.</p>
                 <code>assembly</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../calculators/#easyreflectometry.calculators.calculator_base.BaseAssembly">BaseAssembly</a>]</code>
+                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;BaseAssembly&lt;/code&gt; (&lt;code&gt;easyreflectometry.sample.assemblies.base_assembly.BaseAssembly&lt;/code&gt;)" href="../model/#easyreflectometry.model.model.BaseAssembly">BaseAssembly</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7847,14 +7811,7 @@ By default a 500-point grid spanning the sample.</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7940,7 +7897,7 @@ By default a 500-point grid spanning the sample.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on magnetism on the attached calculator.</span>
 
 <span class="sd">        Raises `NotImplementedError` when the active calculator cannot model</span>
-<span class="sd">        magnetic samples (e.g. refnx or bornagain).</span>
+<span class="sd">        magnetic samples (e.g. refnx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">include_magnetism</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -7978,28 +7935,23 @@ By default a 500-point grid spanning the sample.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach or remove the magnetic properties of this layer.</span>
 
-<span class="sd">        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become</span>
-<span class="sd">        live on the backend; removing drops the layer&#39;s magnetic state from the</span>
-<span class="sd">        backend (and switches calculator magnetism off entirely when this was the</span>
-<span class="sd">        last magnetic layer).</span>
+<span class="sd">        Attaching switches calculator magnetism on and passes the calculator on</span>
+<span class="sd">        to the magnetism; removing lets the calculator switch magnetism off when</span>
+<span class="sd">        this was the last magnetic layer it serves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
-        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
-            <span class="c1"># The detached object must not follow the material any more...</span>
-            <span class="k">if</span> <span class="n">coupled</span><span class="p">:</span>
-                <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
-            <span class="c1"># ...and its value changes must no longer reach the backend.</span>
-            <span class="c1"># `property()` (fget/fset/fdel all None) is easyscience&#39;s own &quot;no</span>
-            <span class="c1"># callback&quot; sentinel -- `Parameter.__copy__` sets it the same way --</span>
-            <span class="c1"># so a later `fset` guard in `Parameter` cleanly no-ops.</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">theta_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
+        <span class="c1"># The detached object must not follow the material any more.</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">coupled</span><span class="p">:</span>
+            <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># After the assignment: the calculator looks at the updated tree.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
 
@@ -8081,8 +8033,6 @@ By default a 500-point grid spanning the sample.</p>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
@@ -8576,19 +8526,17 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/layers/layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
 
 <span class="sd">    Parameters</span>
@@ -8599,8 +8547,6 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

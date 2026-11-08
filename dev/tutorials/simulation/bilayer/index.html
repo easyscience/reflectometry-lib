@@ -4975,9 +4975,6 @@ plt.show()</div>
 <span class="c1"># Disable conformal roughness to allow independent roughness per layer</span>
 <span class="n">bilayer</span><span class="o">.</span><span class="n">conformal_roughness</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="c1"># Re-establish calculator bindings after constraint change</span>
-<span class="n">model</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
-
 <span class="c1"># Set varying roughness across the bilayer</span>
 <span class="n">bilayer</span><span class="o">.</span><span class="n">front_head_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="n">bilayer</span><span class="o">.</span><span class="n">front_tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">1.5</span>
@@ -5001,16 +4998,12 @@ plt.show()</div>
 <span class="c1"># Reset to conformal roughness for subsequent cells</span>
 <span class="n">bilayer</span><span class="o">.</span><span class="n">conformal_roughness</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">bilayer</span><span class="o">.</span><span class="n">front_head_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">3.0</span>
-<span class="n">model</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-16"># First, compute reflectivity with current conformal roughness (3.0 Å)
 reflectivity_conformal = model.interface().reflectity_profile(q, model.unique_name)
 
 # Disable conformal roughness to allow independent roughness per layer
 bilayer.conformal_roughness = False
-
-# Re-establish calculator bindings after constraint change
-model.generate_bindings()
 
 # Set varying roughness across the bilayer
 bilayer.front_head_layer.roughness.value = 2.0
@@ -5034,8 +5027,7 @@ plt.show()
 
 # Reset to conformal roughness for subsequent cells
 bilayer.conformal_roughness = True
-bilayer.front_head_layer.roughness.value = 3.0
-model.generate_bindings()</div>
+bilayer.front_head_layer.roughness.value = 3.0</div>
 </div>
 </div>
 </div>

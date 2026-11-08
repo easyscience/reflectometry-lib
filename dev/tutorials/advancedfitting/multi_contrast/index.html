@@ -3543,10 +3543,10 @@ In this tutorial we will look at how <code>easyreflectometry</code> can be used 
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pooch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easyscience.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">AvailableMinimizers</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalculatorFactory</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiFitter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">PercentageFwhm</span>
@@ -3559,10 +3559,10 @@ In this tutorial we will look at how <code>easyreflectometry</code> can be used 
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfactantLayer</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-2">import pooch
-from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import load
+from easyreflectometry.fitting import Minimizers
 from easyreflectometry.fitting import MultiFitter
 from easyreflectometry.model import Model
 from easyreflectometry.model import PercentageFwhm
@@ -4610,9 +4610,9 @@ d13d2o.head_layer.thickness.max = 12</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/home/runner/work/reflectometry-lib/reflectometry-lib/.pixi/envs/default/lib/python3.13/site-packages/easyscience/variable/parameter.py:1280: RuntimeWarning: invalid value encountered in scalar divide
+<pre>/home/runner/work/reflectometry-lib/reflectometry-lib/.pixi/envs/default/lib/python3.13/site-packages/easyscience/variable/parameter.py:1171: RuntimeWarning: invalid value encountered in scalar divide
   self.max / other.max,
-/home/runner/work/reflectometry-lib/reflectometry-lib/.pixi/envs/default/lib/python3.13/site-packages/easyscience/variable/parameter.py:1281: RuntimeWarning: invalid value encountered in scalar divide
+/home/runner/work/reflectometry-lib/reflectometry-lib/.pixi/envs/default/lib/python3.13/site-packages/easyscience/variable/parameter.py:1172: RuntimeWarning: invalid value encountered in scalar divide
   self.min / other.max,
 </pre>
 </div>
@@ -4679,8 +4679,8 @@ d83acmw_model.interface = interface</div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=43">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=43">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -4699,23 +4699,10 @@ d83acmw_model.interface = interface</div>
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">fitter</span> <span class="o">=</span> <span class="n">MultiFitter</span><span class="p">(</span><span class="n">d13d2o_model</span><span class="p">,</span> <span class="n">d70d2o_model</span><span class="p">,</span> <span class="n">d83acmw_model</span><span class="p">)</span>
-<span class="n">fitter</span><span class="o">.</span><span class="n">switch_minimizer</span><span class="p">(</span><span class="n">AvailableMinimizers</span><span class="o">.</span><span class="n">LMFit_scipy_least_squares</span><span class="p">)</span>
+<span class="n">fitter</span><span class="o">.</span><span class="n">switch_minimizer</span><span class="p">(</span><span class="n">Minimizers</span><span class="o">.</span><span class="n">LMFit_scipy_least_squares</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-23">fitter = MultiFitter(d13d2o_model, d70d2o_model, d83acmw_model)
-fitter.switch_minimizer(AvailableMinimizers.LMFit_scipy_least_squares)</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>CollectionBase is deprecated and will be removed in a future version. Please migrate to ModelBase or EasyList.
-</pre>
+fitter.switch_minimizer(Minimizers.LMFit_scipy_least_squares)</div>
 </div>
 </div>
 </div>
@@ -4792,9 +4779,9 @@ fitter.switch_minimizer(AvailableMinimizers.LMFit_scipy_least_squares)</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[25]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>(&lt;Parameter 'area_per_molecule': 45.0000 Å^2, bounds=[40.0:50.0]&gt;,
- &lt;Parameter 'area_per_molecule': 45.0000 Å^2, bounds=[40.0:50.0]&gt;,
- &lt;Parameter 'area_per_molecule': 45.0000 Å^2, bounds=[40.0:50.0]&gt;)</pre>
+<pre>(&lt;Parameter 'area_per_molecule': 45.0000 Å^2 (dependent), bounds=[40.0:50.0]&gt;,
+ &lt;Parameter 'area_per_molecule': 45.0000 Å^2 (dependent), bounds=[40.0:50.0]&gt;,
+ &lt;Parameter 'area_per_molecule': 45.0000 Å^2 (dependent), bounds=[40.0:50.0]&gt;)</pre>
 </div>
 </div>
 </div>

@@ -3596,25 +3596,7 @@
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialMixture</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaterialMixture</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material_a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3709,8 +3691,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">material_a</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_material_a</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span> <span class="o">=</span> <span class="n">new_material_a</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -3721,8 +3701,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">material_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_material_b</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span> <span class="o">=</span> <span class="n">new_material_b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -3750,20 +3728,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isld</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span>
-
-    <span class="c1"># ----- calculator binding -----</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_linkable_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the *mixed* sld / isld parameters for calculator binding.</span>
-
-<span class="sd">        Override of the inherited `BaseCore._get_linkable_attributes`, which</span>
-<span class="sd">        walks `get_all_variables()` and would otherwise expose the **child**</span>
-<span class="sd">        materials&#39; sld/isld (because our own `sld` / `isld` are floats, not</span>
-<span class="sd">        Parameters). The calculator&#39;s `InterfaceFactoryTemplate.generate_bindings`</span>
-<span class="sd">        matches by parameter `name`; without this override it binds to</span>
-<span class="sd">        `material_a.sld` and reflectivity is computed off the wrong SLD.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">]</span>
 
     <span class="c1"># ----- internal helpers -----</span>
 
@@ -4221,22 +4185,22 @@ here points the graph at the live objects.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/materials/material_mixture.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialMixture&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
 <span class="sd">    the saved ``_fraction`` Parameter.</span>
@@ -4562,7 +4526,7 @@ here points the graph at the live objects.</p>
             <span class="n">old</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
@@ -5039,7 +5003,7 @@ temporary Parameter created from the float kwarg.</p>
         <span class="n">old</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
@@ -5077,7 +5041,7 @@ temporary Parameter created from the float kwarg.</p>
     If the value is a number, a parameter is created with this value and metadata from the dictionary.
     If the value is None, a parameter is created with the default value and metadata from the dictionary.</p>
 <div class="language-text highlight"><pre><span></span><code>param value: The value to use for the parameter.  If None, the default value in the dictionary is used.
-param name: The name of the parameter
+param name: The display name of the parameter (core&#39;s `display_name`)
 param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter
 </code></pre></div>
 <!-- prettier-ignore-start -->
@@ -5141,7 +5105,7 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 <span class="sd">        If the value is None, a parameter is created with the default value and metadata from the dictionary.</span>
 
 <span class="sd">        param value: The value to use for the parameter.  If None, the default value in the dictionary is used.</span>
-<span class="sd">        param name: The name of the parameter</span>
+<span class="sd">        param name: The display name of the parameter (core&#39;s `display_name`)</span>
 <span class="sd">        param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This is a parameter, return it</span>
@@ -5161,11 +5125,11 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Create a default parameter using both value and metadata from dictionary</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
         <span class="c1"># Create a parameter using provided value and metadata from dictionary</span>
         <span class="k">del</span> <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> must be a Parameter, a number, or None.&#39;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

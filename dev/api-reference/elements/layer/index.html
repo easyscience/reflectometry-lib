@@ -2139,17 +2139,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.get_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.get_all_variables" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2858,17 +2847,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.get_parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#easyreflectometry.sample.elements.layers.layer.BaseCore.get_all_variables" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3198,8 +3176,6 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <li>an <code>interface</code> property whose setter propagates the calculator interface
   to child objects and (re)generates bindings</li>
 <li>a yaml-formatted <code>__repr__</code> driven by an abstract <code>_dict_repr</code></li>
-<li>an <code>_get_linkable_attributes</code> compatibility shim used by the calculator's
-  <code>InterfaceFactoryTemplate.generate_bindings</code></li>
 <li>an <code>as_dict</code> alias for <code>to_dict</code></li>
 </ul>
 <p>Subclass <code>__init__</code> convention:
@@ -3222,16 +3198,7 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 16</span>
-<span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
 <span class="normal"> 28</span>
@@ -3453,16 +3420,7 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCore</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseCore</span><span class="p">(</span><span class="n">ModelBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local base class for sample-tree objects (Material, Layer, assemblies).</span>
 
 <span class="sd">    Built on top of `easyscience.base_classes.ModelBase` (the replacement for</span>
@@ -3472,8 +3430,6 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="sd">    - an `interface` property whose setter propagates the calculator interface</span>
 <span class="sd">      to child objects and (re)generates bindings</span>
 <span class="sd">    - a yaml-formatted `__repr__` driven by an abstract `_dict_repr`</span>
-<span class="sd">    - an `_get_linkable_attributes` compatibility shim used by the calculator&#39;s</span>
-<span class="sd">      `InterfaceFactoryTemplate.generate_bindings`</span>
 <span class="sd">    - an `as_dict` alias for `to_dict`</span>
 
 <span class="sd">    Subclass `__init__` convention:</span>
@@ -3542,9 +3498,8 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagate the interface to child objects, then bind via the calculator.</span>
 
 <span class="sd">        We propagate to any child whose class advertises an ``interface`` property</span>
-<span class="sd">        with a setter. That includes both the new `BaseCore`-based children and</span>
-<span class="sd">        legacy `BasedBase`-derived collections (which extend `SerializerComponent`,</span>
-<span class="sd">        not `NewBase`).</span>
+<span class="sd">        with a setter (`BaseCore` children and the `BaseCollection`s). The</span>
+<span class="sd">        calculator keeps only models; for every other object binding is a no-op.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Interface error for generating bindings. `interface` has to be set.&#39;</span><span class="p">)</span>
@@ -3556,7 +3511,7 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
     <span class="k">def</span><span class="w"> </span><span class="nf">_iter_public_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Yield public child objects from both class-level (dir) and instance-level (__dict__) attrs.</span>
 
-<span class="sd">        `NewBase.__dir__` exposes only class attributes, which means plain instance</span>
+<span class="sd">        `EasyBase.__dir__` exposes only class attributes, which means plain instance</span>
 <span class="sd">        attributes (the transitional `setattr(self, key, value)` path in</span>
 <span class="sd">        `__init__`) are invisible to a pure `dir()` scan. To bridge both worlds —</span>
 <span class="sd">        legacy subclasses that still use plain attrs, and migrated subclasses that</span>
@@ -3598,35 +3553,10 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
                 <span class="k">return</span> <span class="n">prop</span><span class="o">.</span><span class="n">fset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="c1"># ----- compatibility shims -----</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_linkable_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used by `easyscience.fitting.calculators.interface_factory.generate_bindings`.</span>
-
-<span class="sd">        Returns the same set as :meth:`get_all_variables` (the modern API on</span>
-<span class="sd">        :class:`ModelBase`). Kept under the legacy name because the calculator</span>
-<span class="sd">        in `easyscience` core has not yet been updated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_variables</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility shim for legacy callers; prefer :meth:`get_all_parameters`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility shim for legacy `ObjBase._add_component`.</span>
-
-<span class="sd">        Legacy callers (e.g. `LayerAreaPerMolecule`) used this to register an</span>
-<span class="sd">        additional child after `super().__init__`. In the new world the</span>
-<span class="sd">        equivalent is simply setting an attribute; we do that here so the</span>
-<span class="sd">        existing call sites keep working until Step 2 removes them.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Discover Parameters/Descriptors across both class-level and instance-level attrs.</span>
 
-<span class="sd">        `ModelBase.get_all_variables` walks `dir(self)`, which `NewBase` restricts</span>
+<span class="sd">        `ModelBase.get_all_variables` walks `dir(self)`, which `EasyBase` restricts</span>
 <span class="sd">        to class attributes only. During the transition some subclasses still</span>
 <span class="sd">        store child Parameters as plain instance attributes (see the kwargs path</span>
 <span class="sd">        in :meth:`__init__`); those are invisible to `dir()`. We therefore also</span>
@@ -3665,7 +3595,7 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 <span class="sd">        the dict (e.g. `Parameter_0`) that subsequently collide on reload when</span>
 <span class="sd">        the global counter restarts from 0.</span>
 
-<span class="sd">        Pass a *copy* of `skip` to super since `NewBase.to_dict` mutates the</span>
+<span class="sd">        Pass a *copy* of `skip` to super since `EasyBase.to_dict` mutates the</span>
 <span class="sd">        list (appends `unique_name` / `display_name` if those are default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span> <span class="ow">or</span> <span class="p">[])</span>
@@ -3680,8 +3610,18 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializer hook, called for this object at any depth: tag it, or refer</span>
-<span class="sd">        to its first occurrence (see :mod:`easyreflectometry.sample.references`).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializer hook, called for this object at any depth.</span>
+
+<span class="sd">        Drops easyscience&#39;s own dependency record from this object&#39;s parameters:</span>
+<span class="sd">        the library persists dependencies itself (owning classes rebuild the</span>
+<span class="sd">        internal ones, `Project` saves user constraints), and a second record</span>
+<span class="sd">        would be restored on top of them. Then tags the object, or refers to</span>
+<span class="sd">        its first occurrence (see :mod:`easyreflectometry.sample.references`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_CORE_DEPENDENCY_FIELDS</span><span class="p">:</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">references</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -3784,9 +3724,8 @@ the deprecated <code>ObjBase</code>). On top of <code>ModelBase</code> this clas
 
         <p>Propagate the interface to child objects, then bind via the calculator.</p>
 <p>We propagate to any child whose class advertises an <code>interface</code> property
-with a setter. That includes both the new <code>BaseCore</code>-based children and
-legacy <code>BasedBase</code>-derived collections (which extend <code>SerializerComponent</code>,
-not <code>NewBase</code>).</p>
+with a setter (<code>BaseCore</code> children and the <code>BaseCollection</code>s). The
+calculator keeps only models; for every other object binding is a no-op.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3794,26 +3733,24 @@ not <code>NewBase</code>).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagate the interface to child objects, then bind via the calculator.</span>
 
 <span class="sd">    We propagate to any child whose class advertises an ``interface`` property</span>
-<span class="sd">    with a setter. That includes both the new `BaseCore`-based children and</span>
-<span class="sd">    legacy `BasedBase`-derived collections (which extend `SerializerComponent`,</span>
-<span class="sd">    not `NewBase`).</span>
+<span class="sd">    with a setter (`BaseCore` children and the `BaseCollection`s). The</span>
+<span class="sd">    calculator keeps only models; for every other object binding is a no-op.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Interface error for generating bindings. `interface` has to be set.&#39;</span><span class="p">)</span>
@@ -3821,36 +3758,6 @@ not <code>NewBase</code>).</p>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_interface_setter</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">attr</span><span class="p">)):</span>
             <span class="n">attr</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="easyreflectometry.sample.elements.layers.layer.BaseCore.get_parameters" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_parameters</span><span class="p">()</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Compatibility shim for legacy callers; prefer :meth:<code>get_all_parameters</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility shim for legacy callers; prefer :meth:`get_all_parameters`.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_parameters</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3869,7 +3776,7 @@ not <code>NewBase</code>).</p>
     <div class="doc doc-contents ">
 
         <p>Discover Parameters/Descriptors across both class-level and instance-level attrs.</p>
-<p><code>ModelBase.get_all_variables</code> walks <code>dir(self)</code>, which <code>NewBase</code> restricts
+<p><code>ModelBase.get_all_variables</code> walks <code>dir(self)</code>, which <code>EasyBase</code> restricts
 to class attributes only. During the transition some subclasses still
 store child Parameters as plain instance attributes (see the kwargs path
 in :meth:<code>__init__</code>); those are invisible to <code>dir()</code>. We therefore also
@@ -3882,34 +3789,34 @@ ModelBase objects whose own <code>get_all_variables</code> we recurse into.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Discover Parameters/Descriptors across both class-level and instance-level attrs.</span>
 
-<span class="sd">    `ModelBase.get_all_variables` walks `dir(self)`, which `NewBase` restricts</span>
+<span class="sd">    `ModelBase.get_all_variables` walks `dir(self)`, which `EasyBase` restricts</span>
 <span class="sd">    to class attributes only. During the transition some subclasses still</span>
 <span class="sd">    store child Parameters as plain instance attributes (see the kwargs path</span>
 <span class="sd">    in :meth:`__init__`); those are invisible to `dir()`. We therefore also</span>
@@ -3960,7 +3867,7 @@ propagate per-object <code>_default_unique_name</code> to nested children — if
 we leave it in, child Parameters end up with explicit unique_names in
 the dict (e.g. <code>Parameter_0</code>) that subsequently collide on reload when
 the global counter restarts from 0.</p>
-<p>Pass a <em>copy</em> of <code>skip</code> to super since <code>NewBase.to_dict</code> mutates the
+<p>Pass a <em>copy</em> of <code>skip</code> to super since <code>EasyBase.to_dict</code> mutates the
 list (appends <code>unique_name</code> / <code>display_name</code> if those are default).</p>
 <!-- prettier-ignore-start -->
 
@@ -3969,31 +3876,31 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, skipping the calculator interface and unique_name by default.</span>
 
 <span class="sd">    The calculator (`CalculatorFactory`) is not serializable and is not part</span>
@@ -4009,7 +3916,7 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 <span class="sd">    the dict (e.g. `Parameter_0`) that subsequently collide on reload when</span>
 <span class="sd">    the global counter restarts from 0.</span>
 
-<span class="sd">    Pass a *copy* of `skip` to super since `NewBase.to_dict` mutates the</span>
+<span class="sd">    Pass a *copy* of `skip` to super since `EasyBase.to_dict` mutates the</span>
 <span class="sd">    list (appends `unique_name` / `display_name` if those are default).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">skip</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span> <span class="ow">or</span> <span class="p">[])</span>
@@ -4043,9 +3950,9 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4077,15 +3984,15 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCore</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rebuild, resolving shared children; see :mod:`easyreflectometry.sample.references`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">references</span><span class="o">.</span><span class="n">is_reference</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">):</span>
@@ -4119,9 +4026,9 @@ list (appends <code>unique_name</code> / <code>display_name</code> if those are 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/base_core.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Yaml-formatted multi-line string built from :attr:`_dict_repr`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5298,14 +5205,7 @@ guide field, i.e. no spin-flip).</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5391,7 +5291,7 @@ guide field, i.e. no spin-flip).</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on magnetism on the attached calculator.</span>
 
 <span class="sd">        Raises `NotImplementedError` when the active calculator cannot model</span>
-<span class="sd">        magnetic samples (e.g. refnx or bornagain).</span>
+<span class="sd">        magnetic samples (e.g. refnx).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">include_magnetism</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -5429,28 +5329,23 @@ guide field, i.e. no spin-flip).</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach or remove the magnetic properties of this layer.</span>
 
-<span class="sd">        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become</span>
-<span class="sd">        live on the backend; removing drops the layer&#39;s magnetic state from the</span>
-<span class="sd">        backend (and switches calculator magnetism off entirely when this was the</span>
-<span class="sd">        last magnetic layer).</span>
+<span class="sd">        Attaching switches calculator magnetism on and passes the calculator on</span>
+<span class="sd">        to the magnetism; removing lets the calculator switch magnetism off when</span>
+<span class="sd">        this was the last magnetic layer it serves.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
-        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">remove_layer_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
-            <span class="c1"># The detached object must not follow the material any more...</span>
-            <span class="k">if</span> <span class="n">coupled</span><span class="p">:</span>
-                <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
-            <span class="c1"># ...and its value changes must no longer reach the backend.</span>
-            <span class="c1"># `property()` (fget/fset/fdel all None) is easyscience&#39;s own &quot;no</span>
-            <span class="c1"># callback&quot; sentinel -- `Parameter.__copy__` sets it the same way --</span>
-            <span class="c1"># so a later `fset` guard in `Parameter` cleanly no-ops.</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
-            <span class="n">previous</span><span class="o">.</span><span class="n">theta_m</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="nb">property</span><span class="p">()</span>
+        <span class="c1"># The detached object must not follow the material any more.</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">coupled</span><span class="p">:</span>
+            <span class="n">_release</span><span class="p">(</span><span class="n">previous</span><span class="o">.</span><span class="n">rho_m</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># After the assignment: the calculator looks at the updated tree.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
 
@@ -5532,8 +5427,6 @@ guide field, i.e. no spin-flip).</p>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
@@ -6027,19 +5920,17 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/layers/layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
 
 <span class="sd">    Parameters</span>
@@ -6050,8 +5941,6 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">assign_material_to_layer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">unique_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6184,7 +6073,7 @@ the bounds before fitting.</p>
     If the value is a number, a parameter is created with this value and metadata from the dictionary.
     If the value is None, a parameter is created with the default value and metadata from the dictionary.</p>
 <div class="language-text highlight"><pre><span></span><code>param value: The value to use for the parameter.  If None, the default value in the dictionary is used.
-param name: The name of the parameter
+param name: The display name of the parameter (core&#39;s `display_name`)
 param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter
 </code></pre></div>
 <!-- prettier-ignore-start -->
@@ -6248,7 +6137,7 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 <span class="sd">        If the value is None, a parameter is created with the default value and metadata from the dictionary.</span>
 
 <span class="sd">        param value: The value to use for the parameter.  If None, the default value in the dictionary is used.</span>
-<span class="sd">        param name: The name of the parameter</span>
+<span class="sd">        param name: The display name of the parameter (core&#39;s `display_name`)</span>
 <span class="sd">        param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This is a parameter, return it</span>
@@ -6268,11 +6157,11 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Create a default parameter using both value and metadata from dictionary</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
         <span class="c1"># Create a parameter using provided value and metadata from dictionary</span>
         <span class="k">del</span> <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> must be a Parameter, a number, or None.&#39;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6303,17 +6192,17 @@ never silently adds a free parameter to the next fit.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/elements/layers/layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_release</span><span class="p">(</span><span class="n">rho_m</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_release</span><span class="p">(</span><span class="n">rho_m</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a coupled magnetic SLD an ordinary parameter again, keeping its value.</span>
 
 <span class="sd">    The dependency cleared `fixed` and narrowed the bounds; give back what a new</span>

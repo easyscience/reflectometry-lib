@@ -4177,7 +4177,7 @@ molecular formula an area per molecule, and a solvent.</p>
             <span class="n">old</span> <span class="o">=</span> <span class="n">mixture</span><span class="o">.</span><span class="n">_fraction</span>
             <span class="n">mixture</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved_solvent_fraction</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="n">mixture</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
@@ -4979,7 +4979,7 @@ the float kwargs. We fix both here.</p>
         <span class="n">old</span> <span class="o">=</span> <span class="n">mixture</span><span class="o">.</span><span class="n">_fraction</span>
         <span class="n">mixture</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved_solvent_fraction</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">_global_object</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="n">mixture</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
@@ -6259,8 +6259,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SurfactantLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A surfactant layer constructs a series of layers representing the</span>
 <span class="sd">    head and tail groups of a surfactant.</span>
 <span class="sd">    This assembly allows the definition of a surfactant or lipid using the chemistry</span>
@@ -6443,7 +6442,6 @@ or area per molecule more straight forward.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conformal_roughness</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Roughness must be conformal to use this function.&#39;</span><span class="p">)</span>
-        <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span>
         <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
@@ -7053,8 +7051,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_solvent_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_roughness</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the constraint to the solvent roughness.</span>
 
 <span class="sd">    Parameters</span>
@@ -7064,7 +7061,6 @@ or area per molecule more straight forward.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conformal_roughness</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Roughness must be conformal to use this function.&#39;</span><span class="p">)</span>
-    <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span>
     <span class="n">solvent_roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_layer</span><span class="o">.</span><span class="n">roughness</span><span class="p">})</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7239,7 +7235,8 @@ or area per molecule more straight forward.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+<span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -7283,8 +7280,7 @@ or area per molecule more straight forward.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_multiple_contrast</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">another_contrast</span><span class="p">:</span> <span class="n">SurfactantLayer</span><span class="p">,</span>
     <span class="n">head_layer_thickness</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -7356,13 +7352,13 @@ from <code>tail_layer</code> and <code>head_layer</code> in <code>__init__</code
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easyreflectometry/sample/assemblies/surfactant_layer.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
+<span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">269</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize, dropping the derived ``layers`` field (it is rebuilt</span>
 <span class="sd">    from ``tail_layer`` and ``head_layer`` in ``__init__``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>

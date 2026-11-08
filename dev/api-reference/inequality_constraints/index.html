@@ -2485,11 +2485,10 @@ and enforced by the <strong>BUMPS</strong> engines (the <code>Bumps*</code> mini
 DREAM sampler) as penalties on the fit problem. LMFit and DFO-LS cannot
 enforce them, and <code>fit</code> raises <code>ValueError</code> in that case rather than
 silently dropping the physics.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyscience.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">AvailableMinimizers</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">InequalitySpec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">InequalitySpec</span>
-
-<span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">AvailableMinimizers</span><span class="o">.</span><span class="n">Bumps</span>
+<span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">Minimizers</span><span class="o">.</span><span class="n">Bumps</span>
 <span class="n">t_a</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># &#39;models/0/sample/1/layers/0/thickness&#39;</span>
 <span class="n">t_b</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">add_inequality_constraint</span><span class="p">(</span><span class="n">InequalitySpec</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">t_a</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">t_b</span><span class="p">},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;order&#39;</span><span class="p">))</span>
@@ -2642,7 +2641,7 @@ BUMPS parameters:</p>
 
 
 <h2 id="easyreflectometry.inequality_constraints._BUMPS_PREFIX" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_BUMPS_PREFIX</span> <span class="o">=</span> <span class="s1">&#39;p&#39;</span></code>
+            <code class="highlight language-python"><span class="n">_BUMPS_PREFIX</span> <span class="o">=</span> <span class="n">PARAMETER_PREFIX</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2734,14 +2733,14 @@ new callers can catch this type instead of matching message substrings.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easyreflectometry/inequality_constraints.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnitError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnitError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit problem in an inequality constraint.</span>
 
 <span class="sd">    Raised by :func:`check_units` when a side cannot be evaluated with its</span>
@@ -3834,7 +3833,7 @@ zero at the boundary is the only continuous choice.</p>
 <span class="sd">    * dependent parameter → its dependency expression, expanded recursively.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span> <span class="ow">in</span> <span class="n">trail</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Circular dependency while expanding parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Circular dependency while expanding parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
         <span class="n">expression</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;_clean_dependency_string&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">dependency_map</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;_dependency_map&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -3843,7 +3842,7 @@ zero at the boundary is the only continuous choice.</p>
             <span class="c1"># EasyScience; this is a defensive fallback for a foreign Parameter</span>
             <span class="c1"># subclass. Freezing silently would hide a bug, so say so.</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Dependent parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has no dependency expression; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Dependent parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">&#39; has no dependency expression; &quot;</span>
                 <span class="s1">&#39;its current value is frozen as a constant in the inequality constraint.&#39;</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
