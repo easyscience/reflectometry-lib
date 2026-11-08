@@ -163,22 +163,23 @@ class Layer(BaseCore):
     def magnetism(self, value: Optional[LayerMagnetism]) -> None:
         """Attach or remove the magnetic properties of this layer.
 
-        Attaching regenerates the calculator bindings so `rho_m`/`theta_m` become
-        live on the backend; removing drops the layer's magnetic state from the
-        backend (and switches calculator magnetism off entirely when this was the
-        last magnetic layer).
+        Attaching switches calculator magnetism on and passes the calculator on
+        to the magnetism; removing lets the calculator switch magnetism off when
+        this was the last magnetic layer it serves.
         """
         previous = self._magnetism
         coupled = self.rho_m_coupled
-        if previous is not None and previous is not value:
-            if value is None and self.interface is not None:
-                self.interface().remove_layer_magnetism(self.unique_name)
-            # The detached object must not follow the material any more.
-            if coupled:
-                _release(previous.rho_m)
+        # The detached object must not follow the material any more.
+        if previous is not None and previous is not value and coupled:
+            _release(previous.rho_m)
         self._magnetism = value
         self._reconcile_rho_m_coupling(coupled)
-        if value is not None and self.interface is not None:
+        if self.interface is None:
+            return
+        if value is None:
+            # After the assignment: the calculator looks at the updated tree.
+            self.interface().reconcile_magnetism()
+        else:
             self._enable_calculator_magnetism()
             self.generate_bindings()
 
@@ -260,8 +261,6 @@ class Layer(BaseCore):
         coupled = self.rho_m_coupled
         self._material = material
         self._reconcile_rho_m_coupling(coupled)
-        if self.interface is not None:
-            self.interface().assign_material_to_layer(self.material.unique_name, self.unique_name)
 
     # Representation
     @property

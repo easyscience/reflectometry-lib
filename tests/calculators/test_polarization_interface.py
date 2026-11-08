@@ -14,6 +14,7 @@ from easyreflectometry.calculators import PolarizationChannel
 from easyreflectometry.model import Model
 from easyreflectometry.model import PercentageFwhm
 from easyreflectometry.sample import Layer
+from easyreflectometry.sample import LayerMagnetism
 from easyreflectometry.sample import Material
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
@@ -42,8 +43,7 @@ def test_polarized_reflectivity_profiles_through_factory():
     model.interface = interface
     calculator = model.interface()
     calculator.include_magnetism = True
-    layer_name = list(calculator._wrapper.storage['layer'].keys())[1]
-    calculator._wrapper.update_layer(layer_name, magnetism_rhoM=2, magnetism_thetaM=45)
+    model.sample[1].layers[0].magnetism = LayerMagnetism(rho_m=2, theta_m=45)
 
     # Through the factory (model.interface), not only the calculator (model.interface())
     channels = model.interface.polarized_reflectivity_profiles(Q, model.unique_name)
@@ -81,8 +81,7 @@ def test_magnetic_sld_profile_through_factory():
     model.interface = interface
     calculator = model.interface()
     calculator.include_magnetism = True
-    layer_name = list(calculator._wrapper.storage['layer'].keys())[1]
-    calculator._wrapper.update_layer(layer_name, magnetism_rhoM=2, magnetism_thetaM=45)
+    model.sample[1].layers[0].magnetism = LayerMagnetism(rho_m=2, theta_m=45)
 
     z, sld, sld_magnetic, theta_magnetic = interface.magnetic_sld_profile(model.unique_name)
 

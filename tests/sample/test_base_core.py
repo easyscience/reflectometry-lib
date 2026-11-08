@@ -168,20 +168,6 @@ class TestBaseCore:
         """Parameter doesn't have an interface property."""
         assert BaseCore._has_interface_setter(Parameter) is False
 
-    # ---- compatibility shims ----
-
-    def test_get_linkable_attributes(self) -> None:
-        param = Parameter(1.0, display_name='p')
-        obj = _ConcreteCore(name='Core', p=param)
-        result = obj._get_linkable_attributes()
-        assert param in result
-
-    def test_add_component(self) -> None:
-        obj = _ConcreteCore(name='Core')
-        comp = Parameter(42.0, display_name='comp')
-        obj._add_component('my_comp', comp)
-        assert obj.my_comp is comp
-
     # ---- get_all_variables ----
 
     def test_get_all_variables_includes_descriptors(self) -> None:

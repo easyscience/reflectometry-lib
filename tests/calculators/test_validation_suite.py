@@ -27,13 +27,6 @@ from easyreflectometry.sample import Sample
 
 TEST4 = np.loadtxt(Path(__file__).parents[1] / '_static' / 'validation_test4.dat')
 ENGINES = ['refnx', 'refl1d']
-# refl1d 1.0 oversamples through `probe.oversample()` (`_calc_Q`); the wrapper
-# sets `probe.calc_Qo`, which refl1d no longer reads, so the smeared curve is
-# convolved on the data grid only and misses test4 by up to 26 %.
-SMEARED_ENGINES = [
-    'refnx',
-    pytest.param('refl1d', marks=pytest.mark.xfail(strict=True, reason='refl1d wrapper oversampling is not applied')),
-]
 
 
 @pytest.fixture(autouse=True)
@@ -95,13 +88,13 @@ def test_unpolarised_test2_bare_interface(engine):
     assert_almost_equal(_reflectivity(model, q), expected)
 
 
-@pytest.mark.parametrize('engine', SMEARED_ENGINES)
+@pytest.mark.parametrize('engine', ENGINES)
 def test_unpolarised_test4_constant_resolution(engine):
     model = _test0_model(engine, PercentageFwhm(5))
     assert_allclose(_reflectivity(model, TEST4[:, 0]), TEST4[:, 1], rtol=0.03)
 
 
-@pytest.mark.parametrize('engine', SMEARED_ENGINES)
+@pytest.mark.parametrize('engine', ENGINES)
 def test_unpolarised_test4_pointwise_resolution(engine):
     # The file carries sigma; the spline takes FWHM.
     model = _test0_model(engine, LinearSpline(TEST4[:, 0], SIGMA_TO_FWHM * TEST4[:, 3]))

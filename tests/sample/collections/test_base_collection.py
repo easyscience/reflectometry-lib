@@ -242,12 +242,6 @@ class TestBaseCollection:
         assert len(free) == 1
         assert free[0].display_name == 'thickness'
 
-    def test_get_linkable_attributes(self):
-        """_get_linkable_attributes should return get_all_variables."""
-        elem = Layer(name='layer')
-        p = BaseCollection('name', MagicMock(), elem)
-        assert p._get_linkable_attributes() == p.get_all_variables()
-
     def test_to_dict_includes_data_and_name(self):
         """to_dict should serialize data items and collection metadata."""
         elem = Layer(name='layer')

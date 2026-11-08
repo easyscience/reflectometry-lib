@@ -13,20 +13,12 @@ from easyreflectometry.model import ResolutionFunction
 from easyreflectometry.model.resolution_functions import SIGMA_TO_FWHM
 
 from ..stateless_wrapper_base import StatelessWrapperBase
+from ..stateless_wrapper_base import repeats_of
+from ..stateless_wrapper_base import value_of
 
 if TYPE_CHECKING:
     from easyreflectometry.model import Model
     from easyreflectometry.sample import Layer
-
-
-def _value(obj: object, name: str) -> float:
-    """The current value of ``obj.<name>``.
-
-    Most attributes are parameters; ``MaterialMixture`` exposes its derived
-    ``sld``/``isld`` as plain floats.
-    """
-    value = getattr(obj, name)
-    return float(getattr(value, 'value', value))
 
 
 class RefnxWrapper(StatelessWrapperBase):
@@ -60,8 +52,7 @@ class RefnxWrapper(StatelessWrapperBase):
         components = []
         for assembly in model.sample:
             slabs = [_slab(layer) for layer in assembly.layers]
-            repetitions = getattr(assembly, 'repetitions', None)
-            repeats = 1.0 if repetitions is None else _value(assembly, 'repetitions')
+            repeats = repeats_of(assembly)
             if repeats == 1:
                 components.extend(slabs)
             else:
@@ -71,8 +62,8 @@ class RefnxWrapper(StatelessWrapperBase):
 
 def _slab(layer: Layer) -> reflect.Slab:
     material = layer.material
-    sld = reflect.SLD(complex(_value(material, 'sld'), _value(material, 'isld')), name=material.unique_name)
-    return reflect.Slab(_value(layer, 'thickness'), sld, _value(layer, 'roughness'), name=layer.unique_name)
+    sld = reflect.SLD(complex(value_of(material, 'sld'), value_of(material, 'isld')), name=material.unique_name)
+    return reflect.Slab(value_of(layer, 'thickness'), sld, value_of(layer, 'roughness'), name=layer.unique_name)
 
 
 def _x_err(resolution_function: ResolutionFunction, q_array: np.ndarray) -> np.ndarray | float:

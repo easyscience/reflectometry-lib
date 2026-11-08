@@ -56,8 +56,8 @@ from easyreflectometry.sample import Sample
 Q = np.geomspace(0.005, 0.3, 100)
 
 
-def _build_simple_model_refnx(wrapper):
-    """Build an ambient | 100 A film | substrate model on a refnx wrapper.
+def _build_simple_model(wrapper):
+    """Build an ambient | 100 A film | substrate model on *wrapper*.
 
     The ambient layer is not optional decoration: both engines treat the first
     layer as the semi-infinite superphase and ignore its thickness.  Without it
@@ -74,45 +74,14 @@ def _build_simple_model_refnx(wrapper):
     return model
 
 
-def _build_simple_model_refl1d(wrapper):
-    """Build the same ambient | 100 A film | substrate model on refl1d."""
-    wrapper.reset_storage()
-    wrapper.create_material('Ambient')
-    wrapper.update_material('Ambient', rho=0.0, irho=0.0)
-    wrapper.create_material('Film')
-    wrapper.update_material('Film', rho=3.45, irho=0.0)
-    wrapper.create_material('Substrate')
-    wrapper.update_material('Substrate', rho=2.07, irho=0.0)
-    wrapper.create_layer('AmbientLayer')
-    wrapper.assign_material_to_layer('Ambient', 'AmbientLayer')
-    wrapper.create_layer('FilmLayer')
-    wrapper.assign_material_to_layer('Film', 'FilmLayer')
-    wrapper.update_layer('FilmLayer', thickness=100.0, interface=3.0)
-    wrapper.create_layer('SubstrateLayer')
-    wrapper.assign_material_to_layer('Substrate', 'SubstrateLayer')
-    wrapper.update_layer('SubstrateLayer', interface=3.0)
-    wrapper.create_item('Item')
-    wrapper.add_layer_to_item('AmbientLayer', 'Item')
-    wrapper.add_layer_to_item('FilmLayer', 'Item')
-    wrapper.add_layer_to_item('SubstrateLayer', 'Item')
-    wrapper.create_model('MyModel')
-    wrapper.add_item('Item', 'MyModel')
-    wrapper.update_model('MyModel', bkg=0.0)
-
-
 def _both_engines(resolution_function):
     """Return (refnx_reflectivity, refl1d_reflectivity) for one resolution."""
-    refnx_w = RefnxWrapper()
-    refnx_model = _build_simple_model_refnx(refnx_w)
-    refnx_w.set_resolution_function(resolution_function)
-    refnx_r = refnx_w.calculate(Q, refnx_model.unique_name)
-
-    refl1d_w = Refl1dWrapper()
-    _build_simple_model_refl1d(refl1d_w)
-    refl1d_w.set_resolution_function(resolution_function)
-    refl1d_r = refl1d_w.calculate(Q, 'MyModel')
-
-    return refnx_r, refl1d_r
+    reflectivities = []
+    for wrapper in (RefnxWrapper(), Refl1dWrapper()):
+        model = _build_simple_model(wrapper)
+        wrapper.set_resolution_function(resolution_function)
+        reflectivities.append(wrapper.calculate(Q, model.unique_name))
+    return tuple(reflectivities)
 
 
 def _assert_log_close(refnx_r, refl1d_r, atol):

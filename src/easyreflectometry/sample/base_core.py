@@ -32,8 +32,6 @@ class BaseCore(ModelBase):
     - an `interface` property whose setter propagates the calculator interface
       to child objects and (re)generates bindings
     - a yaml-formatted `__repr__` driven by an abstract `_dict_repr`
-    - an `_get_linkable_attributes` compatibility shim used by the calculator's
-      `InterfaceFactoryTemplate.generate_bindings`
     - an `as_dict` alias for `to_dict`
 
     Subclass `__init__` convention:
@@ -157,27 +155,6 @@ class BaseCore(ModelBase):
             if isinstance(prop, property):
                 return prop.fset is not None
         return False
-
-    # ----- compatibility shims -----
-
-    def _get_linkable_attributes(self):
-        """Used by `easyscience.fitting.calculators.interface_factory.generate_bindings`.
-
-        Returns the same set as :meth:`get_all_variables` (the modern API on
-        :class:`ModelBase`). Kept under the legacy name because the calculator
-        in `easyscience` core has not yet been updated.
-        """
-        return self.get_all_variables()
-
-    def _add_component(self, key: str, component: Any) -> None:
-        """Compatibility shim for legacy `ObjBase._add_component`.
-
-        Legacy callers (e.g. `LayerAreaPerMolecule`) used this to register an
-        additional child after `super().__init__`. In the new world the
-        equivalent is simply setting an attribute; we do that here so the
-        existing call sites keep working until Step 2 removes them.
-        """
-        setattr(self, key, component)
 
     def get_all_variables(self):
         """Discover Parameters/Descriptors across both class-level and instance-level attrs.

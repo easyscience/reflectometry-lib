@@ -15,6 +15,7 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_equal
 
 from easyreflectometry.calculators import CalculatorFactory
+from easyreflectometry.calculators.refl1d.wrapper import _kernel_inputs
 from easyreflectometry.calculators.refnx.wrapper import RefnxWrapper
 from easyreflectometry.model import LinearSpline
 from easyreflectometry.model import Model
@@ -31,6 +32,11 @@ from easyreflectometry.sample import SurfactantLayer
 def _refnx_components(model):
     """What the refnx calculator is given for *model*: built from it at every evaluation."""
     return [type(component).__name__ for component in RefnxWrapper._build_structure(model).components]
+
+
+def _refl1d_assemblies(model):
+    """(repeats, layer count) per assembly, as the refl1d calculator is given them at every evaluation."""
+    return [(repeats, len(layers)) for repeats, layers in _kernel_inputs(model, magnetism=False)[0]]
 
 
 class TestModel(unittest.TestCase):
@@ -155,11 +161,9 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
 
     def test_duplicate_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
@@ -214,11 +218,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
         mod.duplicate_assembly(1)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 3)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2), (1.0, 2)])
 
     def test_remove_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
@@ -271,14 +275,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
         mod.remove_assembly(0)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(1.0, 2)])
 
     def test_remove_all_assemblies(self):
         # when

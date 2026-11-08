@@ -227,10 +227,6 @@ class BaseCollection(EasyList):
     def get_free_parameters(self) -> List[Parameter]:
         return [p for p in self.get_all_parameters() if p.independent and not p.fixed]
 
-    def _get_linkable_attributes(self) -> List[Parameter]:
-        """Bridge for `easyscience.fitting.calculators.interface_factory.generate_bindings`."""
-        return self.get_all_variables()
-
     # ----- repr -----
 
     @property

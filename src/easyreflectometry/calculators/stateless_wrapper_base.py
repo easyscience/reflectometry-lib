@@ -6,6 +6,7 @@ from __future__ import annotations
 import weakref
 from abc import abstractmethod
 from dataclasses import dataclass
+from dataclasses import field
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -17,6 +18,22 @@ from .polarization import PolarizationChannel
 
 if TYPE_CHECKING:
     from easyreflectometry.model import Model
+    from easyreflectometry.sample import BaseAssembly
+
+
+def value_of(obj: object, name: str) -> float:
+    """The current value of ``obj.<name>``.
+
+    Most attributes are parameters; ``MaterialMixture`` exposes its derived
+    ``sld``/``isld`` as plain floats.
+    """
+    value = getattr(obj, name)
+    return float(getattr(value, 'value', value))
+
+
+def repeats_of(assembly: BaseAssembly) -> float:
+    """How often *assembly* is repeated; 1 for an assembly without ``repetitions``."""
+    return 1.0 if getattr(assembly, 'repetitions', None) is None else value_of(assembly, 'repetitions')
 
 
 @dataclass
@@ -25,6 +42,10 @@ class _ModelEntry:
 
     model: weakref.ReferenceType
     resolution_function: ResolutionFunction | None = None
+    #: The model state that the results in `cache` were calculated at.
+    cache_state: tuple | None = None
+    #: Calculated results at `cache_state`, keyed by grid.
+    cache: dict = field(default_factory=dict)
 
 
 class StatelessWrapperBase:
@@ -41,6 +62,9 @@ class StatelessWrapperBase:
     when it dies, but only while they still refer to that same model: core
     hands the ``unique_name`` of a dead object out again, and a new model
     registered under it keeps its entry.
+
+    The magnetism flag is explicit state; :meth:`reconcile_magnetism` only
+    switches it off when the served models stop being magnetic.
     """
 
     #: Whether this calculator backend can model magnetic samples.
@@ -50,6 +74,8 @@ class StatelessWrapperBase:
         """Constructor."""
         self._models: dict[str, _ModelEntry] = {}
         self._magnetism = False
+        # Whether a served model was magnetic when the flag was last set or reconciled.
+        self._magnetic_seen = False
         self._polarization_channel = PolarizationChannel.PP
         # Used for every model that has not registered a resolution of its own.
         self._resolution_function = PercentageFwhm()
@@ -75,14 +101,17 @@ class StatelessWrapperBase:
                 del owner._models[name]
 
         self._models[name] = _ModelEntry(weakref.ref(model, forget))
+        self.reconcile_magnetism()
 
     def discard_model(self, model_id: str) -> None:
         """Stop serving the model with *model_id* (unknown ids are ignored)."""
         self._models.pop(model_id, None)
+        self.reconcile_magnetism()
 
     def reset_storage(self) -> None:
         """Stop serving every model."""
         self._models = {}
+        self.reconcile_magnetism()
 
     def _get_model(self, model_id: str | None = None) -> Model:
         """The registered model with *model_id*; ``None`` is allowed when exactly one is registered.
@@ -156,9 +185,29 @@ class StatelessWrapperBase:
         if magnetism and not self.supports_magnetism:
             raise NotImplementedError(f'Magnetism is not supported by {self.__class__.__name__}')
         self._magnetism = magnetism
+        # An explicit choice is never undone by the next reconciliation; only a
+        # later removal of magnetism from the models can switch it off.
+        self._magnetic_seen = self._has_magnetic_model()
         if not magnetism:
             # A non-pp channel is only meaningful on the polarized probe path.
             self._polarization_channel = PolarizationChannel.PP
+
+    def reconcile_magnetism(self) -> None:
+        """Switch magnetism off when the served models have just stopped being magnetic.
+
+        Only that transition counts: a flag switched on before any layer is
+        magnetic, or switched off while some are, stays as it was set. Never
+        switches magnetism on.
+        """
+        if not self._magnetism:
+            return
+        magnetic = self._has_magnetic_model()
+        if self._magnetic_seen and not magnetic:
+            self.magnetism = False
+        self._magnetic_seen = magnetic
+
+    def _has_magnetic_model(self) -> bool:
+        return any(model.has_magnetism for model in self.models.values())
 
     @property
     def polarization_channel(self) -> PolarizationChannel:
@@ -168,6 +217,8 @@ class StatelessWrapperBase:
     @polarization_channel.setter
     def polarization_channel(self, channel: PolarizationChannel | str) -> None:
         channel = PolarizationChannel(channel)
+        # First, so that a channel picked after a structural edit is not reset by the next evaluation.
+        self.reconcile_magnetism()
         if channel is not PolarizationChannel.PP and not self._magnetism:
             raise ValueError(f"Selecting the '{channel.value}' channel requires magnetism to be enabled.")
         self._polarization_channel = channel

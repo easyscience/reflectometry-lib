@@ -164,20 +164,6 @@ class MaterialMixture(BaseCore):
     def isld(self) -> float:
         return self._isld.value
 
-    # ----- calculator binding -----
-
-    def _get_linkable_attributes(self):
-        """Return the *mixed* sld / isld parameters for calculator binding.
-
-        Override of the inherited `BaseCore._get_linkable_attributes`, which
-        walks `get_all_variables()` and would otherwise expose the **child**
-        materials' sld/isld (because our own `sld` / `isld` are floats, not
-        Parameters). The calculator's `InterfaceFactoryTemplate.generate_bindings`
-        matches by parameter `name`; without this override it binds to
-        `material_a.sld` and reflectivity is computed off the wrong SLD.
-        """
-        return [self._sld, self._isld]
-
     # ----- internal helpers -----
 
     def _materials_constraints(self):

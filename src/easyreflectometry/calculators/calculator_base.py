@@ -54,31 +54,19 @@ class CalculatorBase(metaclass=ABCMeta):
         """The models served, keyed by ``unique_name``."""
         return self._wrapper.models
 
-    # ----- structural mirroring, kept for the storage-based refl1d calculator until PR 3 -----
-    # A calculator that reads the model at evaluation time needs none of these.
-
-    def assign_material_to_layer(self, material_id: str, layer_id: str) -> None:
-        """No-op: the next evaluation sees the layer's material."""
-
-    def add_layer_to_item(self, layer_id: str, item_id: str) -> None:
-        """No-op: the next evaluation sees the assembly's layers."""
-
-    def remove_layer_from_item(self, layer_id: str, item_id: str) -> None:
-        """No-op: the next evaluation sees the assembly's layers."""
-
-    def add_item_to_model(self, item_id: str, model_id: str) -> None:
-        """No-op: the next evaluation sees the model's assemblies."""
-
-    def remove_item_from_model(self, item_id: str, model_id: str) -> None:
-        """No-op: the next evaluation sees the model's assemblies."""
-
-    def remove_layer_magnetism(self, layer_id: str) -> None:
-        """No-op: the next evaluation sees the layer without magnetism."""
+    def reconcile_magnetism(self) -> None:
+        """Switch `include_magnetism` off when the served models have just stopped being magnetic."""
+        self._wrapper.reconcile_magnetism()
 
     # ----- evaluation -----
 
     def _before_evaluation(self) -> None:
-        """Run at the start of every evaluation and profile."""
+        """Run at the start of every evaluation and profile.
+
+        Covers structural removals (a magnetic layer, an assembly) that nothing
+        reports to the calculator.
+        """
+        self.reconcile_magnetism()
 
     def reflectity_profile(
         self,
@@ -224,6 +212,9 @@ class CalculatorBase(metaclass=ABCMeta):
     @include_magnetism.setter
     def include_magnetism(self, magnetism: bool):
         """Set the magnetism flag for the calculator.
+
+        It stays as set until the served models stop being magnetic (see
+        :meth:`reconcile_magnetism`).
 
         Parameters
         ----------
