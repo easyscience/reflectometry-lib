@@ -12,7 +12,7 @@ from easyreflectometry.sample.collections.base_collection import BaseCollection
 from .model import Model
 
 
-# Needs to be a function, elements are added to the global_object.map
+# Needs to be a function, elements are added to the global_object.registry
 def DEFAULT_ELEMENTS(interface):
     """Default elements."""
     return (Model(interface=interface),)

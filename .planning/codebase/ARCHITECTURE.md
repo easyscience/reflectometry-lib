@@ -1,7 +1,8 @@
 # Architecture
 
 **Analysis Date:** 2026-10-15 **Branch analysed:** `develop` @
-`66adaf54`
+`66adaf54` **Revised:** 2026-11-08 for the easyscience 3 port
+(`core-3.0`)
 
 ## Pattern Overview
 
@@ -29,7 +30,7 @@ is computed by pluggable engine wrappers (refnx, refl1d) behind
   the core's namespace, because the core offers no hook
 - Shared objects (one material in two layers, one assembly in two
   models) serialize once through `sample/references.py`
-  (`file_format` 3)
+  (`file_format` 4)
 
 ## Layers
 
@@ -58,7 +59,7 @@ is computed by pluggable engine wrappers (refnx, refl1d) behind
   `_ConstrainedEasyScienceMultiFitter`, `FitSettings`,
   `MinimizerOption`, `InequalitySpec`, `build_constraints_factory`
 - Depends on: `easyscience.fitting` (`MultiFitter`, `Sampler`,
-  `AvailableMinimizers`, `FitResults`), `asteval`, `scipp`
+  `FitResults`), `easyscience.Minimizers`, `asteval`, `scipp`
 
 **Bayesian Analysis Layer:**
 
@@ -103,19 +104,24 @@ is computed by pluggable engine wrappers (refnx, refl1d) behind
 
 - Purpose: Pluggable reflectivity engines
 - Location: `src/easyreflectometry/calculators/`
-- Contains: `CalculatorBase` (item lifecycle via `ItemContainer`s,
-  per-model resolution, magnetism switches), `WrapperBase` (abstract
-  engine API incl. `calculate_channel`, `calculate_polarized`,
+- Contains: `CalculatorBase` (thin layer over the wrapper: model
+  membership, resolution, magnetism flag and channel),
+  `StatelessWrapperBase` (one entry per served model, held weakly, with
+  its resolution and cache; magnetism reconciliation; abstract engine
+  API incl. `calculate_channel`, `calculate_polarized`,
   `magnetic_sld_profile`), `CalculatorFactory` (`fit_func`,
   `fit_func_for(channel, resolution_function)`), `PolarizationChannel`
+- Stateless: each evaluation builds the engine structure from the model
+  and drops it again; no value is copied into a backend, so model edits
+  need no mirroring
 - Implementations: `refnx/` (unpolarized), `refl1d/` (magnetism,
-  polarized probes, oversampled resolution)
+  polarized probes with a per-model cache, oversampled resolution)
 
-**EasyScience Core (external, pinned 2.5.1):**
+**EasyScience Core (external, `>=3.0.2,<4`):**
 
 - `Fitter` / `MultiFitter` (reshaping of multi-dataset arrays, minimizer
   dispatch), `Sampler` / `SamplingResults` (DREAM chain, `extend`,
-  `save`, `load_state`), minimizer wrappers, `InterfaceFactoryTemplate`
+  `save`, `load_state`), minimizer wrappers, `Minimizers`
 
 ## Data Flow
 
@@ -174,13 +180,13 @@ is computed by pluggable engine wrappers (refnx, refl1d) behind
 **Persistence:**
 
 - `Project.as_dict` writes models, materials in order, experiments by
-  index and name with per-dataset resolution, fit settings, inequality
+  model index with per-dataset resolution, fit settings, inequality
   specs, user-constraint records by path, contrast provenance, links.
-  `references.writing()` replaces repeated objects with `@ref`.
-  `_needs_new_format` bumps `file_format` to 3 when older readers would
-  misread the file.
-- `from_dict` rebuilds shared objects (`references.reading`), restores
-  constraints by path, reports problems in `load_report`.
+  `references.writing()` replaces repeated objects with `@ref`. Always
+  `file_format` 4.
+- `from_dict` refuses anything but format 4 first (files from 1.x carry
+  2, 3 or none), then rebuilds shared objects (`references.reading`),
+  restores constraints by path, reports problems in `load_report`.
 
 **State Management:**
 
@@ -230,10 +236,11 @@ sharing structure with a reference by identity or by `constrain_equal`.
 parameters; `plan_link` / `apply_link` / `unlink` manage equalities
 between two models of one layout with full state snapshots.
 
-**`CalculatorBase` / `WrapperBase` / `CalculatorFactory`:** Template +
-Adapter + Factory. Items are claimed per calculator (`_claim`),
-per-model resolution registry, magnetism toggles, channel-bound fit
-functions.
+**`CalculatorBase` / `StatelessWrapperBase` / `CalculatorFactory`:**
+Template + Adapter + Factory. Explicit model membership
+(`register_model` / `discard_model` / `reset_storage`), per-model
+resolution, a magnetism flag reconciled with the served models,
+channel-bound fit functions.
 
 **`references` (sample/references.py):** Context-managed shared-object
 serialization (`writing()`, `reading(report)`, `suspended()`), with
@@ -294,8 +301,8 @@ model to avoid racing a running fit.
 
 **Serialization:** EasyScience serializer plus library extensions:
 `references` for shared objects, structural paths for constraints, per
-dataset resolution entries, `file_format` negotiation. Posterior chains
-have their own sidecar format.
+dataset resolution entries, a `file_format` check. Posterior chains have
+their own sidecar format.
 
 **Authentication:** Not applicable.
 

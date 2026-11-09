@@ -1,3 +1,83 @@
+# Version 2.0.0 (unreleased)
+
+Built on easyscience 3. Code written for 1.x needs the renames below,
+and project files saved by 1.x no longer load. Stay on 1.9 to keep using
+easyscience 2.
+
+## Dependencies
+
+- Requires `easyscience>=3.0.2,<4`.
+
+## Calculators
+
+- Behaviour change: the refnx and refl1d calculators read the model when
+  they calculate, instead of keeping a copy of every value that the
+  model had to push to them. Value and structural edits (a layer added,
+  a material swapped, an assembly removed) need no extra step, so
+  `model.generate_bindings()` after a change is no longer needed.
+- Behaviour change: refl1d now oversamples before smearing. It always
+  meant to: it evaluates the kernel on 21 evenly spaced points per data
+  point, reaching 3.5 resolution widths beyond the data. Earlier
+  releases asked for this in a way refl1d 1.0 ignores, so every smeared
+  refl1d curve was convolved on the data points only. On the
+  reflectivity/analysis validation data that was up to 26 % off; it is
+  now within 1.5 %, and refl1d agrees with refnx much more closely. Fits
+  with refl1d give different, more accurate results, and are about 3
+  times slower (up to 15 times for thick repeated multilayers).
+- `include_magnetism` is now also switched off when the last magnetic
+  layer leaves the models some other way (a layer or an assembly
+  removed, or a model removed from the project). It is never switched on
+  by itself, and a value set explicitly is kept.
+- A calculator serves exactly the project's models:
+  `Project.remove_model_at_index` and assigning `Project.models` update
+  it.
+- The calculator factory can no longer be pickled; save projects to file
+  instead.
+
+## Fitting
+
+- `AvailableMinimizers` is now `Minimizers` (same member names); import
+  it with `from easyreflectometry import Minimizers`.
+- `get_fit_parameters()` is removed; use `get_free_parameters()`, or
+  `get_all_parameters()`. `get_parameters()` is removed too.
+
+## Parameters
+
+- Parameters have no `name` any more; their label is `display_name`
+  (`layer.thickness.display_name == 'thickness'`). Layers, materials,
+  assemblies and models keep `name`.
+
+## Project persistence
+
+- Behaviour change: projects are saved as `file_format=4`, and files
+  written by easyreflectometry 1.x (`file_format` 2, 3 or none) are
+  refused with a message. Re-create such a project with 2.0, or open it
+  with 1.9.
+- Collections keep their `name` across a save and reload, and the model
+  list keeps its next colour.
+- No longer written: `materials_not_in_model` (the `materials` list
+  holds every material), `fitter_minimizer` (part of `fit_settings`) and
+  the by-name `experiments_models` (experiments are matched by
+  `experiments_model_indices`). `as_dict` lost its
+  `include_materials_not_in_model` argument.
+- `DataSet1D` no longer has `as_dict`/`from_dict`; experiments are saved
+  with their project.
+
+## Samples
+
+- Fixed: `SurfactantLayer.constrain_solvent_roughness` and
+  `Bilayer.constrain_solvent_roughness` raised `AttributeError` when the
+  solvent roughness was already constrained, e.g. one solvent layer
+  shared by two contrasts. The second call now rewires it, and the tie
+  is now kept when the project is saved and reloaded.
+
+## Documentation
+
+- The tutorials and the example notebooks use the 2.0 API.
+- The magnetism tutorial compared refl1d's mm cross-section with
+  EasyReflectometry's pp and labelled refl1d's channels in the wrong
+  order; it now compares like with like.
+
 # Version 1.9.0 (19 Oct 2026)
 
 ## Multiple contrasts

@@ -58,9 +58,9 @@ class MaterialMixture(BaseCore):
             unique_name = global_object.generate_unique_name(self.__class__.__name__)
 
         if material_a is None:
-            material_a = Material(interface=interface)
+            material_a = Material()
         if material_b is None:
-            material_b = Material(interface=interface)
+            material_b = Material()
 
         fraction = get_as_parameter(
             name='fraction',
@@ -122,8 +122,6 @@ class MaterialMixture(BaseCore):
     def material_a(self, new_material_a: Material) -> None:
         self._material_a = new_material_a
         self._materials_constraints()
-        if self.interface is not None:
-            self.interface.generate_bindings(self)
         self._update_name()
 
     @property
@@ -134,8 +132,6 @@ class MaterialMixture(BaseCore):
     def material_b(self, new_material_b: Material) -> None:
         self._material_b = new_material_b
         self._materials_constraints()
-        if self.interface is not None:
-            self.interface.generate_bindings(self)
         self._update_name()
 
     @property

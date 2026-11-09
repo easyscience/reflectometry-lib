@@ -68,7 +68,7 @@ class Multilayer(BaseAssembly):
         elif isinstance(layers, list):
             layers = LayerCollection(*layers, name='/'.join([layer.name for layer in layers]))
         # Needed to ensure an empty list is created when saving and instatiating the object as_dict -> from_dict
-        # Else collisions might occur in global_object.map
+        # Else collisions might occur in global_object.registry
         self.populate_if_none = False
 
         super().__init__(
