@@ -10,9 +10,13 @@ and settings (CORE-3-DESIGN.md, 4.4.4). Each case also edits the model after a
 first evaluation, so the path that brings new values to the backend is
 compared, not only the first build.
 
-Record (only on the old wrappers, never to make a failing port pass)::
+``refl1d.npz`` was recorded again once, on purpose: the stateless port first
+reproduced the ``develop`` arrays, then refl1d oversampling, which ``develop``
+never applied, was switched on (CORE-3-DESIGN.md, 9.2).
 
-    pixi run python tests/calculators/test_calculator_baselines.py --record
+Record one engine, never to make a failing port pass::
+
+    pixi run python tests/calculators/test_calculator_baselines.py --record refnx|refl1d
 """
 
 import sys
@@ -281,18 +285,18 @@ def test_matches_recorded_baseline(clear, engine, case):
         assert_allclose(actual[key], values, rtol=1e-10, atol=1e-14, err_msg=f'{engine}/{case}/{key}')
 
 
-def record() -> None:
+def record(engine: str) -> None:
     BASELINE_DIR.mkdir(exist_ok=True)
-    for engine in ENGINES:
-        arrays = {}
-        for case, (build, engines) in CASES.items():
-            if engine in engines:
-                arrays.update({f'{case}.{key}': value for key, value in build(engine).items()})
-        np.savez_compressed(_baseline_path(engine), **arrays)
-        print(f'{_baseline_path(engine)}: {len(arrays)} arrays')
+    arrays = {}
+    for case, (build, engines) in CASES.items():
+        if engine in engines:
+            global_object.registry.clear()
+            arrays.update({f'{case}.{key}': value for key, value in build(engine).items()})
+    np.savez_compressed(_baseline_path(engine), **arrays)
+    print(f'{_baseline_path(engine)}: {len(arrays)} arrays')
 
 
 if __name__ == '__main__':
-    if '--record' not in sys.argv:
+    if len(sys.argv) != 3 or sys.argv[1] != '--record' or sys.argv[2] not in ENGINES:
         sys.exit(__doc__)
-    record()
+    record(sys.argv[2])

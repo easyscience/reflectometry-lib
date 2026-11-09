@@ -1,33 +1,35 @@
 # External Integrations
 
 **Analysis Date:** 2026-10-15 **Branch analysed:** `develop` @
-`66adaf54`
+`66adaf54` **Revised:** 2026-11-08 for the easyscience 3 port
+(`core-3.0`)
 
 ## APIs & External Services
 
-**Fitting Engine (EasyScience corelib, PyPI `easyscience>=2.5.1,<3`):**
+**Fitting Engine (EasyScience corelib, PyPI `easyscience>=3.0.2,<4`):**
 
 - `easyscience.fitting.multi_fitter.MultiFitter` - Subclassed as
   `_ConstrainedEasyScienceMultiFitter` in `fitting.py` so the raw
   `fit()` path still applies inequality constraints
 - `easyscience.fitting.Sampler` / `SamplingResults` - Owns the DREAM
-  chain; `MultiFitter.mcmc_sample()` builds one and keeps it on
-  `fitter.sampler` for `extend()`, `save()`, `load_state()`
-- `easyscience.fitting.AvailableMinimizers`, `FitResults`
-- `easyscience.fitting.minimizers.minimizer_bumps` - Its module-level
-  `FitDriver` name is wrapped by `_bumps_constraints.install()` to
+  chain; `MultiFitter.mcmc_sample()` builds one (`Sampler.from_fitter`)
+  and keeps it on `fitter.sampler` for `extend()`, `save()`,
+  `load_state()`
+- `easyscience.Minimizers` (re-exported from
+  `easyreflectometry.fitting`), `easyscience.fitting.FitResults`
+- `easyscience.fitting.minimizers.minimizer_bumps` and
+  `easyscience.fitting.samplers.sampler_bumps` - Their module-level
+  `FitDriver` names are wrapped by `_bumps_constraints.install()` to
   attach `FitProblem.constraints`
-- `easyscience.fitting.minimizers.minimizer_base.MINIMIZER_PARAMETER_PREFIX` -
-  Stripped from parameter names in `analysis/bayesian.py`
-- `easyscience.variable.Parameter` / `DescriptorNumber` and
-  `parameter_dependency_resolver.resolve_all_parameter_dependencies` -
-  Equality constraints (`constraints.py`), contrasts, project load
-- `easyscience.base_classes.ModelBase` / `EasyList`,
-  `easyscience.io.SerializerComponent` / `SerializerBase` - Base classes
-  for `BaseCore`, `BaseCollection`, `DataSet1D`, `CalculatorBase`
-- `easyscience.global_object` - Unique-name registry
-- `easyscience.fitting.calculators.interface_factory.InterfaceFactoryTemplate`
-  / `ItemContainer` - `CalculatorFactory` base
+- `easyscience.fitting.engine_base.PARAMETER_PREFIX` - Stripped from
+  parameter names in `analysis/bayesian.py`
+- `easyscience.variable.Parameter` / `DescriptorNumber` - Equality
+  constraints (`constraints.py`), contrasts; labels are `display_name`
+- `easyscience.base_classes.ModelBase` / `EasyList` / `EasyBase` /
+  `SerializerBase` - Base classes for `BaseCore` and `BaseCollection`
+- `easyscience.global_object.registry` - Unique-name registry (weak)
+- The calculators are the library's own (`CalculatorFactory`,
+  `CalculatorBase`); core 3 has no calculator interface
 - Auth: None (Python import)
 
 **Reflectivity Calculators (pluggable via `CalculatorFactory`):**
@@ -89,9 +91,9 @@
 - Local filesystem only
 - Project files: `project.json` written atomically by
   `Project.save_as_json` (temp file + fsync + replace, permission
-  preserving). `file_format` 2 by default, 3 when the file uses shared
-  objects (`@ref`/`@ref_id` from `sample/references.py`), excludes an
-  experiment from the fit, or has ambiguous model names.
+  preserving). `file_format` 4, with shared objects written once
+  (`@ref`/`@ref_id` from `sample/references.py`); files from 1.x are
+  refused.
 - Posterior chains: `save_posterior` / `load_posterior` write the BUMPS
   state plus a JSON sidecar (`_SIDECAR_SCHEMA_VERSION = 1`) carrying a
   data fingerprint and the easyreflectometry version
@@ -102,8 +104,8 @@
 
 - `Project._fitter` cached per current model index, invalidated when
   models change
-- `Refl1dWrapper._model_state_token` caches polarized reflectivities per
-  model state
+- `Refl1dWrapper` caches polarized reflectivities in each model's entry,
+  keyed by every kernel input (`_kernel_inputs`) and the (q, dq) grid
 
 ## Authentication & Identity
 

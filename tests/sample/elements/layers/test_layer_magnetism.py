@@ -11,6 +11,7 @@ from numpy.testing import assert_allclose
 from numpy.testing import assert_equal
 
 from easyreflectometry.calculators.factory import CalculatorFactory
+from easyreflectometry.calculators.refl1d.wrapper import _kernel_inputs
 from easyreflectometry.model import Model
 from easyreflectometry.model import PercentageFwhm
 from easyreflectometry.sample import Layer
@@ -33,6 +34,19 @@ def _magnetic_model(magnetism: LayerMagnetism | None) -> Model:
     model = Model(sample=sample, scale=1, background=0, name='Magnetic Model')
     model.resolution_function = PercentageFwhm(0)
     return model
+
+
+def _kernel_magnetism(layer: Layer) -> tuple | None:
+    """The (rho_m, theta_m) the refl1d kernel receives for *layer* at the next evaluation; None without a moment."""
+    calculator = layer.interface()
+    calculator.reconcile_magnetism()  # as every evaluation does first
+    for model in calculator.models.values():
+        assemblies = _kernel_inputs(model, calculator.include_magnetism)[0]
+        for assembly, (_, layers) in zip(model.sample, assemblies):
+            for candidate, inputs in zip(assembly.layers, layers):
+                if candidate is layer:
+                    return inputs[-1]
+    raise LookupError(f'{layer.name} is in no model served by the calculator.')
 
 
 class TestLayerMagnetism:
@@ -97,10 +111,7 @@ class TestMagnetismThroughCalculator:
 
         assert model.has_magnetism is True
         assert calculator.include_magnetism is True
-        layer = model.sample[1].layers[0]
-        wrapper = calculator._wrapper
-        assert wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 2.0
-        assert wrapper.get_layer_value(layer.unique_name, 'magnetism_thetaM') == 45.0
+        assert _kernel_magnetism(model.sample[1].layers[0]) == (2.0, 45.0)
 
     def test_magnetic_parameter_change_changes_reflectivity(self):
         model = _magnetic_model(LayerMagnetism(rho_m=2.0, theta_m=45.0))
@@ -113,24 +124,18 @@ class TestMagnetismThroughCalculator:
         assert not np.allclose(before['pp'], after['pp'])
         assert not np.allclose(before['mm'], after['mm'])
 
-    def test_model_parameters_match_direct_wrapper_values(self):
-        # Setting rho_m/theta_m through the model must reproduce the reflectivity
-        # obtained by setting magnetism_rhoM/thetaM directly on the wrapper.
+    def test_magnetism_given_at_construction_or_attached_later_agree(self):
         model = _magnetic_model(LayerMagnetism(rho_m=2.0, theta_m=45.0))
         model.interface = self._interface('refl1d')
-        via_model = model.interface.polarized_reflectivity_profiles(Q, model.unique_name)
+        at_construction = model.interface.polarized_reflectivity_profiles(Q, model.unique_name)
 
-        reference_model = _magnetic_model(None)
-        interface = self._interface('refl1d')
-        reference_model.interface = interface
-        calculator = interface()
-        calculator.include_magnetism = True
-        layer_name = reference_model.sample[1].layers[0].unique_name
-        calculator._wrapper.update_layer(layer_name, magnetism_rhoM=2.0, magnetism_thetaM=45.0)
-        via_wrapper = interface.polarized_reflectivity_profiles(Q, reference_model.unique_name)
+        later = _magnetic_model(None)
+        later.interface = self._interface('refl1d')
+        later.sample[1].layers[0].magnetism = LayerMagnetism(rho_m=2.0, theta_m=45.0)
+        attached_later = later.interface.polarized_reflectivity_profiles(Q, later.unique_name)
 
         for channel in ('pp', 'pm', 'mp', 'mm'):
-            assert_allclose(via_model[channel], via_wrapper[channel], rtol=1e-10)
+            assert_allclose(at_construction[channel], attached_later[channel], rtol=1e-10)
 
     def test_magnetism_added_after_interface_is_bound(self):
         model = _magnetic_model(None)
@@ -142,12 +147,10 @@ class TestMagnetismThroughCalculator:
         layer.magnetism = LayerMagnetism(rho_m=2.0, theta_m=45.0)
 
         assert calculator.include_magnetism is True
-        wrapper = calculator._wrapper
-        assert wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 2.0
+        assert _kernel_magnetism(layer) == (2.0, 45.0)
         # The parameter is live: a change reaches the backend at the next evaluation.
         layer.magnetism.rho_m = 3.0
-        calculator._push_values()
-        assert wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 3.0
+        assert _kernel_magnetism(layer) == (3.0, 45.0)
 
     def test_removing_last_magnetism_disables_calculator_magnetism(self):
         model = _magnetic_model(LayerMagnetism(rho_m=2.0, theta_m=45.0))
@@ -162,13 +165,13 @@ class TestMagnetismThroughCalculator:
         assert layer.magnetism is None
         assert model.has_magnetism is False
         assert calculator.include_magnetism is False
-        assert calculator._wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 0.0
+        assert _kernel_magnetism(layer) is None
         # The plain (unpolarized) calculation path works.
         reflectivity = calculator.reflectity_profile(Q, model.unique_name)
         assert len(reflectivity) == len(Q)
         # The detached parameters no longer reach the backend.
         detached.rho_m = 5.0
-        assert calculator._wrapper.get_layer_value(layer.unique_name, 'magnetism_rhoM') == 0.0
+        assert _kernel_magnetism(layer) is None
 
     def test_removing_one_of_two_magnetic_layers_keeps_magnetism(self):
         model = _magnetic_model(LayerMagnetism(rho_m=2.0, theta_m=45.0))
@@ -182,7 +185,7 @@ class TestMagnetismThroughCalculator:
         # One magnetic layer remains: the polarized path stays on, its values intact.
         assert model.has_magnetism is True
         assert calculator.include_magnetism is True
-        assert calculator._wrapper.get_layer_value(subphase.unique_name, 'magnetism_rhoM') == 1.0
+        assert _kernel_magnetism(subphase) == (1.0, 270.0)
 
     def test_magnetic_layer_with_refnx_raises(self):
         model = _magnetic_model(LayerMagnetism(rho_m=2.0, theta_m=45.0))
@@ -249,9 +252,7 @@ class TestRhoMCoupling:
 
     @staticmethod
     def _backend_rho_m(film):
-        # Values reach the backend when the model is evaluated.
-        film.interface()._push_values()
-        return film.interface()._wrapper.get_layer_value(film.unique_name, 'magnetism_rhoM')
+        return _kernel_magnetism(film)[0]
 
     def test_coupling_attaches_magnetism_and_follows_the_material(self):
         model, film = self._coupled_model()
@@ -413,10 +414,8 @@ class TestRhoMCoupling:
 
         iron.magnetic_moment = 1.1
 
-        interface()._push_values()  # values reach the backend when the model is evaluated
-        wrapper = interface()._wrapper
-        assert wrapper.get_layer_value(coupled.unique_name, 'magnetism_rhoM') == pytest.approx(FE_RHO_M / 2)
-        assert wrapper.get_layer_value(uncoupled.unique_name, 'magnetism_rhoM') == pytest.approx(1.0)
+        assert _kernel_magnetism(coupled)[0] == pytest.approx(FE_RHO_M / 2)
+        assert _kernel_magnetism(uncoupled)[0] == pytest.approx(1.0)
 
 
 class TestRhoMUserConstraint:

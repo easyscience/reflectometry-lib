@@ -25,3 +25,19 @@
 - **Content:** 408 points, four columns including sQz, so a loaded
   dataset carries a `Pointwise` resolution; fitting it as an experiment
   exercises per-dataset resolution handling.
+
+## `validation_test4.dat`
+
+- **Source:** the `reflectivity/analysis` validation suite,
+  `validation/test/unpolarised/data/test4.dat`
+  (https://github.com/reflectivity/analysis). Copied unchanged from the
+  `stateless` branch's `tests/calculators/refnx/_validation_data.py`.
+- **Licence:** see that repository.
+- **Content:** 101 points, four columns: Q (Å⁻¹), R, dR, dQ (sigma,
+  Å⁻¹). Calculated, not measured: an independent reference, not a
+  recording of this library.
+- **Model:** the suite's four-layer test0/test4 model (SLD 2.07 | 3.45 +
+  0.1i, 100 Å, σ 3 | 5.0 + 0.01i, 200 Å, σ 1 | 6.0, σ 5), at 5 %
+  constant resolution or the pointwise dQ column.
+- **Used by:** `tests/calculators/test_validation_suite.py`, against
+  both engines.

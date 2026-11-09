@@ -1,0 +1,113 @@
+{
+  "environment": {
+    "label": "after-pr3-port",
+    "date": "2026-11-05 14:22",
+    "machine": "CIN-959369",
+    "python": "3.13.13",
+    "numpy": "2.4.4",
+    "refnx": "0.1.63",
+    "refl1d": "1.0.1",
+    "easyscience_distribution": "3.0.2",
+    "easyscience_source": "C:\\projects\\easy\\ERA\\reflectometry-lib\\.pixi\\envs\\default\\Lib\\site-packages\\easyscience",
+    "easyscience_revision": "installed distribution",
+    "lib_revision": "d089db93",
+    "policy": "3 warm-up calls; 7 repeats of 20 calls; fits repeated 3x"
+  },
+  "rows": {
+    "refnx/five_layer/300q": {
+      "cold_build_and_first_call_ms": 31.85459994710982,
+      "evaluation": {
+        "median_ms": 17.86812999052927,
+        "min_ms": 16.17233499418944,
+        "max_ms": 20.941744989249855,
+        "n": 7
+      }
+    },
+    "refnx/repeated_10x20/1000q": {
+      "cold_build_and_first_call_ms": 63.84560000151396,
+      "evaluation": {
+        "median_ms": 27.785675006452948,
+        "min_ms": 26.579694997053593,
+        "max_ms": 29.494605003856122,
+        "n": 7
+      }
+    },
+    "refnx/fit/five_layer_3_contrasts/300q": {
+      "fit": {
+        "median_ms": 18348.233900032938,
+        "min_ms": 18302.52100015059,
+        "max_ms": 18988.454699981958,
+        "n": 3
+      },
+      "n_evaluations": [404, 404, 404]
+    },
+    "refnx/fit/repeated_10x20_3_contrasts/300q": {
+      "fit": {
+        "median_ms": 2665.7443998847157,
+        "min_ms": 2551.8998000770807,
+        "max_ms": 2672.8075998835266,
+        "n": 3
+      },
+      "n_evaluations": [29, 29, 29]
+    },
+    "refl1d/five_layer/300q": {
+      "cold_build_and_first_call_ms": 453.4579000901431,
+      "evaluation": {
+        "median_ms": 4.293290001805872,
+        "min_ms": 4.07671999419108,
+        "max_ms": 4.495000001043081,
+        "n": 7
+      }
+    },
+    "refl1d/repeated_10x20/1000q": {
+      "cold_build_and_first_call_ms": 125.29470003210008,
+      "evaluation": {
+        "median_ms": 46.12899499479681,
+        "min_ms": 45.182035001926124,
+        "max_ms": 47.972084989305586,
+        "n": 7
+      }
+    },
+    "refl1d/fit/five_layer_3_contrasts/300q": {
+      "fit": {
+        "median_ms": 4796.329299919307,
+        "min_ms": 4765.866300091147,
+        "max_ms": 4921.472899848595,
+        "n": 3
+      },
+      "n_evaluations": [512, 512, 512]
+    },
+    "refl1d/fit/repeated_10x20_3_contrasts/300q": {
+      "fit": {
+        "median_ms": 2078.862600028515,
+        "min_ms": 1988.5370000265539,
+        "max_ms": 2127.300800057128,
+        "n": 3
+      },
+      "n_evaluations": [29, 29, 29]
+    },
+    "refl1d/polarized_cache/300q": {
+      "cache_miss": {
+        "median_ms": 9.75617499789223,
+        "min_ms": 9.497555007692426,
+        "max_ms": 10.013220005203038,
+        "n": 7
+      },
+      "cache_hit": {
+        "median_ms": 0.14353999868035316,
+        "min_ms": 0.13919499469920993,
+        "max_ms": 0.1454849960282445,
+        "n": 7
+      }
+    },
+    "refl1d/fit/polarized_4_channels/300q": {
+      "fit": {
+        "median_ms": 782.7097000554204,
+        "min_ms": 766.0996001213789,
+        "max_ms": 794.012299971655,
+        "n": 3
+      },
+      "n_evaluations": [65, 65, 65]
+    }
+  }
+}

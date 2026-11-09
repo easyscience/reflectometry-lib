@@ -198,9 +198,10 @@ class TestBaseCollection:
         p = BaseCollection('name', None, elem)
         assert p.interface is None
         p.interface = mock_iface
-        # The interface setter propagates to items then calls generate_bindings on the mock
+        # The collection only hands the interface to its items; the item binds
+        # itself (and its material), the collection does not bind anything.
         assert elem.interface is mock_iface
-        mock_iface.generate_bindings.assert_called()
+        mock_iface.generate_bindings.assert_any_call(elem)
 
     def test_interface_propagates_to_inserted_items(self):
         """Items inserted after interface is set should receive the interface."""
@@ -241,12 +242,6 @@ class TestBaseCollection:
         free = p.get_free_parameters()
         assert len(free) == 1
         assert free[0].display_name == 'thickness'
-
-    def test_get_linkable_attributes(self):
-        """_get_linkable_attributes should return get_all_variables."""
-        elem = Layer(name='layer')
-        p = BaseCollection('name', MagicMock(), elem)
-        assert p._get_linkable_attributes() == p.get_all_variables()
 
     def test_to_dict_includes_data_and_name(self):
         """to_dict should serialize data items and collection metadata."""

@@ -443,6 +443,12 @@ class Project:
         the same index, or to the first one when there are fewer.
         """
         old_indices = {key: self._model_index(experiment.model) for key, experiment in self._experiments.items()}
+        calculator = self._calculator()
+        channel = calculator.polarization_channel
+        # The calculator serves exactly these models from now on; they are
+        # registered again below. Not in `_replace_collection`: that also
+        # replaces the materials palette, which must not unregister any model.
+        self._calculator.reset_storage()
         self._replace_collection(models, self._models)
         for key, experiment in self._experiments.items():
             if old_indices[key] is not None and self._model_index(experiment.model) is None and len(self._models):
@@ -457,6 +463,12 @@ class Project:
         self._extend_palette_from_models()
         for model in self._models:
             model.interface = self._calculator
+        # Between the reset and the binding the calculator served no model, so
+        # it switched magnetism off and reset the spin channel to pp. Binding
+        # magnetic layers switches magnetism back on; the channel is restored
+        # here, because only this setter knows the reset was temporary.
+        if calculator.include_magnetism:
+            calculator.polarization_channel = channel
         self._sync_parameter_states()
 
     @property
@@ -947,7 +959,7 @@ class Project:
         """Whether the active calculator can model magnetic samples.
 
         The GUI uses this to gate magnetism-related controls (e.g. when the
-        refnx or bornagain backend is selected).
+        refnx backend is selected).
         """
         return self._calculator().supports_magnetism
 
@@ -2548,6 +2560,7 @@ class Project:
             for key in plan.experiments:
                 self._experiments[key].model = self._models[experiments]
         self._keeping_inequality_paths(lambda: self._models.pop(index))
+        self._calculator.discard_model(removed.unique_name)
         self._invalidate_fitter()
 
         # Adjust current model index if necessary

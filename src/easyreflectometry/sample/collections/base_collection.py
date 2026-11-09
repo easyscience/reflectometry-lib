@@ -100,15 +100,10 @@ class BaseCollection(EasyList):
         self._interface = new_interface
         if new_interface is None:
             return
-        # Propagate to existing items.
+        # Propagate to existing items; the calculator binds the models among them.
         for item in self._data:
             if self._has_interface_setter(type(item)):
                 item.interface = new_interface
-        # Tell the calculator to bind to self (matches the legacy CollectionBase
-        # behavior which called `interface.generate_bindings(self)` once per
-        # collection).
-        if hasattr(new_interface, 'generate_bindings'):
-            new_interface.generate_bindings(self)
 
     def _get_key(self, obj):
         """Use the item's `name` for string-indexed lookups.
@@ -226,10 +221,6 @@ class BaseCollection(EasyList):
 
     def get_free_parameters(self) -> List[Parameter]:
         return [p for p in self.get_all_parameters() if p.independent and not p.fixed]
-
-    def _get_linkable_attributes(self) -> List[Parameter]:
-        """Bridge for `easyscience.fitting.calculators.interface_factory.generate_bindings`."""
-        return self.get_all_variables()
 
     # ----- repr -----
 
