@@ -2486,7 +2486,7 @@ DREAM sampler) as penalties on the fit problem. LMFit and DFO-LS cannot
 enforce them, and <code>fit</code> raises <code>ValueError</code> in that case rather than
 silently dropping the physics.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">InequalitySpec</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
 
 <span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">Minimizers</span><span class="o">.</span><span class="n">Bumps</span>
 <span class="n">t_a</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># &#39;models/0/sample/1/layers/0/thickness&#39;</span>

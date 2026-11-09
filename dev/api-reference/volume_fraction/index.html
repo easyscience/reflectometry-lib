@@ -5672,9 +5672,9 @@ reflectometry engines as the operation can be performed for a single
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">material_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">material_a</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+            <span class="n">material_a</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">material_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+            <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
 
         <span class="n">fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fraction&#39;</span><span class="p">,</span>
@@ -6140,9 +6140,9 @@ reflectometry engines as the operation can be performed for a single
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">material_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">material_a</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+        <span class="n">material_a</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">material_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+        <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
 
     <span class="n">fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fraction&#39;</span><span class="p">,</span>
