@@ -443,6 +443,8 @@ class Project:
         the same index, or to the first one when there are fewer.
         """
         old_indices = {key: self._model_index(experiment.model) for key, experiment in self._experiments.items()}
+        calculator = self._calculator()
+        channel = calculator.polarization_channel
         # The calculator serves exactly these models from now on; they are
         # registered again below. Not in `_replace_collection`: that also
         # replaces the materials palette, which must not unregister any model.
@@ -461,6 +463,12 @@ class Project:
         self._extend_palette_from_models()
         for model in self._models:
             model.interface = self._calculator
+        # Between the reset and the binding the calculator served no model, so
+        # it switched magnetism off and reset the spin channel to pp. Binding
+        # magnetic layers switches magnetism back on; the channel is restored
+        # here, because only this setter knows the reset was temporary.
+        if calculator.include_magnetism:
+            calculator.polarization_channel = channel
         self._sync_parameter_states()
 
     @property

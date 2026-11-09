@@ -109,6 +109,39 @@ def test_removing_the_magnetic_model_switches_magnetism_off():
     assert calculator.include_magnetism is False
 
 
+@pytest.mark.parametrize('first_magnetic', [True, False], ids=['magnetic-first', 'magnetic-last'])
+def test_reassigning_the_models_keeps_the_selected_channel(first_magnetic):
+    # The setter resets the calculator before binding the models again; that
+    # brief moment with no models must not lose the channel (#449 regression).
+    models = [_model(), _model(magnetic=False)]
+    project = Project()
+    project.calculator = 'refl1d'
+    project.models = ModelCollection(*(models if first_magnetic else models[::-1]))
+    magnetic = models[0]
+    calculator = project._calculator()
+    calculator.polarization_channel = 'mm'
+    mm = project._calculator.fit_func(Q, magnetic.unique_name)
+
+    project.models = ModelCollection(*project.models)
+
+    assert calculator.include_magnetism is True
+    assert calculator.polarization_channel is PolarizationChannel.MM
+    np.testing.assert_allclose(project._calculator.fit_func(Q, magnetic.unique_name), mm)
+
+
+def test_replacing_magnetic_models_by_non_magnetic_ones_still_resets_the_channel():
+    project = Project()
+    project.calculator = 'refl1d'
+    project.models = ModelCollection(_model())
+    calculator = project._calculator()
+    calculator.polarization_channel = 'mm'
+
+    project.models = ModelCollection(_model(magnetic=False))
+
+    assert calculator.include_magnetism is False
+    assert calculator.polarization_channel is PolarizationChannel.PP
+
+
 def test_a_channel_picked_after_a_structural_removal_sees_it():
     model = _model()
     factory = _served(model)
