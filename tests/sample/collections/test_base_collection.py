@@ -198,9 +198,10 @@ class TestBaseCollection:
         p = BaseCollection('name', None, elem)
         assert p.interface is None
         p.interface = mock_iface
-        # The interface setter propagates to items then calls generate_bindings on the mock
+        # The collection only hands the interface to its items; the item binds
+        # itself (and its material), the collection does not bind anything.
         assert elem.interface is mock_iface
-        mock_iface.generate_bindings.assert_called()
+        mock_iface.generate_bindings.assert_any_call(elem)
 
     def test_interface_propagates_to_inserted_items(self):
         """Items inserted after interface is set should receive the interface."""

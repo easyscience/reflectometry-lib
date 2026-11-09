@@ -37,7 +37,7 @@ easyscience 2.
 ## Fitting
 
 - `AvailableMinimizers` is now `Minimizers` (same member names); import
-  it with `from easyreflectometry.fitting import Minimizers`.
+  it with `from easyreflectometry import Minimizers`.
 - `get_fit_parameters()` is removed; use `get_free_parameters()`, or
   `get_all_parameters()`. `get_parameters()` is removed too.
 
@@ -68,7 +68,8 @@ easyscience 2.
 - Fixed: `SurfactantLayer.constrain_solvent_roughness` and
   `Bilayer.constrain_solvent_roughness` raised `AttributeError` when the
   solvent roughness was already constrained, e.g. one solvent layer
-  shared by two contrasts. The second call now rewires it.
+  shared by two contrasts. The second call now rewires it, and the tie
+  is now kept when the project is saved and reloaded.
 
 ## Documentation
 

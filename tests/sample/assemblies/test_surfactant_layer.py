@@ -113,6 +113,19 @@ class TestSurfactantLayer:
         second.tail_layer.roughness.value = 6.0
         assert solvent.roughness.value == 6.0
 
+    def test_constrain_solvent_roughness_is_a_user_constraint(self):
+        # The flag is what Project.save records, so the tie survives a reload.
+        from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
+
+        p = SurfactantLayer()
+        p.conformal_roughness = True
+        solvent = Layer()
+
+        p.constrain_solvent_roughness(solvent.roughness)
+
+        assert getattr(solvent.roughness, USER_CONSTRAINT_FLAG, False)
+        assert not solvent.roughness.independent
+
     def test_dict_repr(self):
         p = SurfactantLayer()
 

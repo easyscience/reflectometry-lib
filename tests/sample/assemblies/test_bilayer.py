@@ -10,6 +10,7 @@ __author__ = 'github.com/easyscience'
 
 from easyscience import global_object
 
+from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
 from easyreflectometry.sample.assemblies.bilayer import Bilayer
 from easyreflectometry.sample.elements.layers.layer import Layer
 from easyreflectometry.sample.elements.layers.layer_area_per_molecule import LayerAreaPerMolecule
@@ -420,6 +421,17 @@ def test_a_constrained_solvent_roughness_can_follow_another_bilayer():
     assert solvent.roughness.value == 5.0
     second.front_head_layer.roughness.value = 6.0
     assert solvent.roughness.value == 6.0
+
+
+def test_constrain_solvent_roughness_is_a_user_constraint():
+    # The flag is what Project.save records, so the tie survives a reload.
+    bilayer = Bilayer(conformal_roughness=True)
+    solvent = Layer()
+
+    bilayer.constrain_solvent_roughness(solvent.roughness)
+
+    assert getattr(solvent.roughness, USER_CONSTRAINT_FLAG, False)
+    assert not solvent.roughness.independent
 
 
 def test_constrain_solvent_roughness_error():

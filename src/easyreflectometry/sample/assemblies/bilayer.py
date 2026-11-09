@@ -430,10 +430,7 @@ class Bilayer(BaseAssembly):
         """
         if not self.conformal_roughness:
             raise ValueError('Roughness must be conformal to use this function.')
-        solvent_roughness.make_dependent_on(
-            dependency_expression='a',
-            dependency_map={'a': self.front_head_layer.roughness},
-        )
+        constrain_equal(solvent_roughness, self.front_head_layer.roughness)
 
     def constrain_multiple_contrast(
         self,

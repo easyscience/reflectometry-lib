@@ -58,9 +58,9 @@ class MaterialMixture(BaseCore):
             unique_name = global_object.generate_unique_name(self.__class__.__name__)
 
         if material_a is None:
-            material_a = Material(interface=interface)
+            material_a = Material()
         if material_b is None:
-            material_b = Material(interface=interface)
+            material_b = Material()
 
         fraction = get_as_parameter(
             name='fraction',

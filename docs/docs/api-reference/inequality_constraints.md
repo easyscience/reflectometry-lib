@@ -10,7 +10,7 @@ silently dropping the physics.
 
 ```python
 from easyreflectometry import InequalitySpec
-from easyreflectometry.fitting import Minimizers
+from easyreflectometry import Minimizers
 
 project.minimizer = Minimizers.Bumps
 t_a = project.parameter_path(layer_a.thickness)  # 'models/0/sample/1/layers/0/thickness'
