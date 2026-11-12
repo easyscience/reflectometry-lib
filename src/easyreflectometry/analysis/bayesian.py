@@ -248,6 +248,7 @@ _POSTERIOR_PAIR_DENSITY_GRID_SIZE = 256
 _POSTERIOR_PAIR_MARGINAL_LINE_COLOR = 'rgb(44, 160, 44)'
 _POSTERIOR_PAIR_MARGINAL_FILL_COLOR = 'rgba(44, 160, 44, 0.22)'
 _POSTERIOR_PAIR_SCATTER_COLOR = 'rgba(140, 140, 140, 0.22)'
+_CORNER_FRAME_COLOR = '#444'
 _POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
 _POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 _POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(214, 39, 40, 0.14)'
@@ -668,10 +669,16 @@ def plot_corner(draws: np.ndarray, param_names: list[str]) -> Any:
     for i, label in enumerate(wrapped_labels):
         fig.update_xaxes(title_text=label, title_font=dict(size=10), row=n_params, col=i + 1)
         fig.update_yaxes(title_text=label, title_font=dict(size=10), row=i + 1, col=1)
-    # Diagonal y-axes are probability density — hide their tick labels (except the
-    # top-left, where ticks would be the only cue about the density scale).
-    for i in range(1, n_params):
-        fig.update_yaxes(showticklabels=False, row=i + 1, col=i + 1)
+    # Tick values on the outer edges only: x values on the bottom row, y values
+    # on the leftmost column (which keeps the top-left density scale).  Inner
+    # cells keep their tick marks but drop the labels, which would otherwise
+    # overlap the neighbouring panel frames.
+    for row in range(n_params):
+        for col in range(row + 1):
+            if row < n_params - 1:
+                fig.update_xaxes(showticklabels=False, row=row + 1, col=col + 1)
+            if col > 0:
+                fig.update_yaxes(showticklabels=False, row=row + 1, col=col + 1)
 
     fig.update_layout(
         height=max(450, 180 * n_params),
@@ -691,6 +698,25 @@ def plot_corner(draws: np.ndarray, param_names: list[str]) -> Any:
     )
     fig.update_xaxes(showgrid=False, zeroline=False, ticks='outside')
     fig.update_yaxes(showgrid=False, zeroline=False, ticks='outside')
+    # Frame every visible (lower-triangle + diagonal) cell.  Drawn as domain-
+    # anchored shapes rather than mirrored axis lines: traces with ``zorder``
+    # are rendered on overlay layers that paint over axis lines.
+    for row in range(n_params):
+        for col in range(row + 1):
+            fig.add_shape(
+                type='rect',
+                xref='x domain',
+                yref='y domain',
+                x0=0,
+                x1=1,
+                y0=0,
+                y1=1,
+                line=dict(color=_CORNER_FRAME_COLOR, width=1),
+                fillcolor='rgba(0,0,0,0)',
+                layer='above',
+                row=row + 1,
+                col=col + 1,
+            )
     return fig
 
 
