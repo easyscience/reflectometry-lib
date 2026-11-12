@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""`include_magnetism` as the models change (CORE-3-DESIGN.md, 4.4.6).
+"""`include_magnetism` as the models change.
 
 The flag is explicit calculator state. The calculator switches it off only
 when the models it serves have just stopped being magnetic, and never on.

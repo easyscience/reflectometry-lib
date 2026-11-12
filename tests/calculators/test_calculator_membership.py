@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Which models a calculator serves, as the project changes (CORE-3-DESIGN.md, 4.4.3).
+"""Which models a calculator serves, as the project changes.
 
 Every test keeps a reference to the model it removes or replaces, so what is
 checked is membership, not garbage collection.

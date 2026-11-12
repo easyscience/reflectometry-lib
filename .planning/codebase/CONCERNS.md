@@ -126,9 +126,9 @@ contexts being active. Several `_from_dict_*` helpers append to a shared
 
 ### Project files from 1.x no longer load
 
-**Issue:** By design (CORE-3-DESIGN.md, 4.6): 2.0 writes and reads
-`file_format` 4 only, and refuses files from 1.x (format 2, 3 or none)
-with a message; there is no converter. 1.x refuses format 4 in turn.
+**Issue:** By design: 2.0 writes and reads `file_format` 4 only, and
+refuses files from 1.x (format 2, 3 or none) with a message; there is no
+converter. 1.x refuses format 4 in turn.
 
 **Files:** `project.py` (`FILE_FORMAT`, `from_dict`)
 
@@ -269,10 +269,9 @@ declares no `[project.scripts]`.
 
 ## 7. Work in flight (not on develop)
 
-- The easyscience 3 port (`CORE-3-DESIGN.md`) is on `core-3.0`, in PRs
-  into that branch; it is merged into `develop` only once the app no
-  longer installs the library from `develop` (the app needs its own
-  port).
+- The easyscience 3 port is on `core-3.0`, in PRs into that branch; it
+  is merged into `develop` only once the app no longer installs the
+  library from `develop` (the app needs its own port).
 - Uncommitted app-side work for per-dataset resolution (A1-A5) and the
   magnetism/fitting gaps lives in the GUI repository, not here.
 

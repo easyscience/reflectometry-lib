@@ -4,10 +4,12 @@
 """Per-backend calculator benchmark for the easyscience core 3 port.
 
 Run once on the storage-based wrappers ("before") and once on the rebuilt ones
-("after"), on the same machine, and compare per backend (CORE-3-DESIGN.md,
-4.4.4)::
+("after"), on the same machine, and compare per backend::
 
-    pixi run python tools/benchmark_calculators.py --label before --out tests/calculators/baselines/benchmark-before.json
+    pixi run python tools/benchmark_calculators.py --label before --out benchmark-before.json
+
+The report records the machine name and local paths, so keep it out of the
+repository.
 
 Only the public model, calculator and fitting API is used, so the same script
 runs on both sides of the port. Acceptance: no end-to-end fit of a backend more

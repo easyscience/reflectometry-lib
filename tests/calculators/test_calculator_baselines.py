@@ -6,13 +6,13 @@
 The arrays in ``baselines/<engine>.npz`` were recorded with the storage-based
 wrappers on ``develop`` (easyscience 2.5.1), before any wrapper was touched.
 Every rewrite of the calculator layer must reproduce them for the same engine
-and settings (CORE-3-DESIGN.md, 4.4.4). Each case also edits the model after a
+and settings. Each case also edits the model after a
 first evaluation, so the path that brings new values to the backend is
 compared, not only the first build.
 
 ``refl1d.npz`` was recorded again once, on purpose: the stateless port first
 reproduced the ``develop`` arrays, then refl1d oversampling, which ``develop``
-never applied, was switched on (CORE-3-DESIGN.md, 9.2).
+never applied, was switched on (see CHANGELOG.md, 2.0.0, Calculators).
 
 Record one engine, never to make a failing port pass::
 
