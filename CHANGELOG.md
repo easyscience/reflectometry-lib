@@ -1,4 +1,4 @@
-# Version 2.0.0 (unreleased)
+# Version 2.0.0 (12 Nov 2026)
 
 Built on easyscience 3. Code written for 1.x needs the renames below,
 and project files saved by 1.x no longer load. Stay on 1.9 to keep using
