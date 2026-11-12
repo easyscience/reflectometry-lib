@@ -21,7 +21,7 @@ from easyreflectometry.sample.elements.materials.material import Material
 class TestGradientLayer:
     @pytest.fixture
     def gradient_layer(self) -> GradientLayer:
-        global_object.map._clear()
+        global_object.registry.clear()
 
         self.front = Material(10.0, -10.0, 'Material_1')
         self.back = Material(0.0, 0.0, 'Material_2')
@@ -92,7 +92,7 @@ class TestGradientLayer:
         # When
         p = GradientLayer()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = GradientLayer.from_dict(p_dict)

@@ -10,6 +10,7 @@ __author__ = 'github.com/easyscience'
 
 from easyscience import global_object
 
+from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
 from easyreflectometry.sample.assemblies.bilayer import Bilayer
 from easyreflectometry.sample.elements.layers.layer import Layer
 from easyreflectometry.sample.elements.layers.layer_area_per_molecule import LayerAreaPerMolecule
@@ -20,12 +21,8 @@ class TestBilayer:
     def setup_method(self):
         from easyscience import global_object
 
-        # Clear the global object map to prevent name collisions
-        # Accessing private _clear method as Map doesn't expose a public clear
-        if hasattr(global_object.map, 'clear'):
-            global_object.map.clear()
-        elif hasattr(global_object.map, '_clear'):
-            global_object.map._clear()
+        # Clear the global object registry to prevent name collisions
+        global_object.registry.clear()
 
     def test_default(self):
         """Test default bilayer creation with expected structure."""
@@ -325,7 +322,7 @@ def test_dict_round_trip():
         conformal_roughness=False,
     )
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)
@@ -339,7 +336,7 @@ def test_dict_round_trip_constraints_enabled():
     # When
     p = Bilayer(constrain_heads=True, conformal_roughness=True)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)
@@ -355,7 +352,7 @@ def test_dict_round_trip_constraints_disabled():
     # When
     p = Bilayer(constrain_heads=False, conformal_roughness=False)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = Bilayer.from_dict(p_dict)
@@ -409,6 +406,32 @@ def test_constrain_solvent_roughness():
     # Change bilayer roughness - solvent should follow
     p.front_head_layer.roughness.value = 5.0
     assert layer.roughness.value == 5.0
+
+
+def test_a_constrained_solvent_roughness_can_follow_another_bilayer():
+    # One solvent layer shared by two contrasts: the second call rewires it.
+    first, second = Bilayer(conformal_roughness=True), Bilayer(conformal_roughness=True)
+    first.front_head_layer.roughness.value = 2.0
+    second.front_head_layer.roughness.value = 5.0
+    solvent = Layer()
+    first.constrain_solvent_roughness(solvent.roughness)
+
+    second.constrain_solvent_roughness(solvent.roughness)
+
+    assert solvent.roughness.value == 5.0
+    second.front_head_layer.roughness.value = 6.0
+    assert solvent.roughness.value == 6.0
+
+
+def test_constrain_solvent_roughness_is_a_user_constraint():
+    # The flag is what Project.save records, so the tie survives a reload.
+    bilayer = Bilayer(conformal_roughness=True)
+    solvent = Layer()
+
+    bilayer.constrain_solvent_roughness(solvent.roughness)
+
+    assert getattr(solvent.roughness, USER_CONSTRAINT_FLAG, False)
+    assert not solvent.roughness.independent
 
 
 def test_constrain_solvent_roughness_error():

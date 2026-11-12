@@ -1,7 +1,8 @@
 # Codebase Concerns
 
 **Analysis Date:** 2026-10-15 **Branch analysed:** `develop` @
-`66adaf54`
+`66adaf54` **Revised:** 2026-11-08 for the easyscience 3 port
+(`core-3.0`)
 
 ## Summary
 
@@ -38,38 +39,37 @@ through without complaint.
 **Fix approach:** Keep the shim test that asserts penalties reach the
 problem on both `fit` and `mcmc_sample`; add a start-up assertion that
 the patched attribute exists; pursue an upstream hook
-(`constraints=`/callback) in corelib and gate `<3` → `<2.6` until it
-lands.
+(`constraints=`/callback) in corelib and keep the `<4` pin until it
+lands. Since core 3 the shim patches both `minimizer_bumps` and
+`samplers.sampler_bumps`, which imports its own `FitDriver`.
 
-### Pin `easyscience>=2.5.1,<3` vs. local core on `release-3.0`
+### Core API surface (`easyscience>=3.0.2,<4`)
 
-**Issue:** The local `C:\projects\easy\ERA\core` checkout is on
-`release-3.0` (60 commits past 2.5.1) while pixi resolves 2.5.1 from
-PyPI. Changes developed against the local core (e.g. the `_update`/fset
-dependency fix, `update_from_calculator`) are not what tests run
-against, and 3.0 is excluded by the pin.
+**Issue:** Besides the public `Parameter`, `DescriptorNumber`,
+`global_object`, `Minimizers`, `ModelBase`/`EasyList`/`EasyBase`,
+`SerializerBase`, `MultiFitter`, `Sampler` and `FitResults`, the library
+depends on module paths a core refactor could move:
+`fitting.engine_base.PARAMETER_PREFIX`, the module-level `FitDriver` in
+`fitting.minimizers.minimizer_bumps` and
+`fitting.samplers.sampler_bumps`, and
+`variable.descriptor_base.DescriptorBase`.
 
-**Files:** `pyproject.toml`, `pixi.lock`
+**Files:** `analysis/bayesian.py`, `inequality_constraints.py`,
+`_bumps_constraints.py`, `fitting.py`, `sample/base_core.py`
 
-**Impact:** Medium. Divergence between what is tested and what the next
-core release ships.
+**Impact:** Medium. A core minor release can break them.
 
-**Fix approach:** Add a CI job (allowed to fail) installing core from
-`release-3.0`; list the library's core API surface (`Sampler`,
-`MultiFitter._precompute_reshaping`, `MINIMIZER_PARAMETER_PREFIX`,
-`InterfaceFactoryTemplate`, `minimizer_bumps.FitDriver`) and check it
-against the branch.
+**Fix approach:** Keep the shim tests; check this list on every core
+upgrade.
 
 ### Private core imports
 
-**Issue:** `MINIMIZER_PARAMETER_PREFIX` from `minimizer_base`,
-`resolve_all_parameter_dependencies` from
-`parameter_dependency_resolver`, `NewBase` from `base_classes.new_base`,
-`ItemContainer` from `interface_factory` are not public core API.
+**Issue:** `PARAMETER_PREFIX` from `fitting.engine_base` and
+`DescriptorBase` from `variable.descriptor_base` are not exported at a
+package level.
 
-**Files:** `analysis/bayesian.py`, `project.py`,
-`sample/collections/base_collection.py`,
-`calculators/calculator_base.py`
+**Files:** `analysis/bayesian.py`, `inequality_constraints.py`,
+`sample/base_core.py`
 
 **Impact:** Medium.
 
@@ -124,17 +124,16 @@ contexts being active. Several `_from_dict_*` helpers append to a shared
 
 ## 3. Persistence format risks
 
-### `file_format=3` is refused by older readers
+### Project files from 1.x no longer load
 
-**Issue:** By design (`_needs_new_format`), but the triggers are subtle:
-shared objects, an experiment left out of the fit, duplicate model
-names. A user may save a file in 1.9 that 1.8 refuses without an obvious
-reason.
+**Issue:** By design: 2.0 writes and reads `file_format` 4 only, and
+refuses files from 1.x (format 2, 3 or none) with a message; there is no
+converter. 1.x refuses format 4 in turn.
 
-**Files:** `project.py` (`_needs_new_format`,
-`_as_dict_add_experiments`)
+**Files:** `project.py` (`FILE_FORMAT`, `from_dict`)
 
-**Impact:** Medium. Document in release notes; already in CHANGELOG.
+**Impact:** Medium. Users re-create such projects or stay on 1.9; in the
+CHANGELOG.
 
 ### Constraint records keyed by structural path
 
@@ -206,19 +205,6 @@ refl1d is exercised mainly through polarized/magnetism tests and
 
 ## 5. Repository hygiene
 
-### Stale build files
-
-**Issue:** `Makefile` references `setup.py`, `flake8`, Sphinx and an
-`EasyReflectometry/` directory; `.coveragerc` points at
-`EasyReflectometry/`. Neither reflects hatchling/ruff/MkDocs/`src/`.
-
-**Files:** `Makefile`, `.coveragerc`
-
-**Impact:** Low. Confusing for new contributors.
-
-**Fix approach:** Delete both (pixi tasks cover everything) or rewrite
-to call `pixi run`.
-
 ### Duplicate CI matrices
 
 **Issue:** `python-ci.yml` and `python-package.yml` (pip-based, run on
@@ -283,13 +269,11 @@ declares no `[project.scripts]`.
 
 ## 7. Work in flight (not on develop)
 
-- Branch `425-magnetism` (3 commits ahead: magnetism fixes for issue
-  #425 point 3, review fixes, ruff) is the current working branch.
+- The easyscience 3 port is on `core-3.0`, in PRs into that branch; it
+  is merged into `develop` only once the app no longer installs the
+  library from `develop` (the app needs its own port).
 - Uncommitted app-side work for per-dataset resolution (A1-A5) and the
   magnetism/fitting gaps lives in the GUI repository, not here.
-- Local corelib changes (`update_from_calculator`, dependent-parameter
-  callback fix) are uncommitted in `C:\projects\easy\ERA\core` and not
-  part of the 2.5.1 the tests use.
 
 ---
 

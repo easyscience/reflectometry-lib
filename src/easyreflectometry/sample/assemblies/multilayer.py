@@ -68,7 +68,7 @@ class Multilayer(BaseAssembly):
         elif isinstance(layers, list):
             layers = LayerCollection(*layers, name='/'.join([layer.name for layer in layers]))
         # Needed to ensure an empty list is created when saving and instatiating the object as_dict -> from_dict
-        # Else collisions might occur in global_object.map
+        # Else collisions might occur in global_object.registry
         self.populate_if_none = False
 
         super().__init__(
@@ -94,8 +94,6 @@ class Multilayer(BaseAssembly):
         for arg in layers:
             if issubclass(arg.__class__, Layer):
                 self.layers.append(arg)
-                if self.interface is not None:
-                    self.interface().add_layer_to_item(arg.unique_name, self.unique_name)
 
     def duplicate_layer(self, idx: int) -> None:
         """Duplicate a given layer.
@@ -122,8 +120,6 @@ class Multilayer(BaseAssembly):
         idx : int
             Index of layer to remove.
         """
-        if self.interface is not None:
-            self.interface().remove_layer_from_item(self.layers[idx].unique_name, self.unique_name)
         del self.layers[idx]
 
     # Representation

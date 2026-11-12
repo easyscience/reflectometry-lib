@@ -6,7 +6,8 @@
 EasyScience builds the ``FitProblem`` internally and offers no hook for
 attaching inequality penalties to it, so the enforcement lives here
 rather than in the core: :func:`install` wraps the ``FitDriver`` name in
-the core's ``minimizer_bumps`` namespace and :func:`applied` makes a
+the core's ``minimizer_bumps`` and ``sampler_bumps`` namespaces and
+:func:`applied` makes a
 factory current for the duration of a fit, attaching the constraints to
 each problem as it is handed to the driver.
 
@@ -16,9 +17,9 @@ whose ``.pars`` is the very ``{prefixed name: BumpsParameter}`` mapping
 the factory expects — so attaching before the driver runs is equivalent
 to passing ``constraints=`` to the ``FitProblem`` constructor.
 
-Both ``Bumps.fit`` and ``Bumps.mcmc_sample`` construct their driver via
-the module-level ``FitDriver`` binding in ``minimizer_bumps``, so one
-patched namespace covers classical fitting and DREAM sampling alike.
+Classical fitting (``minimizer_bumps``) and DREAM sampling
+(``samplers.sampler_bumps``) construct their driver through their own
+module-level ``FitDriver`` binding.
 Only problems whose model exposes a ``.pars`` mapping are touched; any
 other problem passes through the shim untouched.
 
@@ -37,6 +38,7 @@ from typing import Iterator
 from typing import Optional
 
 from easyscience.fitting.minimizers import minimizer_bumps
+from easyscience.fitting.samplers import sampler_bumps
 
 #: Raised for engines that cannot enforce inequality constraints. The wording is
 #: matched by the test suite and printed in the constraints tutorial, so keep it
@@ -89,13 +91,9 @@ def _patch(module) -> None:
 
 
 def install() -> None:
-    """Patch the BUMPS driver entry point.
-
-    ``minimizer_bumps`` binds ``FitDriver`` at import time and both
-    ``Bumps.fit`` and ``Bumps.mcmc_sample`` read the name from that
-    namespace, so patching it covers fitting and sampling. Idempotent.
-    """
+    """Patch the BUMPS driver entry points of fitting and sampling."""
     _patch(minimizer_bumps)
+    _patch(sampler_bumps)
 
 
 def is_applied() -> bool:

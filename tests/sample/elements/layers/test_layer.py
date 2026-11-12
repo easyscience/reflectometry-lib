@@ -13,6 +13,7 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_equal
 
 from easyreflectometry.calculators.factory import CalculatorFactory
+from easyreflectometry.calculators.refnx.wrapper import _slab
 from easyreflectometry.sample.elements.layers.layer import DEFAULTS
 from easyreflectometry.sample.elements.layers.layer import Layer
 from easyreflectometry.sample.elements.materials.material import Material
@@ -104,11 +105,11 @@ class TestLayer(unittest.TestCase):
         m = Material(6.908, -0.278, 'Boron', interface=interface)
         p = Layer(m, 5.0, 2.0, 'thinBoron', interface=interface)
         k = Material(2.074, 0.0, 'Silicon', interface=interface)
-        assert_almost_equal(p.interface()._wrapper.storage['layer'][p.unique_name].sld.real.value, 6.908)
-        assert_almost_equal(p.interface()._wrapper.storage['layer'][p.unique_name].sld.imag.value, -0.278)
+        assert_almost_equal(_slab(p).sld.real.value, 6.908)
+        assert_almost_equal(_slab(p).sld.imag.value, -0.278)
         p.assign_material(k)
-        assert_almost_equal(p.interface()._wrapper.storage['layer'][p.unique_name].sld.real.value, 2.074)
-        assert_almost_equal(p.interface()._wrapper.storage['layer'][p.unique_name].sld.imag.value, 0.0)
+        assert_almost_equal(_slab(p).sld.real.value, 2.074)
+        assert_almost_equal(_slab(p).sld.imag.value, 0.0)
 
     def test_dict_repr(self):
         p = Layer()
@@ -130,7 +131,7 @@ class TestLayer(unittest.TestCase):
     def test_dict_round_trip(self):
         p = Layer()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = Layer.from_dict(p_dict)
         assert sorted(p.as_dict()) == sorted(q.as_dict())

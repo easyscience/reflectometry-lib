@@ -18,9 +18,9 @@ from easyreflectometry.special.calculations import weighted_average
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 class TestMaterialMixtureSld:
@@ -71,25 +71,25 @@ class TestMolecularWeight:
 
 class TestApplyDefaultLimits:
     def test_percentage_limits_set_for_infinite_bounds(self):
-        param = Parameter('thickness', 10.0, min=-np.inf, max=np.inf)
+        param = Parameter(10.0, display_name='thickness', min=-np.inf, max=np.inf)
         apply_default_limits(param, 'thickness')
         assert param.min == pytest.approx(5.0)
         assert param.max == pytest.approx(20.0)
 
     def test_percentage_limits_leave_finite_bounds_untouched(self):
-        param = Parameter('roughness', 10.0, min=2.0, max=30.0)
+        param = Parameter(10.0, display_name='roughness', min=2.0, max=30.0)
         apply_default_limits(param, 'roughness')
         assert param.min == 2.0
         assert param.max == 30.0
 
     def test_percentage_limits_skip_zero_value(self):
-        param = Parameter('thickness', 0.0, min=-np.inf, max=np.inf)
+        param = Parameter(0.0, display_name='thickness', min=-np.inf, max=np.inf)
         apply_default_limits(param, 'thickness')
         assert np.isinf(param.min)
         assert np.isinf(param.max)
 
     def test_sld_gets_fixed_limits(self):
-        param = Parameter('sld', 4.0, min=-np.inf, max=np.inf)
+        param = Parameter(4.0, display_name='sld', min=-np.inf, max=np.inf)
         apply_default_limits(param, 'sld')
         assert param.min == -1.0
         assert param.max == 10.0

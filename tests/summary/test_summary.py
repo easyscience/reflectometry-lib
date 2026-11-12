@@ -23,7 +23,7 @@ PATH_STATIC = os.path.join(os.path.dirname(os.path.dirname(__file__)), '_static'
 class TestSummary:
     @pytest.fixture
     def project(self) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         return project
@@ -292,7 +292,7 @@ class TestSummaryPolarized:
 
     @pytest.fixture
     def polarized_project(self, tmp_path) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.default_model()
@@ -327,7 +327,7 @@ class TestSummaryPolarized:
 
     @pytest.fixture
     def project(self) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         return project
@@ -376,7 +376,7 @@ class TestSummaryMultipleExperiments:
     @pytest.fixture
     def contrasts(self) -> Project:
         """The default model and two contrasts, each with synthetic data from its own model."""
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         d2o = project._materials[1]
@@ -484,7 +484,7 @@ class TestSummarySharedParameters:
     @pytest.fixture
     def contrast_project(self) -> Project:
         """The default model plus an H2O contrast, which reuses the superphase and subphase assemblies."""
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.default_model()
         d2o = project._materials[1]

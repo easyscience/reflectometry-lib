@@ -3,7 +3,8 @@
 **Analysis Date:** 2026-10-15 **Branch analysed:** `develop` @
 `66adaf54` (tag `v1.7.0-51`; last release `v1.8.0` on 2026-09-18,
 develop carries the unreleased 1.9 work listed under "Unreleased" in
-`CHANGELOG.md`)
+`CHANGELOG.md`) **Revised:** 2026-11-08 for the easyscience 3 port
+(`core-3.0`)
 
 ## Languages
 
@@ -39,11 +40,11 @@ develop carries the unreleased 1.9 work listed under "Unreleased" in
 
 **Core:**
 
-- EasyScience `easyscience>=2.5.1,<3` (PyPI; pixi resolves 2.5.1) -
-  Parameter model (`Parameter`, `DescriptorNumber`), dependency
-  resolver, `EasyList`/`ModelBase` base classes, serializer,
-  `Fitter`/`MultiFitter`, `Sampler`/`SamplingResults`, minimizer
-  wrappers (LMFit, Bumps, DFO), `InterfaceFactoryTemplate`
+- EasyScience `easyscience>=3.0.2,<4` (PyPI) - Parameter model
+  (`Parameter`, `DescriptorNumber`), `EasyList`/`ModelBase` base
+  classes, serializer, `Fitter`/`MultiFitter`, `Sampler`/
+  `SamplingResults`, minimizer wrappers (LMFit, Bumps, DFO),
+  `Minimizers`
 - scipp 26.3 - `sc.DataGroup`/`sc.array` with variances as the fit I/O
   container
 - refnx 0.1.63 - Reflectivity engine (unpolarized only)
@@ -92,10 +93,10 @@ develop carries the unreleased 1.9 work listed under "Unreleased" in
 
 **Critical (fitting pipeline):**
 
-- `easyscience` - `MultiFitter`, `Sampler`, `AvailableMinimizers`,
-  `FitResults`, `MINIMIZER_PARAMETER_PREFIX`; the library subclasses the
-  core `MultiFitter` and monkeypatches `minimizer_bumps.FitDriver` (see
-  `_bumps_constraints.py`)
+- `easyscience` - `MultiFitter`, `Sampler`, `Minimizers`, `FitResults`,
+  `PARAMETER_PREFIX`; the library subclasses the core `MultiFitter` and
+  monkeypatches `FitDriver` in `minimizer_bumps` and `sampler_bumps`
+  (see `_bumps_constraints.py`)
 - `bumps` - DREAM, `FitProblem`, `Parameter`; required for inequality
   constraints and MCMC
 - `numpy` - Array math everywhere

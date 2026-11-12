@@ -5,8 +5,8 @@
 import dataclasses
 
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 
 from easyreflectometry import Project
 from easyreflectometry.fitting import FitRun
@@ -15,7 +15,7 @@ from easyreflectometry.summary import Summary
 
 @pytest.fixture
 def project() -> Project:
-    global_object.map._clear()
+    global_object.registry.clear()
     project = Project()
     project.default_model()
     return project
@@ -74,7 +74,7 @@ class TestRefinementSection:
         project.models.duplicate_model(0)
         for model in project.models:
             model.sample[1].layers[0].thickness.fixed = False
-        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project.minimizer = Minimizers.Bumps_simplex
         project._last_fit = _run(1.5)  # LMFit_leastsq, two free parameters
 
         html = Summary(project)._refinement_section()

@@ -7,13 +7,12 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-from easyscience.io import SerializerComponent
 
 from easyreflectometry.model import Model
 from easyreflectometry.model import ResolutionFunction
 
 
-class DataSet1D(SerializerComponent):
+class DataSet1D:
     def __init__(
         self,
         name: str = 'Series',

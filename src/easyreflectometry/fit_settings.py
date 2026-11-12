@@ -4,7 +4,7 @@
 
 Every fitter the project hands out is configured from a :class:`FitSettings`,
 and a prepared fit works on a snapshot of it. Settings reach an engine on two
-seams of the easyscience minimizers, as they exist in easyscience 2.5:
+seams of the easyscience minimizers:
 
 - *core fitter attributes* (``tolerance``, ``max_evaluations``), written by
   :meth:`FitSettings.configure`. ``None`` leaves them to the engine adapter:
@@ -12,10 +12,10 @@ seams of the easyscience minimizers, as they exist in easyscience 2.5:
   native ``ftol``/``xtol``;
 - *per-call keyword arguments* (:meth:`FitSettings.engine_kwargs`): the
   method-specific options of the catalogue below, and LMFit's tolerance. The
-  LMFit adapter of easyscience 2.5 chooses the tolerance keyword from the
-  per-call method, which is always None, so a core-side tolerance reaches
-  scipy's Powell and COBYLA as ``ftol`` and crashes. The keyword is therefore
-  chosen here, by method, and the core fitter's tolerance stays unset.
+  LMFit tolerance keyword (``ftol``, ``xtol``, ``tol``) depends on the method,
+  so it is chosen here, by method, and the core fitter's tolerance stays
+  unset for LMFit. (easyscience 3 also chooses it correctly from the core
+  tolerance; this per-call route predates that and gives the same result.)
 
 The catalogue is deliberately small: the step size, population, strategy and
 trust-region settings the requirements name. Options outside it can still be
@@ -30,9 +30,9 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 
-from easyscience.fitting import AvailableMinimizers
+from easyscience import Minimizers
 
-DEFAULT_MINIMIZER = AvailableMinimizers.LMFit_leastsq
+DEFAULT_MINIMIZER = Minimizers.LMFit_leastsq
 OBJECTIVES = ('hybrid', 'mighell', 'legacy_mask')
 MODES = ('minimize', 'sample')
 
@@ -134,12 +134,12 @@ _OPTIONS: dict[tuple[str, str], tuple[MinimizerOption, ...]] = {
 }
 
 
-def option_schema(minimizer: AvailableMinimizers) -> list[MinimizerOption]:
+def option_schema(minimizer: Minimizers) -> list[MinimizerOption]:
     """The method-specific options ``minimizer`` accepts."""
     return list(_OPTIONS.get((minimizer.package, minimizer.method), ()))
 
 
-def validate_options(minimizer: AvailableMinimizers, options: dict) -> dict:
+def validate_options(minimizer: Minimizers, options: dict) -> dict:
     """``options`` if every one is known for ``minimizer`` and valid.
 
     Raises
@@ -156,8 +156,8 @@ def validate_options(minimizer: AvailableMinimizers, options: dict) -> dict:
 
 def canonical_minimizer(minimizer: Any) -> Any:
     """The member an alias stands for (``LMFit`` is ``LMFit_leastsq``); anything else unchanged."""
-    if isinstance(minimizer, AvailableMinimizers) and minimizer.name in _MINIMIZER_ALIASES:
-        return AvailableMinimizers[_MINIMIZER_ALIASES[minimizer.name]]
+    if isinstance(minimizer, Minimizers) and minimizer.name in _MINIMIZER_ALIASES:
+        return Minimizers[_MINIMIZER_ALIASES[minimizer.name]]
     return minimizer
 
 
@@ -176,7 +176,7 @@ def normalize_objective(objective: Any) -> str:
     return objective
 
 
-def requires_finite_bounds(minimizer: AvailableMinimizers) -> bool:
+def requires_finite_bounds(minimizer: Minimizers) -> bool:
     """Whether ``minimizer`` needs a finite ``min`` and ``max`` on every free parameter."""
     return minimizer.package == 'lm' and minimizer.method == 'differential_evolution'
 
@@ -187,7 +187,7 @@ class FitSettings:
 
     Attributes
     ----------
-    minimizer : AvailableMinimizers
+    minimizer : Minimizers
         The engine and method. An alias member (``LMFit``, ``Bumps``, ``DFO``)
         is stored as the member it stands for, so its options keep one key.
     mode : str
@@ -205,7 +205,7 @@ class FitSettings:
         values of one method are neither lost nor applied when switching.
     """
 
-    minimizer: AvailableMinimizers = field(default_factory=lambda: DEFAULT_MINIMIZER)
+    minimizer: Minimizers = field(default_factory=lambda: DEFAULT_MINIMIZER)
     mode: str = 'minimize'
     tolerance: float | None = None
     max_evaluations: int | None = None
@@ -261,8 +261,8 @@ class FitSettings:
 
     def validate(self) -> None:
         """Check every field; raises ValueError naming the first offending one."""
-        if not isinstance(self.minimizer, AvailableMinimizers):
-            raise ValueError(f'minimizer must be an AvailableMinimizers member, got {self.minimizer!r}.')
+        if not isinstance(self.minimizer, Minimizers):
+            raise ValueError(f'minimizer must be an Minimizers member, got {self.minimizer!r}.')
         _check_mode(self.mode, self.minimizer)
         _check_tolerance(self.tolerance, self.minimizer)
         _check_budget(self.max_evaluations)
@@ -335,7 +335,7 @@ class FitSettings:
         # Aliases first, so a member's own options win over its alias's.
         for name, options in sorted(engine_options.items(), key=lambda item: item[0] not in _MINIMIZER_ALIASES):
             key = _MINIMIZER_ALIASES.get(name, name) if isinstance(name, str) else name
-            minimizer = AvailableMinimizers.__members__.get(key) if isinstance(key, str) else None
+            minimizer = Minimizers.__members__.get(key) if isinstance(key, str) else None
             try:
                 if minimizer is None:
                     raise ValueError(f'{name!r} is not an available minimizer.')
@@ -355,18 +355,18 @@ class FitSettings:
         return settings, report
 
 
-def _minimizer_from_name(name: Any, report: list[str]) -> AvailableMinimizers:
+def _minimizer_from_name(name: Any, report: list[str]) -> Minimizers:
     if name is None:
         return DEFAULT_MINIMIZER
-    # AvailableMinimizers only defines members whose engine is installed.
-    minimizer = AvailableMinimizers.__members__.get(_MINIMIZER_ALIASES.get(name, name)) if isinstance(name, str) else None
+    # Minimizers only defines members whose engine is installed.
+    minimizer = Minimizers.__members__.get(_MINIMIZER_ALIASES.get(name, name)) if isinstance(name, str) else None
     if minimizer is None:
         report.append(f'Minimizer {name!r} is not available; using {DEFAULT_MINIMIZER.name}.')
         return DEFAULT_MINIMIZER
     return minimizer
 
 
-def _check_mode(value: Any, minimizer: AvailableMinimizers) -> str:
+def _check_mode(value: Any, minimizer: Minimizers) -> str:
     if value not in MODES:
         raise ValueError(f'Unknown fit mode {value!r}; must be one of {MODES}.')
     if value == 'sample' and minimizer.package != 'bumps':
@@ -374,7 +374,7 @@ def _check_mode(value: Any, minimizer: AvailableMinimizers) -> str:
     return value
 
 
-def _check_tolerance(value: Any, minimizer: AvailableMinimizers) -> float | None:
+def _check_tolerance(value: Any, minimizer: Minimizers) -> float | None:
     if value is None:
         return None
     if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
@@ -392,7 +392,7 @@ def _check_budget(value: Any) -> int | None:
     return value
 
 
-def _check_trust_region(minimizer: AvailableMinimizers, tolerance: float | None, options: dict) -> None:
+def _check_trust_region(minimizer: Minimizers, tolerance: float | None, options: dict) -> None:
     """DFO-LS takes the tolerance as its final trust-region radius, which must lie below the initial one."""
     rhobeg = options.get('rhobeg')
     if minimizer.package == 'dfo' and tolerance is not None and rhobeg is not None and rhobeg <= tolerance:

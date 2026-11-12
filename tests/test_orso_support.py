@@ -51,9 +51,9 @@ FIXTURE_SQZ = FIXTURE_QZ * 0.02
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 @pytest.fixture
