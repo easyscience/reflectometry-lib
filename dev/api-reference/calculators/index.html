@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2663,16 +2663,16 @@ uppercase strings are rejected.</p>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PolarizationChannel</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spin cross-section channels for polarized neutron reflectometry.</span>
+<span class="w">    </span><span class="sd">"""Spin cross-section channels for polarized neutron reflectometry.</span>
 
-<span class="sd">    The accepted spellings are exactly the enum values (&#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39;);</span>
+<span class="sd">    The accepted spellings are exactly the enum values ('pp', 'pm', 'mp', 'mm');</span>
 <span class="sd">    uppercase strings are rejected.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">PP</span> <span class="o">=</span> <span class="s1">&#39;pp&#39;</span>  <span class="c1"># non-spin-flip, up-up</span>
-    <span class="n">PM</span> <span class="o">=</span> <span class="s1">&#39;pm&#39;</span>  <span class="c1"># spin-flip, up-down</span>
-    <span class="n">MP</span> <span class="o">=</span> <span class="s1">&#39;mp&#39;</span>  <span class="c1"># spin-flip, down-up</span>
-    <span class="n">MM</span> <span class="o">=</span> <span class="s1">&#39;mm&#39;</span>  <span class="c1"># non-spin-flip, down-down</span>
+    <span class="n">PP</span> <span class="o">=</span> <span class="s1">'pp'</span>  <span class="c1"># non-spin-flip, up-up</span>
+    <span class="n">PM</span> <span class="o">=</span> <span class="s1">'pm'</span>  <span class="c1"># spin-flip, up-down</span>
+    <span class="n">MP</span> <span class="o">=</span> <span class="s1">'mp'</span>  <span class="c1"># spin-flip, down-up</span>
+    <span class="n">MM</span> <span class="o">=</span> <span class="s1">'mm'</span>  <span class="c1"># non-spin-flip, down-down</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3120,10 +3120,10 @@ uppercase strings are rejected.</p>
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model is the class that represents the experiment.</span>
+<span class="w">    </span><span class="sd">"""Model is the class that represents the experiment.</span>
 
 <span class="sd">    It is used to store the information about the experiment and to perform the calculations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3131,14 +3131,14 @@ uppercase strings are rejected.</p>
         <span class="n">scale</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">background</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">resolution_function</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ResolutionFunction</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Model&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Model'</span><span class="p">,</span>
         <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">guide_field_angle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">applied_field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3153,7 +3153,7 @@ uppercase strings are rejected.</p>
 <span class="sd">        background : Union[Parameter, Number, None], optional</span>
 <span class="sd">            Linear background magnitude. By default, None.</span>
 <span class="sd">        name : str, optional</span>
-<span class="sd">            Name of the model. By default, &#39;Model&#39;.</span>
+<span class="sd">            Name of the model. By default, 'Model'.</span>
 <span class="sd">        resolution_function : Union[ResolutionFunction, None], optional</span>
 <span class="sd">            Resolution function. By default, None.</span>
 <span class="sd">        guide_field_angle : Union[Parameter, Number, None], optional</span>
@@ -3162,20 +3162,20 @@ uppercase strings are rejected.</p>
 <span class="sd">            Applied field in tesla (refl1d ``H``). By default, 0.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resolution_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+            <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">'resolution'</span><span class="p">][</span><span class="s1">'value'</span><span class="p">])</span>
 
-        <span class="n">scale</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="s1">&#39;scale&#39;</span><span class="p">)</span>
-        <span class="n">background</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-        <span class="n">guide_field_angle</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;guide_field_angle&#39;</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-        <span class="n">applied_field</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;applied_field&#39;</span><span class="p">,</span> <span class="n">applied_field</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'scale'</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="s1">'scale'</span><span class="p">)</span>
+        <span class="n">background</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'background'</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+        <span class="n">guide_field_angle</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'guide_field_angle'</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+        <span class="n">applied_field</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'applied_field'</span><span class="p">,</span> <span class="n">applied_field</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_default</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
@@ -3187,16 +3187,16 @@ uppercase strings are rejected.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_guide_field_angle</span> <span class="o">=</span> <span class="n">guide_field_angle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_applied_field</span> <span class="o">=</span> <span class="n">applied_field</span>
 
-        <span class="c1"># Derived, read-only &quot;calculation&quot; parameter (see `total_thickness`).</span>
+        <span class="c1"># Derived, read-only "calculation" parameter (see `total_thickness`).</span>
         <span class="c1"># Rebuilt by every constructor call — including `from_dict` — and</span>
         <span class="c1"># deliberately *not* serialized: it is a function of the layers.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-            <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;total_thickness&#39;</span><span class="p">,</span>
+            <span class="n">display_name</span><span class="o">=</span><span class="s1">'total_thickness'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-            <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;angstrom&#39;</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s1">'angstrom'</span><span class="p">,</span>
             <span class="n">fixed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Total thickness of the film: the sum of all layer thicknesses &#39;</span>
-            <span class="s1">&#39;between the superphase and the subphase (derived, read-only).&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Total thickness of the film: the sum of all layer thicknesses '</span>
+            <span class="s1">'between the superphase and the subphase (derived, read-only).'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">refresh_derived</span><span class="p">()</span>
@@ -3234,7 +3234,7 @@ uppercase strings are rejected.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">guide_field_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Field angle about the beam axis in degrees (refl1d ``Aguide``); only magnetic calculators use it.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Field angle about the beam axis in degrees (refl1d ``Aguide``); only magnetic calculators use it."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_guide_field_angle</span>
 
     <span class="nd">@guide_field_angle</span><span class="o">.</span><span class="n">setter</span>
@@ -3243,7 +3243,7 @@ uppercase strings are rejected.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">applied_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applied field in tesla (refl1d ``H``); only magnetic calculators use it.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Applied field in tesla (refl1d ``H``); only magnetic calculators use it."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applied_field</span>
 
     <span class="nd">@applied_field</span><span class="o">.</span><span class="n">setter</span>
@@ -3253,19 +3253,19 @@ uppercase strings are rejected.</p>
     <span class="c1"># ----- derived parameters -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_film_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Layers between the superphase and the subphase (first and last layer of the sample).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Layers between the superphase and the subphase (first and last layer of the sample)."""</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">assembly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">assembly</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">refresh_derived</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-derive the model&#39;s computed parameters from the current layer structure.</span>
+<span class="w">        </span><span class="sd">"""Re-derive the model's computed parameters from the current layer structure.</span>
 
 <span class="sd">        Cheap (a few string operations) and idempotent: the dependency is</span>
 <span class="sd">        only rebuilt when the set of contributing layers changed. Called on</span>
 <span class="sd">        every access to :attr:`total_thickness`, so layers added or removed</span>
 <span class="sd">        through *any* path (`Model.add_assemblies`, `assembly.layers.append`,</span>
 <span class="sd">        ...) are picked up without explicit notification.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">thickness</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_film_layers</span><span class="p">()]</span>
         <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness_sources</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">current</span><span class="p">)):</span>
@@ -3281,35 +3281,35 @@ uppercase strings are rejected.</p>
             <span class="n">total</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">total</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">return</span>
-        <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;t</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">source</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)}</span>
+        <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'t</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">source</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)}</span>
         <span class="n">total</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39; + &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dependency_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">' + '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dependency_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
             <span class="n">dependency_map</span><span class="o">=</span><span class="n">dependency_map</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read-only parameter: the summed thickness of the film layers.</span>
+<span class="w">        </span><span class="sd">"""Read-only parameter: the summed thickness of the film layers.</span>
 
 <span class="sd">        The superphase (first layer of the sample) and the subphase (last</span>
 <span class="sd">        layer) are semi-infinite and excluded. The parameter is *dependent*:</span>
 <span class="sd">        it tracks the layer thicknesses, never enters a fit and cannot be</span>
 <span class="sd">        set; it can be referenced from constraint expressions and</span>
 <span class="sd">        inequality constraints like any other parameter.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">refresh_derived</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness</span>
 
     <span class="c1"># ----- assembly management -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_assemblies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">assemblies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseAssembly</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add assemblies to the model sample.</span>
+<span class="w">        </span><span class="sd">"""Add assemblies to the model sample.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        *assemblies : list[BaseAssembly]</span>
 <span class="sd">            Assemblies to add to model sample.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">assemblies</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">add_assembly</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -3317,69 +3317,69 @@ uppercase strings are rejected.</p>
                 <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">assembly</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseAssembly</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">add_assembly</span><span class="p">(</span><span class="n">assembly</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Object </span><span class="si">{</span><span class="n">assembly</span><span class="si">}</span><span class="s1"> is not a valid type, must be a child of BaseAssembly.&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Object </span><span class="si">{</span><span class="n">assembly</span><span class="si">}</span><span class="s1"> is not a valid type, must be a child of BaseAssembly.'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Duplicate a given item or layer in a sample.</span>
+<span class="w">        </span><span class="sd">"""Duplicate a given item or layer in a sample.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        index : int</span>
 <span class="sd">            Index of the item or layer to duplicate.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">duplicate_assembly</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an assembly from the model.</span>
+<span class="w">        </span><span class="sd">"""Remove an assembly from the model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        index : int</span>
 <span class="sd">            Index of the item to remove.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">remove_assembly</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether any layer in the sample carries magnetic properties.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s1">&#39;magnetism&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">assembly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">assembly</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Whether any layer in the sample carries magnetic properties."""</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="s1">'magnetism'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">assembly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">assembly</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether this model was created as a default placeholder.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Whether this model was created as a default placeholder."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_default</span>
 
     <span class="nd">@is_default</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set whether this model is a default placeholder.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set whether this model is a default placeholder."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_default</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="c1"># ----- resolution function -----</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResolutionFunction</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the resolution function.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the resolution function."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span>
 
     <span class="nd">@resolution_function</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the resolution function for the model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the resolution function for the model."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Registered per model: one calculator serves every model of a</span>
             <span class="c1"># project, each possibly with a different resolution.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
-    <span class="c1"># ----- bindings (override BaseCore&#39;s to add the resolution-function side effect) -----</span>
+    <span class="c1"># ----- bindings (override BaseCore's to add the resolution-function side effect) -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagate the interface over the sample tree, then register this</span>
-<span class="sd">        model&#39;s resolution function on the calculator.</span>
+<span class="w">        </span><span class="sd">"""Propagate the interface over the sample tree, then register this</span>
+<span class="sd">        model's resolution function on the calculator.</span>
 
 <span class="sd">        Runs on every interface assignment and on every engine switch (the</span>
 <span class="sd">        project regenerates bindings on a fresh calculator then), so the new</span>
-<span class="sd">        calculator always knows this model&#39;s resolution.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        calculator always knows this model's resolution.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 
@@ -3387,46 +3387,46 @@ uppercase strings are rejected.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="n">PercentageFwhm</span><span class="p">):</span>
-            <span class="n">resolution_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">&#39;constant&#39;</span><span class="p">]</span>
-            <span class="n">resolution</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">resolution_value</span><span class="si">}</span><span class="s1"> %&#39;</span>
+            <span class="n">resolution_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()[</span><span class="s1">'constant'</span><span class="p">]</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">resolution_value</span><span class="si">}</span><span class="s1"> %'</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">resolution</span> <span class="o">=</span> <span class="s1">&#39;function of Q&#39;</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="s1">'function of Q'</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;scale&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="s1">&#39;background&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
-                <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="n">resolution</span><span class="p">,</span>
-                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
-                <span class="s1">&#39;sample&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'scale'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="s1">'background'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                <span class="s1">'resolution'</span><span class="p">:</span> <span class="n">resolution</span><span class="p">,</span>
+                <span class="s1">'color'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
+                <span class="s1">'sample'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
     <span class="c1"># ----- serialization (custom because resolution_function + interface need special handling) -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the model, encoding the resolution function and interface name.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Serialize the model, encoding the resolution function and interface name."""</span>
         <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Sample/resolution_function/interface get bespoke encoding below.</span>
-        <span class="n">skip_for_super</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;resolution_function&#39;</span><span class="p">,</span> <span class="s1">&#39;interface&#39;</span><span class="p">]</span>
+        <span class="n">skip_for_super</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'sample'</span><span class="p">,</span> <span class="s1">'resolution_function'</span><span class="p">,</span> <span class="s1">'interface'</span><span class="p">]</span>
         <span class="n">this_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip_for_super</span><span class="p">)</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;resolution_function&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'sample'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'resolution_function'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;interface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">this_dict</span><span class="p">[</span><span class="s1">'interface'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;interface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">this_dict</span><span class="p">[</span><span class="s1">'interface'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="n">this_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compatibility alias for :meth:`to_dict`."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_orso</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The sample as an ORSO simple-model (``sample.model``) dictionary.</span>
+<span class="w">        </span><span class="sd">"""The sample as an ORSO simple-model (``sample.model``) dictionary.</span>
 
 <span class="sd">        Slab representation: lengths in angstrom, SLDs in 1/angstrom^2,</span>
 <span class="sd">        repeating multilayers via the inline ``N ( ... )`` stack syntax.</span>
@@ -3434,9 +3434,9 @@ uppercase strings are rejected.</p>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            The ORSO model-language dictionary (the content of an .ort file&#39;s</span>
+<span class="sd">            The ORSO model-language dictionary (the content of an .ort file's</span>
 <span class="sd">            ``data_source.sample.model`` section).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Circular import if hoisted to module-top.</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">orsopy.fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span>
 
@@ -3444,7 +3444,7 @@ uppercase strings are rejected.</p>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide_field_angle</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mf">270.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">applied_field</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s1">&#39;The guide field angle and applied field are not written: the ORSO model language has no field.&#39;</span><span class="p">,</span>
+                <span class="s1">'The guide field angle and applied field are not written: the ORSO model language has no field.'</span><span class="p">,</span>
                 <span class="ne">UserWarning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
@@ -3452,13 +3452,13 @@ uppercase strings are rejected.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">passed_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Model from a dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create a Model from a dictionary."""</span>
         <span class="c1"># Circular import if hoisted to module-top.</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalculatorFactory</span>
 
         <span class="n">this_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">passed_dict</span><span class="p">)</span>
-        <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">ResolutionFunction</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resolution_function&#39;</span><span class="p">))</span>
-        <span class="n">interface_name</span> <span class="o">=</span> <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">)</span>
+        <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">ResolutionFunction</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'resolution_function'</span><span class="p">))</span>
+        <span class="n">interface_name</span> <span class="o">=</span> <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'interface'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">interface_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
             <span class="n">interface</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">interface_name</span><span class="p">)</span>
@@ -3649,7 +3649,7 @@ inequality constraints like any other parameter.</p>
 
 
 <h3 id="easyreflectometry.calculators.calculator_base.Model.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">applied_field</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Model'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">applied_field</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -3708,7 +3708,7 @@ inequality constraints like any other parameter.</p>
               </div>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;COLORS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;#0173B2&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#DE8F05&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#029E73&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#D55E00&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#CC78BC&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#CA9161&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#FBAFE4&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#949494&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#ECE133&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#56B4E9&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;
+                  <code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;COLORS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#x27;#0173B2&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#DE8F05&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#029E73&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#D55E00&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#CC78BC&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#CA9161&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#FBAFE4&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#949494&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#ECE133&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#x27;#56B4E9&#x27;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;/code&gt;
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
@@ -3957,14 +3957,14 @@ inequality constraints like any other parameter.</p>
     <span class="n">scale</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">background</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">resolution_function</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ResolutionFunction</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Model&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Model'</span><span class="p">,</span>
     <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">guide_field_angle</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">applied_field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3979,7 +3979,7 @@ inequality constraints like any other parameter.</p>
 <span class="sd">    background : Union[Parameter, Number, None], optional</span>
 <span class="sd">        Linear background magnitude. By default, None.</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Name of the model. By default, &#39;Model&#39;.</span>
+<span class="sd">        Name of the model. By default, 'Model'.</span>
 <span class="sd">    resolution_function : Union[ResolutionFunction, None], optional</span>
 <span class="sd">        Resolution function. By default, None.</span>
 <span class="sd">    guide_field_angle : Union[Parameter, Number, None], optional</span>
@@ -3988,20 +3988,20 @@ inequality constraints like any other parameter.</p>
 <span class="sd">        Applied field in tesla (refl1d ``H``). By default, 0.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">Sample</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">resolution_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">DEFAULTS</span><span class="p">[</span><span class="s1">'resolution'</span><span class="p">][</span><span class="s1">'value'</span><span class="p">])</span>
 
-    <span class="n">scale</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="s1">&#39;scale&#39;</span><span class="p">)</span>
-    <span class="n">background</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-    <span class="n">guide_field_angle</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;guide_field_angle&#39;</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
-    <span class="n">applied_field</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">&#39;applied_field&#39;</span><span class="p">,</span> <span class="n">applied_field</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'scale'</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="s1">'scale'</span><span class="p">)</span>
+    <span class="n">background</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'background'</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+    <span class="n">guide_field_angle</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'guide_field_angle'</span><span class="p">,</span> <span class="n">guide_field_angle</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
+    <span class="n">applied_field</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span><span class="s1">'applied_field'</span><span class="p">,</span> <span class="n">applied_field</span><span class="p">,</span> <span class="n">DEFAULTS</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_is_default</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span> <span class="o">=</span> <span class="n">resolution_function</span>
@@ -4013,16 +4013,16 @@ inequality constraints like any other parameter.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_guide_field_angle</span> <span class="o">=</span> <span class="n">guide_field_angle</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_applied_field</span> <span class="o">=</span> <span class="n">applied_field</span>
 
-    <span class="c1"># Derived, read-only &quot;calculation&quot; parameter (see `total_thickness`).</span>
+    <span class="c1"># Derived, read-only "calculation" parameter (see `total_thickness`).</span>
     <span class="c1"># Rebuilt by every constructor call — including `from_dict` — and</span>
     <span class="c1"># deliberately *not* serialized: it is a function of the layers.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
-        <span class="n">display_name</span><span class="o">=</span><span class="s1">&#39;total_thickness&#39;</span><span class="p">,</span>
+        <span class="n">display_name</span><span class="o">=</span><span class="s1">'total_thickness'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;angstrom&#39;</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="s1">'angstrom'</span><span class="p">,</span>
         <span class="n">fixed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Total thickness of the film: the sum of all layer thicknesses &#39;</span>
-        <span class="s1">&#39;between the superphase and the subphase (derived, read-only).&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'Total thickness of the film: the sum of all layer thicknesses '</span>
+        <span class="s1">'between the superphase and the subphase (derived, read-only).'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">refresh_derived</span><span class="p">()</span>
@@ -4090,14 +4090,14 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
 <span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">refresh_derived</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-derive the model&#39;s computed parameters from the current layer structure.</span>
+<span class="w">    </span><span class="sd">"""Re-derive the model's computed parameters from the current layer structure.</span>
 
 <span class="sd">    Cheap (a few string operations) and idempotent: the dependency is</span>
 <span class="sd">    only rebuilt when the set of contributing layers changed. Called on</span>
 <span class="sd">    every access to :attr:`total_thickness`, so layers added or removed</span>
 <span class="sd">    through *any* path (`Model.add_assemblies`, `assembly.layers.append`,</span>
 <span class="sd">    ...) are picked up without explicit notification.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">thickness</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_film_layers</span><span class="p">()]</span>
     <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_thickness_sources</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">current</span><span class="p">)):</span>
@@ -4113,9 +4113,9 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
         <span class="n">total</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">total</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">return</span>
-    <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;t</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">source</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)}</span>
+    <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'t</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">source</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)}</span>
     <span class="n">total</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span>
-        <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39; + &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dependency_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+        <span class="n">dependency_expression</span><span class="o">=</span><span class="s1">' + '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dependency_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
         <span class="n">dependency_map</span><span class="o">=</span><span class="n">dependency_map</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4193,13 +4193,13 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
 <span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_assemblies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">assemblies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseAssembly</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add assemblies to the model sample.</span>
+<span class="w">    </span><span class="sd">"""Add assemblies to the model sample.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    *assemblies : list[BaseAssembly]</span>
 <span class="sd">        Assemblies to add to model sample.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">assemblies</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">add_assembly</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -4207,7 +4207,7 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
             <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">assembly</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseAssembly</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">add_assembly</span><span class="p">(</span><span class="n">assembly</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Object </span><span class="si">{</span><span class="n">assembly</span><span class="si">}</span><span class="s1"> is not a valid type, must be a child of BaseAssembly.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Object </span><span class="si">{</span><span class="n">assembly</span><span class="si">}</span><span class="s1"> is not a valid type, must be a child of BaseAssembly.'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4276,13 +4276,13 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Duplicate a given item or layer in a sample.</span>
+<span class="w">    </span><span class="sd">"""Duplicate a given item or layer in a sample.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    index : int</span>
 <span class="sd">        Index of the item or layer to duplicate.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">duplicate_assembly</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4352,13 +4352,13 @@ through <em>any</em> path (<code>Model.add_assemblies</code>, <code>assembly.lay
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_assembly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove an assembly from the model.</span>
+<span class="w">    </span><span class="sd">"""Remove an assembly from the model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    index : int</span>
 <span class="sd">        Index of the item to remove.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">remove_assembly</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4399,13 +4399,13 @@ calculator always knows this model's resolution.</p>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagate the interface over the sample tree, then register this</span>
-<span class="sd">    model&#39;s resolution function on the calculator.</span>
+<span class="w">    </span><span class="sd">"""Propagate the interface over the sample tree, then register this</span>
+<span class="sd">    model's resolution function on the calculator.</span>
 
 <span class="sd">    Runs on every interface assignment and on every engine switch (the</span>
 <span class="sd">    project regenerates bindings on a fresh calculator then), so the new</span>
-<span class="sd">    calculator always knows this model&#39;s resolution.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    calculator always knows this model's resolution.</span>
+<span class="sd">    """</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_bindings</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="p">()</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolution_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4447,18 +4447,18 @@ calculator always knows this model's resolution.</p>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the model, encoding the resolution function and interface name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serialize the model, encoding the resolution function and interface name."""</span>
     <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># Sample/resolution_function/interface get bespoke encoding below.</span>
-    <span class="n">skip_for_super</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;resolution_function&#39;</span><span class="p">,</span> <span class="s1">&#39;interface&#39;</span><span class="p">]</span>
+    <span class="n">skip_for_super</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'sample'</span><span class="p">,</span> <span class="s1">'resolution_function'</span><span class="p">,</span> <span class="s1">'interface'</span><span class="p">]</span>
     <span class="n">this_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip_for_super</span><span class="p">)</span>
-    <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
-    <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;resolution_function&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
+    <span class="n">this_dict</span><span class="p">[</span><span class="s1">'sample'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
+    <span class="n">this_dict</span><span class="p">[</span><span class="s1">'resolution_function'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;interface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'interface'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;interface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'interface'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
     <span class="k">return</span> <span class="n">this_dict</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4488,7 +4488,7 @@ calculator always knows this model's resolution.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">383</span>
 <span class="normal">384</span>
 <span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Compatibility alias for :meth:`to_dict`."""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4568,7 +4568,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">408</span>
 <span class="normal">409</span>
 <span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_orso</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The sample as an ORSO simple-model (``sample.model``) dictionary.</span>
+<span class="w">    </span><span class="sd">"""The sample as an ORSO simple-model (``sample.model``) dictionary.</span>
 
 <span class="sd">    Slab representation: lengths in angstrom, SLDs in 1/angstrom^2,</span>
 <span class="sd">    repeating multilayers via the inline ``N ( ... )`` stack syntax.</span>
@@ -4576,9 +4576,9 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
-<span class="sd">        The ORSO model-language dictionary (the content of an .ort file&#39;s</span>
+<span class="sd">        The ORSO model-language dictionary (the content of an .ort file's</span>
 <span class="sd">        ``data_source.sample.model`` section).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Circular import if hoisted to module-top.</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">orsopy.fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span>
 
@@ -4586,7 +4586,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guide_field_angle</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mf">270.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">applied_field</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s1">&#39;The guide field angle and applied field are not written: the ORSO model language has no field.&#39;</span><span class="p">,</span>
+            <span class="s1">'The guide field angle and applied field are not written: the ORSO model language has no field.'</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
@@ -4641,13 +4641,13 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">430</span>
 <span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">passed_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Model from a dictionary.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create a Model from a dictionary."""</span>
     <span class="c1"># Circular import if hoisted to module-top.</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.calculators</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalculatorFactory</span>
 
     <span class="n">this_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">passed_dict</span><span class="p">)</span>
-    <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">ResolutionFunction</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resolution_function&#39;</span><span class="p">))</span>
-    <span class="n">interface_name</span> <span class="o">=</span> <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">)</span>
+    <span class="n">resolution_function</span> <span class="o">=</span> <span class="n">ResolutionFunction</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'resolution_function'</span><span class="p">))</span>
+    <span class="n">interface_name</span> <span class="o">=</span> <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'interface'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">interface_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">interface</span> <span class="o">=</span> <span class="n">CalculatorFactory</span><span class="p">()</span>
         <span class="n">interface</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">interface_name</span><span class="p">)</span>
@@ -4722,7 +4722,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResolutionFunction</span><span class="p">:</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">smearing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the resolution as sigma (standard deviation) at each ``q``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the resolution as sigma (standard deviation) at each ``q``."""</span>
         <span class="o">...</span>
 
     <span class="nd">@abstractmethod</span>
@@ -4730,18 +4730,18 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResolutionFunction</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Smearing function.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PercentageFwhm&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;LinearSpline&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">LinearSpline</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;q_data_points&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;fwhm_values&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Pointwise&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Smearing function."""</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'PercentageFwhm'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'LinearSpline'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LinearSpline</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'q_data_points'</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">'fwhm_values'</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Pointwise'</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Pointwise</span><span class="p">([</span>
-                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;q_data_points&#39;</span><span class="p">],</span>
-                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;R_data_points&#39;</span><span class="p">],</span>
-                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sQz_data_points&#39;</span><span class="p">],</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">'q_data_points'</span><span class="p">],</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">'R_data_points'</span><span class="p">],</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">'sQz_data_points'</span><span class="p">],</span>
             <span class="p">])</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown resolution function type&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unknown resolution function type'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4786,7 +4786,7 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">37</span>
 <span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">smearing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the resolution as sigma (standard deviation) at each ``q``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the resolution as sigma (standard deviation) at each ``q``."""</span>
     <span class="o">...</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4832,18 +4832,18 @@ repeating multilayers via the inline <code>N ( ... )</code> stack syntax.</p>
 <span class="normal">55</span>
 <span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResolutionFunction</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Smearing function.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PercentageFwhm&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;LinearSpline&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">LinearSpline</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;q_data_points&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;fwhm_values&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;smearing&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Pointwise&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Smearing function."""</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'PercentageFwhm'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PercentageFwhm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'LinearSpline'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">LinearSpline</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'q_data_points'</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">'fwhm_values'</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s1">'smearing'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Pointwise'</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Pointwise</span><span class="p">([</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;q_data_points&#39;</span><span class="p">],</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;R_data_points&#39;</span><span class="p">],</span>
-            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sQz_data_points&#39;</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">'q_data_points'</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">'R_data_points'</span><span class="p">],</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">'sQz_data_points'</span><span class="p">],</span>
         <span class="p">])</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown resolution function type&#39;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unknown resolution function type'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5120,60 +5120,60 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CalculatorBase</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A calculator: a thin layer over its wrapper, which reads the models it serves.</span>
+<span class="w">    </span><span class="sd">"""A calculator: a thin layer over its wrapper, which reads the models it serves.</span>
 
 <span class="sd">    Every non-abstract subclass registers itself in ``_calculators`` and so</span>
 <span class="sd">    becomes available in :class:`CalculatorFactory`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_calculators</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">CalculatorBase</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># class variable to store all calculators</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">is_abstract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Register every subclass, unless *is_abstract*, so that the factory can create it.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Register every subclass, unless *is_abstract*, so that the factory can create it."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_abstract</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_calculators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Init function."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by each subclass</span>
 
     <span class="c1"># ----- membership -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called for every object of a sample tree attached to this calculator; only models are kept.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Called for every object of a sample tree attached to this calculator; only models are kept."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">register_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serve *model*.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Serve *model*."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">discard_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop serving the model with *model_id*.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Stop serving the model with *model_id*."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">discard_model</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop serving every model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Stop serving every model."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">reset_storage</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">models</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Model</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The models served, keyed by ``unique_name``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The models served, keyed by ``unique_name``."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">models</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">reconcile_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch `include_magnetism` off when the served models have just stopped being magnetic.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Switch `include_magnetism` off when the served models have just stopped being magnetic."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
 
     <span class="c1"># ----- evaluation -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_before_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run at the start of every evaluation and profile.</span>
+<span class="w">        </span><span class="sd">"""Run at the start of every evaluation and profile.</span>
 
 <span class="sd">        Covers structural removals (a magnetic layer, an assembly) that nothing</span>
 <span class="sd">        reports to the calculator.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">reflectity_profile</span><span class="p">(</span>
@@ -5182,7 +5182,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
         <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines the reflectivity profile for the given range and model.</span>
+<span class="w">        </span><span class="sd">"""Determines the reflectivity profile for the given range and model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -5193,7 +5193,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        resolution_function : ResolutionFunction | None, optional</span>
 <span class="sd">            Resolution to smear with; by default the one registered for the</span>
 <span class="sd">            model through :meth:`set_resolution_function`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 
@@ -5204,7 +5204,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
         <span class="n">channel</span><span class="p">,</span>
         <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the reflectivity profile of one explicit spin channel.</span>
+<span class="w">        </span><span class="sd">"""Determine the reflectivity profile of one explicit spin channel.</span>
 
 <span class="sd">        Unlike `polarization_channel` (global calculator state), the channel is an</span>
 <span class="sd">        argument, so several channels can be evaluated against the same model —</span>
@@ -5217,7 +5217,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        model_id : str</span>
 <span class="sd">            The model id.</span>
 <span class="sd">        channel : PolarizationChannel | str</span>
-<span class="sd">            One of &#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39; (or the corresponding enum member).</span>
+<span class="sd">            One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).</span>
 <span class="sd">        resolution_function : ResolutionFunction | None, optional</span>
 <span class="sd">            Resolution to smear with; by default the one registered for the model.</span>
 
@@ -5225,7 +5225,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        -------</span>
 <span class="sd">        np.ndarray</span>
 <span class="sd">            Reflectivity of the requested channel at q.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate_channel</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 
@@ -5235,7 +5235,7 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
         <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines the reflectivity profiles of all four spin channels for the given range and model.</span>
+<span class="w">        </span><span class="sd">"""Determines the reflectivity profiles of all four spin channels for the given range and model.</span>
 
 <span class="sd">        Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).</span>
 
@@ -5251,13 +5251,13 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict[str, np.ndarray]</span>
-<span class="sd">            Reflectivity per spin channel, keyed &#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39; (in that order).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            Reflectivity per spin channel, keyed 'pp', 'pm', 'mp', 'mm' (in that order).</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate_polarized</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sld_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the scattering length density profile.</span>
+<span class="w">        </span><span class="sd">"""Return the scattering length density profile.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -5268,12 +5268,12 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        -------</span>
 <span class="sd">        tuple[np.ndarray, np.ndarray]</span>
 <span class="sd">            z and sld(z).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">sld_profile</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetic_sld_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the nuclear and magnetic scattering length density profiles.</span>
+<span class="w">        </span><span class="sd">"""Return the nuclear and magnetic scattering length density profiles.</span>
 
 <span class="sd">        Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).</span>
 
@@ -5286,12 +5286,12 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        -------</span>
 <span class="sd">        tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</span>
 <span class="sd">            z, sld(z), magnetic sld rhoM(z) and magnetic angle thetaM(z).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">magnetic_sld_profile</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the resolution function of one model, or the default for all others.</span>
+<span class="w">        </span><span class="sd">"""Set the resolution function of one model, or the default for all others.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -5300,26 +5300,26 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        model_id : str | None, optional</span>
 <span class="sd">            The model id. ``None`` sets the default used by every model that</span>
 <span class="sd">            has not registered a resolution of its own.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="n">resolution_function</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">resolution_function_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResolutionFunction</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The resolution function used when calculating the model with *model_id*.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The resolution function used when calculating the model with *model_id*."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">resolution_function_for</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">supports_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether this calculator backend can model magnetic samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Whether this calculator backend can model magnetic samples."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">supports_magnetism</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">include_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Include magnetism.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Include magnetism."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">magnetism</span>
 
     <span class="nd">@include_magnetism</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">include_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magnetism</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the magnetism flag for the calculator.</span>
+<span class="w">        </span><span class="sd">"""Set the magnetism flag for the calculator.</span>
 
 <span class="sd">        It stays as set until the served models stop being magnetic (see</span>
 <span class="sd">        :meth:`reconcile_magnetism`).</span>
@@ -5328,27 +5328,27 @@ becomes available in :class:<code>CalculatorFactory</code>.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        magnetism : bool</span>
 <span class="sd">            True if the calculator should include magnetism.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">magnetism</span> <span class="o">=</span> <span class="n">magnetism</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">polarization_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The spin channel (&#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39; or &#39;mm&#39;) used by `reflectity_profile` when magnetism is enabled.</span>
+<span class="w">        </span><span class="sd">"""The spin channel ('pp', 'pm', 'mp' or 'mm') used by `reflectity_profile` when magnetism is enabled.</span>
 
 <span class="sd">        Note: this state belongs to the currently-active calculator instance; switching</span>
 <span class="sd">        calculators via the factory constructs a fresh instance and resets it.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">polarization_channel</span>
 
     <span class="nd">@polarization_channel</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">polarization_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the spin channel for reflectivity calculations.</span>
+<span class="w">        </span><span class="sd">"""Set the spin channel for reflectivity calculations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        channel : PolarizationChannel | str</span>
-<span class="sd">            One of &#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39; (or the corresponding enum member).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">polarization_channel</span> <span class="o">=</span> <span class="n">channel</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5494,7 +5494,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">is_abstract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Register every subclass, unless *is_abstract*, so that the factory can create it.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Register every subclass, unless *is_abstract*, so that the factory can create it."""</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_abstract</span><span class="p">:</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_calculators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
@@ -5526,7 +5526,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Init function."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by each subclass</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5557,7 +5557,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Called for every object of a sample tree attached to this calculator; only models are kept.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Called for every object of a sample tree attached to this calculator; only models are kept."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5588,7 +5588,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serve *model*.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serve *model*."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">register_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5618,7 +5618,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">discard_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stop serving the model with *model_id*.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Stop serving the model with *model_id*."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">discard_model</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5648,7 +5648,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reset_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stop serving every model.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Stop serving every model."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">reset_storage</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5678,7 +5678,7 @@ calculators via the factory constructs a fresh instance and resets it.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reconcile_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Switch `include_magnetism` off when the served models have just stopped being magnetic.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Switch `include_magnetism` off when the served models have just stopped being magnetic."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">reconcile_magnetism</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5803,7 +5803,7 @@ model through :meth:<code>set_resolution_function</code>.</p>
     <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines the reflectivity profile for the given range and model.</span>
+<span class="w">    </span><span class="sd">"""Determines the reflectivity profile for the given range and model.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -5814,7 +5814,7 @@ model through :meth:<code>set_resolution_function</code>.</p>
 <span class="sd">    resolution_function : ResolutionFunction | None, optional</span>
 <span class="sd">        Resolution to smear with; by default the one registered for the</span>
 <span class="sd">        model through :meth:`set_resolution_function`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5999,7 +5999,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
     <span class="n">channel</span><span class="p">,</span>
     <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine the reflectivity profile of one explicit spin channel.</span>
+<span class="w">    </span><span class="sd">"""Determine the reflectivity profile of one explicit spin channel.</span>
 
 <span class="sd">    Unlike `polarization_channel` (global calculator state), the channel is an</span>
 <span class="sd">    argument, so several channels can be evaluated against the same model —</span>
@@ -6012,7 +6012,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="sd">    model_id : str</span>
 <span class="sd">        The model id.</span>
 <span class="sd">    channel : PolarizationChannel | str</span>
-<span class="sd">        One of &#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39; (or the corresponding enum member).</span>
+<span class="sd">        One of 'pp', 'pm', 'mp', 'mm' (or the corresponding enum member).</span>
 <span class="sd">    resolution_function : ResolutionFunction | None, optional</span>
 <span class="sd">        Resolution to smear with; by default the one registered for the model.</span>
 
@@ -6020,7 +6020,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="sd">    -------</span>
 <span class="sd">    np.ndarray</span>
 <span class="sd">        Reflectivity of the requested channel at q.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate_channel</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6178,7 +6178,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
     <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines the reflectivity profiles of all four spin channels for the given range and model.</span>
+<span class="w">    </span><span class="sd">"""Determines the reflectivity profiles of all four spin channels for the given range and model.</span>
 
 <span class="sd">    Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).</span>
 
@@ -6194,8 +6194,8 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict[str, np.ndarray]</span>
-<span class="sd">        Reflectivity per spin channel, keyed &#39;pp&#39;, &#39;pm&#39;, &#39;mp&#39;, &#39;mm&#39; (in that order).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Reflectivity per spin channel, keyed 'pp', 'pm', 'mp', 'mm' (in that order).</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">calculate_polarized</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">resolution_function</span><span class="o">=</span><span class="n">resolution_function</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6298,7 +6298,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sld_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the scattering length density profile.</span>
+<span class="w">    </span><span class="sd">"""Return the scattering length density profile.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6309,7 +6309,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="sd">    -------</span>
 <span class="sd">    tuple[np.ndarray, np.ndarray]</span>
 <span class="sd">        z and sld(z).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">sld_profile</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6415,7 +6415,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">magnetic_sld_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the nuclear and magnetic scattering length density profiles.</span>
+<span class="w">    </span><span class="sd">"""Return the nuclear and magnetic scattering length density profiles.</span>
 
 <span class="sd">    Requires `include_magnetism` to be enabled and a calculator that supports it (refl1d).</span>
 
@@ -6428,7 +6428,7 @@ one per dataset in a simultaneous multi-channel fit.</p>
 <span class="sd">    -------</span>
 <span class="sd">    tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</span>
 <span class="sd">        z, sld(z), magnetic sld rhoM(z) and magnetic angle thetaM(z).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_before_evaluation</span><span class="p">()</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">magnetic_sld_profile</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6522,7 +6522,7 @@ has not registered a resolution of its own.</p>
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_resolution_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution_function</span><span class="p">:</span> <span class="n">ResolutionFunction</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the resolution function of one model, or the default for all others.</span>
+<span class="w">    </span><span class="sd">"""Set the resolution function of one model, or the default for all others.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6531,7 +6531,7 @@ has not registered a resolution of its own.</p>
 <span class="sd">    model_id : str | None, optional</span>
 <span class="sd">        The model id. ``None`` sets the default used by every model that</span>
 <span class="sd">        has not registered a resolution of its own.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">set_resolution_function</span><span class="p">(</span><span class="n">resolution_function</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6561,7 +6561,7 @@ has not registered a resolution of its own.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolution_function_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResolutionFunction</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The resolution function used when calculating the model with *model_id*.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The resolution function used when calculating the model with *model_id*."""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">resolution_function_for</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6745,10 +6745,10 @@ has not registered a resolution of its own.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
@@ -6757,5 +6757,112 @@ has not registered a resolution of its own.</p>
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

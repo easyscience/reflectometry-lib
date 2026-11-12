@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2926,7 +2926,7 @@
 
 
 <h2 id="easyreflectometry.sample.elements.materials.material_solvated.DEFAULTS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">DEFAULTS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;solvent_fraction&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Fraction of solvent in layer.&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;fixed&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span></code>
+            <code class="highlight language-python"><span class="n">DEFAULTS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'solvent_fraction'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Fraction of solvent in layer.'</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="s1">'unit'</span><span class="p">:</span> <span class="s1">'dimensionless'</span><span class="p">,</span> <span class="s1">'min'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'max'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'fixed'</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -3049,11 +3049,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">isld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyMaterial'</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3064,28 +3064,28 @@
 <span class="sd">        isld : Union[Parameter, float, None], optional</span>
 <span class="sd">            Imaginary scattering length density. By default, None.</span>
 <span class="sd">        name : str, optional</span>
-<span class="sd">            Name of the material. By default, &#39;EasyMaterial&#39;.</span>
+<span class="sd">            Name of the material. By default, 'EasyMaterial'.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">sld</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">&#39;sld&#39;</span><span class="p">)</span>
+        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">'sld'</span><span class="p">)</span>
 
         <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">isld</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">&#39;isld&#39;</span><span class="p">)</span>
+        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">'isld'</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span> <span class="o">=</span> <span class="n">sld</span>
@@ -3113,11 +3113,11 @@
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;sld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;isld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">'sld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'isld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -3140,7 +3140,7 @@
 
 
 <h3 id="easyreflectometry.sample.elements.materials.material_solvated.Material.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'EasyMaterial'</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -3315,11 +3315,11 @@
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">sld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">isld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyMaterial'</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3330,28 +3330,28 @@
 <span class="sd">    isld : Union[Parameter, float, None], optional</span>
 <span class="sd">        Imaginary scattering length density. By default, None.</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Name of the material. By default, &#39;EasyMaterial&#39;.</span>
+<span class="sd">        Name of the material. By default, 'EasyMaterial'.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">sld</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">&#39;sld&#39;</span><span class="p">)</span>
+    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">'sld'</span><span class="p">)</span>
 
     <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">isld</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">&#39;isld&#39;</span><span class="p">)</span>
+    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">'isld'</span><span class="p">)</span>
 
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span> <span class="o">=</span> <span class="n">sld</span>
@@ -3606,7 +3606,7 @@
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3622,7 +3622,7 @@
 <span class="sd">            Name of the material. By default, None.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -3632,10 +3632,10 @@
             <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
 
         <span class="n">fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fraction&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'fraction'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">fraction</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">sld_value</span> <span class="o">=</span> <span class="n">weighted_average</span><span class="p">(</span>
@@ -3650,22 +3650,22 @@
         <span class="p">)</span>
 
         <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">sld_value</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">isld_value</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># `name` may be None to signal &quot;derive from material names&quot;; resolve</span>
+        <span class="c1"># `name` may be None to signal "derive from material names"; resolve</span>
         <span class="c1"># before super().__init__ since BaseCore stores `_name` directly.</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">material_b</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">material_b</span><span class="o">.</span><span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -3705,13 +3705,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Parameter that controls the mixing fraction of material_b in material_a.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The Parameter that controls the mixing fraction of material_b in material_a."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span>
 
     <span class="nd">@fraction</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;fraction must be a float&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'fraction must be a float'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="c1"># ----- derived sld / isld parameters (shared shape with Material) -----</span>
@@ -3732,51 +3732,51 @@
     <span class="c1"># ----- internal helpers -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_materials_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wire the mixed `_sld` / `_isld` to depend on the current child</span>
+<span class="w">        </span><span class="sd">"""Wire the mixed `_sld` / `_isld` to depend on the current child</span>
 <span class="sd">        material parameters and the current `_fraction`. Idempotent: callers</span>
 <span class="sd">        invoke this once from ``__init__`` and again from ``from_dict`` after</span>
 <span class="sd">        the saved Parameters have been reattached (so the dependency graph</span>
-<span class="sd">        points at the right objects, not the temporary constructor params).&quot;&quot;&quot;</span>
+<span class="sd">        points at the right objects, not the temporary constructor params)."""</span>
         <span class="c1"># Detach any existing dependency before rebuilding so make_dependent_on</span>
-        <span class="c1"># doesn&#39;t chain on top of stale references.</span>
+        <span class="c1"># doesn't chain on top of stale references.</span>
         <span class="k">for</span> <span class="n">derived</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">derived</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
                 <span class="n">derived</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
 
-        <span class="n">dependency_expression</span> <span class="o">=</span> <span class="s1">&#39;a * (1 - p) + b * p&#39;</span>
+        <span class="n">dependency_expression</span> <span class="o">=</span> <span class="s1">'a * (1 - p) + b * p'</span>
         <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">sld</span><span class="p">,</span>
-            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">sld</span><span class="p">,</span>
-            <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span>
+            <span class="s1">'a'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">sld</span><span class="p">,</span>
+            <span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">sld</span><span class="p">,</span>
+            <span class="s1">'p'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="n">dependency_expression</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="n">dependency_map</span><span class="p">)</span>
 
         <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">isld</span><span class="p">,</span>
-            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">isld</span><span class="p">,</span>
-            <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span>
+            <span class="s1">'a'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">isld</span><span class="p">,</span>
+            <span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">isld</span><span class="p">,</span>
+            <span class="s1">'p'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="n">dependency_expression</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="n">dependency_map</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update name.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">name</span>
+<span class="w">        </span><span class="sd">"""Update name."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">name</span>
 
     <span class="c1"># ----- deserialization -----</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialMixture&#39;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'MaterialMixture'</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
 <span class="sd">        the saved ``_fraction`` Parameter.</span>
 
 <span class="sd">        :class:`ModelBase.from_dict` runs ``__init__`` (which builds the</span>
 <span class="sd">        ``_sld`` / ``_isld`` constraints against the *temporary* ``_fraction``</span>
 <span class="sd">        created from the float kwargs) and then re-points ``self._fraction``</span>
 <span class="sd">        at the persisted Parameter. The constraint graph still references the</span>
-<span class="sd">        temporary object, so subsequent ``mm.fraction = X`` mutations don&#39;t</span>
+<span class="sd">        temporary object, so subsequent ``mm.fraction = X`` mutations don't</span>
 <span class="sd">        propagate to ``_sld`` / ``_isld``. Re-running ``_materials_constraints``</span>
 <span class="sd">        here points the graph at the live objects.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">instance</span>
@@ -3784,14 +3784,14 @@
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;fraction&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;sld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;isld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;material_a&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
-                <span class="s1">&#39;material_b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'fraction'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'sld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'isld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'material_a'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'material_b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -4074,7 +4074,7 @@
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4090,7 +4090,7 @@
 <span class="sd">        Name of the material. By default, None.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -4100,10 +4100,10 @@
         <span class="n">material_b</span> <span class="o">=</span> <span class="n">Material</span><span class="p">()</span>
 
     <span class="n">fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fraction&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'fraction'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">fraction</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">sld_value</span> <span class="o">=</span> <span class="n">weighted_average</span><span class="p">(</span>
@@ -4118,22 +4118,22 @@
     <span class="p">)</span>
 
     <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">sld_value</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">isld_value</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># `name` may be None to signal &quot;derive from material names&quot;; resolve</span>
+    <span class="c1"># `name` may be None to signal "derive from material names"; resolve</span>
     <span class="c1"># before super().__init__ since BaseCore stores `_name` directly.</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">material_b</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">material_b</span><span class="o">.</span><span class="n">name</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">resolved_name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -4201,18 +4201,18 @@ here points the graph at the live objects.</p>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialMixture&#39;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'MaterialMixture'</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Re-attach mixed-sld dependencies after :class:`ModelBase` swaps in</span>
 <span class="sd">    the saved ``_fraction`` Parameter.</span>
 
 <span class="sd">    :class:`ModelBase.from_dict` runs ``__init__`` (which builds the</span>
 <span class="sd">    ``_sld`` / ``_isld`` constraints against the *temporary* ``_fraction``</span>
 <span class="sd">    created from the float kwargs) and then re-points ``self._fraction``</span>
 <span class="sd">    at the persisted Parameter. The constraint graph still references the</span>
-<span class="sd">    temporary object, so subsequent ``mm.fraction = X`` mutations don&#39;t</span>
+<span class="sd">    temporary object, so subsequent ``mm.fraction = X`` mutations don't</span>
 <span class="sd">    propagate to ``_sld`` / ``_isld``. Re-running ``_materials_constraints``</span>
 <span class="sd">    here points the graph at the live objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">)</span>
     <span class="n">instance</span><span class="o">.</span><span class="n">_materials_constraints</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">instance</span>
@@ -4410,7 +4410,7 @@ here points the graph at the live objects.</p>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -4426,20 +4426,20 @@ here points the graph at the live objects.</p>
 <span class="sd">            Name of the material. By default, None.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">6.36</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;D2O&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+            <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">6.36</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'D2O'</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">solvent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">solvent</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=-</span><span class="mf">0.561</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+            <span class="n">solvent</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=-</span><span class="mf">0.561</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'H2O'</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
 
         <span class="n">solvent_fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;solvent_fraction&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'solvent_fraction'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">solvent_fraction</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># In super class, the fraction is the fraction of material b in material a</span>
@@ -4456,72 +4456,72 @@ here points the graph at the live objects.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">material</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Material</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get material.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get material."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span>
 
     <span class="nd">@material</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the material.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the material."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">material_a</span> <span class="o">=</span> <span class="n">new_material</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solvent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Material</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get solvent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get solvent."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span>
 
     <span class="nd">@solvent</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_solvent</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the solvent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the solvent."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">material_b</span> <span class="o">=</span> <span class="n">new_solvent</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solvent_fraction_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the parameter for the fraction of layer described by the solvent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the parameter for the fraction of layer described by the solvent."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solvent_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Parameter for the fraction of the layer described by the solvent.</span>
+<span class="w">        </span><span class="sd">"""The Parameter for the fraction of the layer described by the solvent.</span>
 
 <span class="sd">        This might be the fraction of:</span>
 <span class="sd">        - solvation where solvent is within the layer, or</span>
 <span class="sd">        - patches of solvent in the layer where no material is present.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span>
 
     <span class="nd">@solvent_fraction</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solvent_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_fraction</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the fraction of layer covered by the material.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the fraction of layer covered by the material."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">solvent_fraction</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;solvent_fraction must be a float between 0 and 1&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'solvent_fraction must be a float between 0 and 1'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">solvent_fraction</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">solvent_fraction</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;solvent_fraction must be between 0 and 1&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'solvent_fraction must be between 0 and 1'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">solvent_fraction</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update name.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; in &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">name</span>
+<span class="w">        </span><span class="sd">"""Update name."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">' in '</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_material_b</span><span class="o">.</span><span class="n">name</span>
 
     <span class="c1"># ----- deserialization -----</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialSolvated&#39;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-route the saved ``solvent_fraction`` Parameter onto ``_fraction``.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'MaterialSolvated'</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Re-route the saved ``solvent_fraction`` Parameter onto ``_fraction``.</span>
 
 <span class="sd">        :class:`ModelBase.from_dict` writes the saved Parameter to</span>
-<span class="sd">        ``_solvent_fraction`` because that&#39;s the constructor-arg name, but</span>
+<span class="sd">        ``_solvent_fraction`` because that's the constructor-arg name, but</span>
 <span class="sd">        the live `solvent_fraction` property returns ``self._fraction``</span>
 <span class="sd">        (the field MaterialMixture maintains). Without this override the</span>
 <span class="sd">        saved fit metadata (fixed/bounds/etc.) is stranded on the unused</span>
 <span class="sd">        ``_solvent_fraction`` attribute and the active parameter keeps the</span>
 <span class="sd">        defaults from `__init__`.</span>
 
-<span class="sd">        Also re-runs `_materials_constraints` so the parent MaterialMixture&#39;s</span>
+<span class="sd">        Also re-runs `_materials_constraints` so the parent MaterialMixture's</span>
 <span class="sd">        mixed `_sld` / `_isld` depend on the live `_fraction`, not the</span>
 <span class="sd">        temporary Parameter created from the float kwarg.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">)</span>
-        <span class="n">saved</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_solvent_fraction&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">saved</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'_solvent_fraction'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">saved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">old</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span>
             <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved</span>
@@ -4535,14 +4535,14 @@ here points the graph at the live objects.</p>
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;solvent_fraction&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;sld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;isld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;material&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
-                <span class="s1">&#39;solvent&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'solvent_fraction'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fraction</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'sld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'isld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'material'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'solvent'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvent</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -4873,7 +4873,7 @@ here points the graph at the live objects.</p>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4889,20 +4889,20 @@ here points the graph at the live objects.</p>
 <span class="sd">        Name of the material. By default, None.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">6.36</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;D2O&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+        <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="mf">6.36</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'D2O'</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">solvent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">solvent</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=-</span><span class="mf">0.561</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;H2O&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
+        <span class="n">solvent</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">sld</span><span class="o">=-</span><span class="mf">0.561</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'H2O'</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
 
     <span class="n">solvent_fraction</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;solvent_fraction&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'solvent_fraction'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">solvent_fraction</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Fraction'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># In super class, the fraction is the fraction of material b in material a</span>
@@ -4982,23 +4982,23 @@ temporary Parameter created from the float kwarg.</p>
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MaterialSolvated&#39;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Re-route the saved ``solvent_fraction`` Parameter onto ``_fraction``.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'MaterialSolvated'</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Re-route the saved ``solvent_fraction`` Parameter onto ``_fraction``.</span>
 
 <span class="sd">    :class:`ModelBase.from_dict` writes the saved Parameter to</span>
-<span class="sd">    ``_solvent_fraction`` because that&#39;s the constructor-arg name, but</span>
+<span class="sd">    ``_solvent_fraction`` because that's the constructor-arg name, but</span>
 <span class="sd">    the live `solvent_fraction` property returns ``self._fraction``</span>
 <span class="sd">    (the field MaterialMixture maintains). Without this override the</span>
 <span class="sd">    saved fit metadata (fixed/bounds/etc.) is stranded on the unused</span>
 <span class="sd">    ``_solvent_fraction`` attribute and the active parameter keeps the</span>
 <span class="sd">    defaults from `__init__`.</span>
 
-<span class="sd">    Also re-runs `_materials_constraints` so the parent MaterialMixture&#39;s</span>
+<span class="sd">    Also re-runs `_materials_constraints` so the parent MaterialMixture's</span>
 <span class="sd">    mixed `_sld` / `_isld` depend on the live `_fraction`, not the</span>
 <span class="sd">    temporary Parameter created from the float kwarg.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">)</span>
-    <span class="n">saved</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_solvent_fraction&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">saved</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'_solvent_fraction'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">saved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">old</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">_fraction</span> <span class="o">=</span> <span class="n">saved</span>
@@ -5041,7 +5041,7 @@ temporary Parameter created from the float kwarg.</p>
     If the value is a number, a parameter is created with this value and metadata from the dictionary.
     If the value is None, a parameter is created with the default value and metadata from the dictionary.</p>
 <div class="language-text highlight"><pre><span></span><code>param value: The value to use for the parameter.  If None, the default value in the dictionary is used.
-param name: The display name of the parameter (core&#39;s `display_name`)
+param name: The display name of the parameter (core's `display_name`)
 param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter
 </code></pre></div>
 <!-- prettier-ignore-start -->
@@ -5097,7 +5097,7 @@ param default_dict: Dictionary with entry for `name` containing the default valu
     <span class="n">default_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">unique_name_prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function creates a parameter for the variable `name`.</span>
+<span class="w">    </span><span class="sd">"""This function creates a parameter for the variable `name`.</span>
 
 <span class="sd">        A parameter has a value and metadata.</span>
 <span class="sd">    If the value already is a parameter, it is returned.</span>
@@ -5105,9 +5105,9 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 <span class="sd">        If the value is None, a parameter is created with the default value and metadata from the dictionary.</span>
 
 <span class="sd">        param value: The value to use for the parameter.  If None, the default value in the dictionary is used.</span>
-<span class="sd">        param name: The display name of the parameter (core&#39;s `display_name`)</span>
+<span class="sd">        param name: The display name of the parameter (core's `display_name`)</span>
 <span class="sd">        param default_dict: Dictionary with entry for `name` containing the default value and metadata for the parameter</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># This is a parameter, return it</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">value</span>
@@ -5121,17 +5121,17 @@ param default_dict: Dictionary with entry for `name` containing the default valu
 
     <span class="c1"># Add specific unique name prefix if requested</span>
     <span class="k">if</span> <span class="n">unique_name_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">&#39;unique_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="n">unique_name_prefix</span> <span class="o">+</span> <span class="s1">&#39;Parameter&#39;</span><span class="p">)</span>
+        <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">'unique_name'</span><span class="p">]</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="n">unique_name_prefix</span> <span class="o">+</span> <span class="s1">'Parameter'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Create a default parameter using both value and metadata from dictionary</span>
         <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
         <span class="c1"># Create a parameter using provided value and metadata from dictionary</span>
-        <span class="k">del</span> <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">parameter_dict</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">parameter_dict</span><span class="p">)</span>
 
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> must be a Parameter, a number, or None.&#39;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> must be a Parameter, a number, or None.'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5305,10 +5305,10 @@ param default_dict: Dictionary with entry for `name` containing the default valu
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../../assets/javascripts/extra.js"></script>
       
@@ -5317,5 +5317,112 @@ param default_dict: Dictionary with entry for `name` containing the default valu
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

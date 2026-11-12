@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -3244,13 +3244,13 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Layer</span><span class="p">]],</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyLayerCollection&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyLayerCollection'</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">populate_if_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Init function."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">layers</span><span class="p">:</span>
             <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -3264,31 +3264,31 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Layer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a layer to the collection.</span>
+<span class="w">        </span><span class="sd">"""Add a layer to the collection.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        layer : Optional[Layer], optional</span>
 <span class="sd">            Layer to add. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">layer</span> <span class="o">=</span> <span class="n">Layer</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyLayer added&#39;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">'EasyLayer added'</span><span class="p">,</span>
                 <span class="n">interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Duplicate a layer in the collection.</span>
+<span class="w">        </span><span class="sd">"""Duplicate a layer in the collection.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        index : int</span>
 <span class="sd">            Index of the layer to duplicate.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">to_be_duplicated</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">duplicate</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">to_be_duplicated</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unique_name&#39;</span><span class="p">]))</span>
-        <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; duplicate&#39;</span>
+        <span class="n">duplicate</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">to_be_duplicated</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="p">[</span><span class="s1">'unique_name'</span><span class="p">]))</span>
+        <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">' duplicate'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">duplicate</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -3310,7 +3310,7 @@
 
 
 <h3 id="easyreflectometry.sample.assemblies.gradient_layer.LayerCollection.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyLayerCollection&#39;</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populate_if_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'EasyLayerCollection'</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populate_if_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h3>
 
@@ -3348,13 +3348,13 @@
 <span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="n">layers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Layer</span><span class="p">]],</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyLayerCollection&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyLayerCollection'</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">populate_if_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Init function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Init function."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">layers</span><span class="p">:</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -3439,16 +3439,16 @@
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Layer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a layer to the collection.</span>
+<span class="w">    </span><span class="sd">"""Add a layer to the collection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    layer : Optional[Layer], optional</span>
 <span class="sd">        Layer to add. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="n">Layer</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyLayer added&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'EasyLayer added'</span><span class="p">,</span>
             <span class="n">interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
@@ -3523,16 +3523,16 @@
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">duplicate_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Duplicate a layer in the collection.</span>
+<span class="w">    </span><span class="sd">"""Duplicate a layer in the collection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    index : int</span>
 <span class="sd">        Index of the layer to duplicate.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">to_be_duplicated</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-    <span class="n">duplicate</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">to_be_duplicated</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unique_name&#39;</span><span class="p">]))</span>
-    <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; duplicate&#39;</span>
+    <span class="n">duplicate</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">to_be_duplicated</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="p">[</span><span class="s1">'unique_name'</span><span class="p">]))</span>
+    <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">duplicate</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">' duplicate'</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">duplicate</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3816,13 +3816,13 @@
         <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">thickness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">roughness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyLayer&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyLayer'</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">magnetism</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">rho_m_coupled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3841,10 +3841,10 @@
 <span class="sd">            Take the magnetic SLD from the material (see :attr:`rho_m_coupled`).</span>
 <span class="sd">            By default, False.</span>
 <span class="sd">        name : str, optional</span>
-<span class="sd">            Name of the layer. By default, &#39;EasyLayer&#39;.</span>
+<span class="sd">            Name of the layer. By default, 'EasyLayer'.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Interface object. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
 
@@ -3853,19 +3853,19 @@
 
         <span class="n">thickness_value</span> <span class="o">=</span> <span class="n">thickness</span>
         <span class="n">thickness</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;thickness&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'thickness'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Thickness&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Thickness'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">thickness</span><span class="o">.</span><span class="n">default_limits_pending</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thickness_value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span>
 
         <span class="n">roughness_value</span> <span class="o">=</span> <span class="n">roughness</span>
         <span class="n">roughness</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;roughness&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'roughness'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Roughness&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Roughness'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">roughness</span><span class="o">.</span><span class="n">default_limits_pending</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">roughness_value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span>
 
@@ -3881,23 +3881,23 @@
         <span class="k">if</span> <span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
 
-    <span class="c1"># ----- interface (override BaseCore&#39;s to switch on calculator magnetism) -----</span>
+    <span class="c1"># ----- interface (override BaseCore's to switch on calculator magnetism) -----</span>
 
     <span class="nd">@BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the interface; runs `generate_bindings` and, for a magnetic layer,</span>
+<span class="w">        </span><span class="sd">"""Set the interface; runs `generate_bindings` and, for a magnetic layer,</span>
 <span class="sd">        enables magnetism on the calculator (raising if it does not support it).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">new_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_enable_calculator_magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on magnetism on the attached calculator.</span>
+<span class="w">        </span><span class="sd">"""Turn on magnetism on the attached calculator.</span>
 
 <span class="sd">        Raises `NotImplementedError` when the active calculator cannot model</span>
 <span class="sd">        magnetic samples (e.g. refnx).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="p">()</span><span class="o">.</span><span class="n">include_magnetism</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
@@ -3932,12 +3932,12 @@
 
     <span class="nd">@magnetism</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">magnetism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach or remove the magnetic properties of this layer.</span>
+<span class="w">        </span><span class="sd">"""Attach or remove the magnetic properties of this layer.</span>
 
 <span class="sd">        Attaching switches calculator magnetism on and passes the calculator on</span>
 <span class="sd">        to the magnetism; removing lets the calculator switch magnetism off when</span>
 <span class="sd">        this was the last magnetic layer it serves.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="c1"># The detached object must not follow the material any more.</span>
@@ -3956,7 +3956,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rho_m_coupled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the layer&#39;s magnetic SLD is the material&#39;s ``rho_m``</span>
+<span class="w">        </span><span class="sd">"""Whether the layer's magnetic SLD is the material's ``rho_m``</span>
 <span class="sd">        (a :class:`~easyreflectometry.sample.MaterialMagnetic`).</span>
 
 <span class="sd">        When True, ``magnetism.rho_m`` is a dependent parameter following the</span>
@@ -3966,26 +3966,26 @@
 <span class="sd">        material with ``rho_m``. Uncoupling keeps the current value. Removing</span>
 <span class="sd">        the magnetism, or a user ``unconstrain`` of ``rho_m``, uncouples.</span>
 
-<span class="sd">        Only the layer&#39;s own wiring counts: a user constraint placed on</span>
+<span class="sd">        Only the layer's own wiring counts: a user constraint placed on</span>
 <span class="sd">        ``rho_m`` (:func:`~easyreflectometry.constraints.constrain`) reads as</span>
 <span class="sd">        uncoupled, is saved as the user constraint it is, and is left alone</span>
 <span class="sd">        when the material is later replaced. Setting this to True explicitly</span>
 <span class="sd">        replaces such a constraint with the coupling.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rho_m_coupled</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">rho_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span><span class="o">.</span><span class="n">rho_m</span>
         <span class="k">if</span> <span class="n">rho_m</span><span class="o">.</span><span class="n">independent</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rho_m</span><span class="p">,</span> <span class="n">USER_CONSTRAINT_FLAG</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">&#39;rho_m&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">'rho_m'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">dependency_map</span> <span class="o">=</span> <span class="n">rho_m</span><span class="o">.</span><span class="n">dependency_map</span>
-        <span class="k">return</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dependency_map</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">dependency_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rho_m&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="n">source</span>
+        <span class="k">return</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dependency_map</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">dependency_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'rho_m'</span><span class="p">)</span> <span class="ow">is</span> <span class="n">source</span>
 
     <span class="nd">@rho_m_coupled</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rho_m_coupled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">couple</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">couple</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">couple</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">couple</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">&#39;rho_m&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The material of layer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1"> has no magnetic SLD to couple to.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">couple</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">'rho_m'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The material of layer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1"> has no magnetic SLD to couple to.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">couple</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">magnetism</span> <span class="o">=</span> <span class="n">LayerMagnetism</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">couple</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span><span class="p">:</span>
@@ -3993,22 +3993,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">couple</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">couple</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-establish the invariant of :attr:`rho_m_coupled` after a change of</span>
-<span class="sd">        material, magnetism or coupling: coupled means the current magnetism&#39;s</span>
-<span class="sd">        ``rho_m`` follows the current material&#39;s ``rho_m``.</span>
+<span class="w">        </span><span class="sd">"""Re-establish the invariant of :attr:`rho_m_coupled` after a change of</span>
+<span class="sd">        material, magnetism or coupling: coupled means the current magnetism's</span>
+<span class="sd">        ``rho_m`` follows the current material's ``rho_m``.</span>
 
 <span class="sd">        `couple` is the state to keep, read *before* the change (afterwards the</span>
 <span class="sd">        dependency may point at a replaced object).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rho_m_coupled</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">couple</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">rho_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span><span class="o">.</span><span class="n">rho_m</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">&#39;rho_m&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_material</span><span class="p">,</span> <span class="s1">'rho_m'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;The material of layer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1"> has no magnetic SLD; &#39;</span>
-                <span class="s1">&#39;the layer keeps its current rho_m and is no longer coupled.&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'The material of layer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1"> has no magnetic SLD; '</span>
+                <span class="s1">'the layer keeps its current rho_m and is no longer coupled.'</span><span class="p">,</span>
                 <span class="ne">UserWarning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4018,17 +4018,17 @@
         <span class="c1"># Drops any previous dependency, including a stale user-constraint marker</span>
         <span class="c1"># that would make the project persist this internal wiring.</span>
         <span class="n">unconstrain</span><span class="p">(</span><span class="n">rho_m</span><span class="p">)</span>
-        <span class="n">rho_m</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;rho_m&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;rho_m&#39;</span><span class="p">:</span> <span class="n">source</span><span class="p">})</span>
+        <span class="n">rho_m</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">'rho_m'</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">'rho_m'</span><span class="p">:</span> <span class="n">source</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rho_m_coupled</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
+<span class="w">        </span><span class="sd">"""Assign a material to the layer interface.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        material : Material</span>
 <span class="sd">            The material to assign to the layer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
@@ -4036,16 +4036,16 @@
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="n">this_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;material&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
-                <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;roughness&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">'material'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+                <span class="s1">'thickness'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'roughness'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">this_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;magnetism&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span><span class="o">.</span><span class="n">_dict_repr</span>
+            <span class="n">this_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">'magnetism'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span><span class="o">.</span><span class="n">_dict_repr</span>
         <span class="k">return</span> <span class="n">this_dict</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4105,7 +4105,7 @@ replaces such a constraint with the coupling.</p>
 
 
 <h3 id="easyreflectometry.sample.assemblies.gradient_layer.Layer.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyLayer&#39;</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnetism</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho_m_coupled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'EasyLayer'</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnetism</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho_m_coupled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
@@ -4361,13 +4361,13 @@ By default, False.</p>
     <span class="n">material</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">thickness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">roughness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyLayer&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyLayer'</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">magnetism</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LayerMagnetism</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">rho_m_coupled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4386,10 +4386,10 @@ By default, False.</p>
 <span class="sd">        Take the magnetic SLD from the material (see :attr:`rho_m_coupled`).</span>
 <span class="sd">        By default, False.</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Name of the layer. By default, &#39;EasyLayer&#39;.</span>
+<span class="sd">        Name of the layer. By default, 'EasyLayer'.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Interface object. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">)</span>
 
@@ -4398,19 +4398,19 @@ By default, False.</p>
 
     <span class="n">thickness_value</span> <span class="o">=</span> <span class="n">thickness</span>
     <span class="n">thickness</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;thickness&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'thickness'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Thickness&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Thickness'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">thickness</span><span class="o">.</span><span class="n">default_limits_pending</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thickness_value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span>
 
     <span class="n">roughness_value</span> <span class="o">=</span> <span class="n">roughness</span>
     <span class="n">roughness</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;roughness&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'roughness'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Roughness&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Roughness'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">roughness</span><span class="o">.</span><span class="n">default_limits_pending</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">roughness_value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span>
 
@@ -4460,9 +4460,9 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 <span class="normal">121</span>
 <span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">setter</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the interface; runs `generate_bindings` and, for a magnetic layer,</span>
+<span class="w">    </span><span class="sd">"""Set the interface; runs `generate_bindings` and, for a magnetic layer,</span>
 <span class="sd">    enables magnetism on the calculator (raising if it does not support it).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">BaseCore</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_interface</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">new_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_magnetism</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enable_calculator_magnetism</span><span class="p">()</span>
@@ -4536,13 +4536,13 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 <span class="normal">261</span>
 <span class="normal">262</span>
 <span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">assign_material</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="n">Material</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assign a material to the layer interface.</span>
+<span class="w">    </span><span class="sd">"""Assign a material to the layer interface.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    material : Material</span>
 <span class="sd">        The material to assign to the layer.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">coupled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_m_coupled</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_material</span> <span class="o">=</span> <span class="n">material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_reconcile_rho_m_coupling</span><span class="p">(</span><span class="n">coupled</span><span class="p">)</span>
@@ -4666,11 +4666,11 @@ enables magnetism on the calculator (raising if it does not support it).</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">isld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyMaterial'</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -4681,28 +4681,28 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 <span class="sd">        isld : Union[Parameter, float, None], optional</span>
 <span class="sd">            Imaginary scattering length density. By default, None.</span>
 <span class="sd">        name : str, optional</span>
-<span class="sd">            Name of the material. By default, &#39;EasyMaterial&#39;.</span>
+<span class="sd">            Name of the material. By default, 'EasyMaterial'.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">sld</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">&#39;sld&#39;</span><span class="p">)</span>
+        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">'sld'</span><span class="p">)</span>
 
         <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">isld</span><span class="p">,</span>
             <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+            <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">&#39;isld&#39;</span><span class="p">)</span>
+        <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">'isld'</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span> <span class="o">=</span> <span class="n">sld</span>
@@ -4730,11 +4730,11 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="c1"># Representation</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;sld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;isld&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">'sld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'isld'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">e-6 </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_isld</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -4757,7 +4757,7 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 
 
 <h3 id="easyreflectometry.sample.assemblies.gradient_layer.Material.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">sld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isld</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'EasyMaterial'</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -4932,11 +4932,11 @@ enables magnetism on the calculator (raising if it does not support it).</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">sld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">isld</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyMaterial&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyMaterial'</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -4947,28 +4947,28 @@ enables magnetism on the calculator (raising if it does not support it).</p>
 <span class="sd">    isld : Union[Parameter, float, None], optional</span>
 <span class="sd">        Imaginary scattering length density. By default, None.</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Name of the material. By default, &#39;EasyMaterial&#39;.</span>
+<span class="sd">        Name of the material. By default, 'EasyMaterial'.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unique_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">unique_name</span> <span class="o">=</span> <span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="n">sld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'sld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">sld</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Sld'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">&#39;sld&#39;</span><span class="p">)</span>
+    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">sld</span><span class="p">,</span> <span class="s1">'sld'</span><span class="p">)</span>
 
     <span class="n">isld</span> <span class="o">=</span> <span class="n">get_as_parameter</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;isld&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'isld'</span><span class="p">,</span>
         <span class="n">value</span><span class="o">=</span><span class="n">isld</span><span class="p">,</span>
         <span class="n">default_dict</span><span class="o">=</span><span class="n">DEFAULTS</span><span class="p">,</span>
-        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld&#39;</span><span class="p">,</span>
+        <span class="n">unique_name_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s1">_Isld'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">&#39;isld&#39;</span><span class="p">)</span>
+    <span class="n">apply_default_limits</span><span class="p">(</span><span class="n">isld</span><span class="p">,</span> <span class="s1">'isld'</span><span class="p">)</span>
 
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_sld</span> <span class="o">=</span> <span class="n">sld</span>
@@ -5199,12 +5199,12 @@ its index number depends on the number of finite layers in the system, but it mi
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseAssembly</span><span class="p">(</span><span class="n">BaseCore</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assembly of layers.</span>
+<span class="w">    </span><span class="sd">"""Assembly of layers.</span>
 
 <span class="sd">    The front layer (front_layer) is the layer the neutron beam starts in, it has an index of 0.</span>
 <span class="sd">    The back layer (back_layer) is the final layer from which the unreflected neutron beam is transmitted,</span>
 <span class="sd">    its index number depends on the number of finite layers in the system, but it might be accessed at index -1.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5235,28 +5235,28 @@ its index number depends on the number of finite layers in the system, but it mi
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get type of the assembly.</span>
+<span class="w">        </span><span class="sd">"""Get type of the assembly.</span>
 
 <span class="sd">        Needed by the GUI.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">front_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Layer</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the front layer in the assembly.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the front layer in the assembly."""</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@front_layer</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">front_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the front layer in the assembly.</span>
+<span class="w">        </span><span class="sd">"""Set the front layer in the assembly.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        layer : Layer</span>
 <span class="sd">            Layer to set as the front layer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -5264,7 +5264,7 @@ its index number depends on the number of finite layers in the system, but it mi
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">back_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Layer</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the back layer in the assembly.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the back layer in the assembly."""</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -5272,16 +5272,16 @@ its index number depends on the number of finite layers in the system, but it mi
 
     <span class="nd">@back_layer</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">back_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the back layer in the assembly.</span>
+<span class="w">        </span><span class="sd">"""Set the back layer in the assembly.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        layer : Layer</span>
 <span class="sd">            Layer to set as the back layer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;There is no front layer to add the back layer to. Please add a front layer first.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'There is no front layer to add the back layer to. Please add a front layer first.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -5290,12 +5290,12 @@ its index number depends on the number of finite layers in the system, but it mi
     <span class="c1"># ----- public constraint toggles -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_layers_follow_front</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;True when every layer&#39;s `attribute` is tied *equal* to the front layer&#39;s.</span>
+<span class="w">        </span><span class="sd">"""True when every layer's `attribute` is tied *equal* to the front layer's.</span>
 
-<span class="sd">        Only the conformal idiom counts (expression ``&#39;a&#39;`` over ``{&#39;a&#39;: leader}``,</span>
+<span class="sd">        Only the conformal idiom counts (expression ``'a'`` over ``{'a': leader}``,</span>
 <span class="sd">        as set up by ``_setup_*_constraints``); a parameter that merely *uses*</span>
-<span class="sd">        the front layer&#39;s value in some other expression is not conformal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        the front layer's value in some other expression is not conformal.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">leader</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
@@ -5307,70 +5307,70 @@ its index number depends on the number of finite layers in the system, but it mi
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">conformal_thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether every layer shares the front layer&#39;s thickness.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">&#39;thickness&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Whether every layer shares the front layer's thickness."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">'thickness'</span><span class="p">)</span>
 
     <span class="nd">@conformal_thickness</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">conformal_thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tie (or release) every layer&#39;s thickness to the front layer&#39;s.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Tie (or release) every layer's thickness to the front layer's."""</span>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup_thickness_constraints</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">&#39;thickness&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">'thickness'</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
                 <span class="n">layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">conformal_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether every layer shares the front layer&#39;s roughness.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">&#39;roughness&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Whether every layer shares the front layer's roughness."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">'roughness'</span><span class="p">)</span>
 
     <span class="nd">@conformal_roughness</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">conformal_roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tie (or release) every layer&#39;s roughness to the front layer&#39;s.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Tie (or release) every layer's roughness to the front layer's."""</span>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup_roughness_constraints</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">&#39;roughness&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers_follow_front</span><span class="p">(</span><span class="s1">'roughness'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_disable_roughness_constraints</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_thickness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup thickness constraint, front layer is the deciding layer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setup thickness constraint, front layer is the deciding layer."""</span>
         <span class="n">independent_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">thickness</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">independent_param</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">independent_param</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thickness_constraints_setup</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_enable_thickness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable the thickness constraint.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Enable the thickness constraint."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thickness_constraints_setup</span><span class="p">:</span>
             <span class="c1"># Make sure that the thickness constraint is enabled</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup_thickness_constraints</span><span class="p">()</span>
             <span class="c1"># Make sure that the thickness parameter is enabled</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Thickness constraints not setup&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Thickness constraints not setup'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_disable_thickness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disable the thickness constraint.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Disable the thickness constraint."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thickness_constraints_setup</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Thickness constraints not setup&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Thickness constraints not setup'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_roughness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup roughness constraint, front layer is the deciding layer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Setup roughness constraint, front layer is the deciding layer."""</span>
         <span class="n">independent_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">roughness</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">independent_parameter</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">independent_parameter</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_roughness_constraints_setup</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_enable_roughness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable the roughness constraint.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Enable the roughness constraint."""</span>
         <span class="n">independent_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">roughness</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">independent_parameter</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">independent_parameter</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_disable_roughness_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disable the roughness constraint.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Disable the roughness constraint."""</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -5715,10 +5715,10 @@ its index number depends on the number of finite layers in the system, but it mi
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GradientLayer</span><span class="p">(</span><span class="n">BaseAssembly</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A set of discrete gradient layers changing from the front to the back material.</span>
+<span class="w">    </span><span class="sd">"""A set of discrete gradient layers changing from the front to the back material.</span>
 
 <span class="sd">    The front layer is where the neutron beam starts in, it has an index of 0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5727,11 +5727,11 @@ its index number depends on the number of finite layers in the system, but it mi
         <span class="n">thickness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
         <span class="n">roughness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
         <span class="n">discretisation_elements</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyGradienLayer&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyGradienLayer'</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">        </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -5748,19 +5748,19 @@ its index number depends on the number of finite layers in the system, but it mi
 <span class="sd">        discretisation_elements : int, optional</span>
 <span class="sd">            Number of discrete layers. By default, 10.</span>
 <span class="sd">        name : str, optional</span>
-<span class="sd">            Name for gradient layer. By default, &#39;EasyGradienLayer&#39;.</span>
+<span class="sd">            Name for gradient layer. By default, 'EasyGradienLayer'.</span>
 <span class="sd">        interface :</span>
 <span class="sd">            Calculator interface. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">front_material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">front_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;Air&#39;</span><span class="p">)</span>
+            <span class="n">front_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'Air'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">back_material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">back_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">6.36</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;D2O&#39;</span><span class="p">)</span>
+            <span class="n">back_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">6.36</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'D2O'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">discretisation_elements</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Discretisation elements must be greater than 2.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Discretisation elements must be greater than 2.'</span><span class="p">)</span>
 
         <span class="n">gradient_layers</span> <span class="o">=</span> <span class="n">_prepare_gradient_layers</span><span class="p">(</span>
             <span class="n">front_material</span><span class="o">=</span><span class="n">front_material</span><span class="p">,</span>
@@ -5774,7 +5774,7 @@ its index number depends on the number of finite layers in the system, but it mi
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">,</span>
             <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Gradient-layer&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s1">'Gradient-layer'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_front_material</span> <span class="o">=</span> <span class="n">front_material</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_back_material</span> <span class="o">=</span> <span class="n">back_material</span>
@@ -5806,48 +5806,48 @@ its index number depends on the number of finite layers in the system, but it mi
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the thickness of the gradient layer in Angstrom.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the thickness of the gradient layer in Angstrom."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discretisation_elements</span>
 
     <span class="nd">@thickness</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thickness</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the thickness of the gradient layer.</span>
+<span class="w">        </span><span class="sd">"""Set the thickness of the gradient layer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        thickness : float</span>
 <span class="sd">            Thickness of the gradient layer in Angstroms.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">thickness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">thickness</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discretisation_elements</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the Roughness of the gradient layer in Angstrom.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the Roughness of the gradient layer in Angstrom."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span>
 
     <span class="nd">@roughness</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">roughness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roughness</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the roughness of the gradient layer.</span>
+<span class="w">        </span><span class="sd">"""Set the roughness of the gradient layer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        roughness : float</span>
 <span class="sd">            Roughness of the gradient layer in Angstroms.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">roughness</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">roughness</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A simplified dict representation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A simplified dict representation."""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">),</span>  <span class="c1"># Conversion to float is necessary to prevent property reference in dict</span>
-            <span class="s1">&#39;discretisation_elements&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discretisation_elements</span><span class="p">),</span>  <span class="c1"># Same as above</span>
-            <span class="s1">&#39;back_layer&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_layer</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
-            <span class="s1">&#39;front_layer&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+            <span class="s1">'thickness'</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">),</span>  <span class="c1"># Conversion to float is necessary to prevent property reference in dict</span>
+            <span class="s1">'discretisation_elements'</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discretisation_elements</span><span class="p">),</span>  <span class="c1"># Same as above</span>
+            <span class="s1">'back_layer'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_layer</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
+            <span class="s1">'front_layer'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">front_layer</span><span class="o">.</span><span class="n">_dict_repr</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produces a cleaned dict using a custom to_dict method to skip necessary things.</span>
+<span class="w">        </span><span class="sd">"""Produces a cleaned dict using a custom to_dict method to skip necessary things.</span>
 
 <span class="sd">        The resulting dict matches the parameters in __init__: layers are derived</span>
 <span class="sd">        in ``__init__`` from ``front_material``/``back_material``/``discretisation_elements``</span>
@@ -5857,18 +5857,18 @@ its index number depends on the number of finite layers in the system, but it mi
 <span class="sd">        ----------</span>
 <span class="sd">        skip : Optional[list[str]], optional</span>
 <span class="sd">            List of keys to skip. By default, None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">this_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
         <span class="c1"># Determined in __init__</span>
-        <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;layers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'layers'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1"># `thickness` / `roughness` are read-only float views; the serialized</span>
         <span class="c1"># constructor args are the floats themselves.</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
-        <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;roughness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="p">)</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'thickness'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+        <span class="n">this_dict</span><span class="p">[</span><span class="s1">'roughness'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">this_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compatibility alias for :meth:`to_dict`."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5942,7 +5942,7 @@ its index number depends on the number of finite layers in the system, but it mi
 
 
 <h3 id="easyreflectometry.sample.assemblies.gradient_layer.GradientLayer.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">front_material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">back_material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">discretisation_elements</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EasyGradienLayer&#39;</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">front_material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">back_material</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">discretisation_elements</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'EasyGradienLayer'</span><span class="p">,</span> <span class="n">unique_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -6200,11 +6200,11 @@ its index number depends on the number of finite layers in the system, but it mi
     <span class="n">thickness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
     <span class="n">roughness</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
     <span class="n">discretisation_elements</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;EasyGradienLayer&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'EasyGradienLayer'</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor.</span>
+<span class="w">    </span><span class="sd">"""Constructor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -6221,19 +6221,19 @@ its index number depends on the number of finite layers in the system, but it mi
 <span class="sd">    discretisation_elements : int, optional</span>
 <span class="sd">        Number of discrete layers. By default, 10.</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Name for gradient layer. By default, &#39;EasyGradienLayer&#39;.</span>
+<span class="sd">        Name for gradient layer. By default, 'EasyGradienLayer'.</span>
 <span class="sd">    interface :</span>
 <span class="sd">        Calculator interface. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">front_material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">front_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;Air&#39;</span><span class="p">)</span>
+        <span class="n">front_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'Air'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">back_material</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">back_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">6.36</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;D2O&#39;</span><span class="p">)</span>
+        <span class="n">back_material</span> <span class="o">=</span> <span class="n">Material</span><span class="p">(</span><span class="mf">6.36</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'D2O'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">discretisation_elements</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Discretisation elements must be greater than 2.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Discretisation elements must be greater than 2.'</span><span class="p">)</span>
 
     <span class="n">gradient_layers</span> <span class="o">=</span> <span class="n">_prepare_gradient_layers</span><span class="p">(</span>
         <span class="n">front_material</span><span class="o">=</span><span class="n">front_material</span><span class="p">,</span>
@@ -6247,7 +6247,7 @@ its index number depends on the number of finite layers in the system, but it mi
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
         <span class="n">unique_name</span><span class="o">=</span><span class="n">unique_name</span><span class="p">,</span>
         <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Gradient-layer&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s1">'Gradient-layer'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_front_material</span> <span class="o">=</span> <span class="n">front_material</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_back_material</span> <span class="o">=</span> <span class="n">back_material</span>
@@ -6346,7 +6346,7 @@ so they are excluded from the serialized representation.</p>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Produces a cleaned dict using a custom to_dict method to skip necessary things.</span>
+<span class="w">    </span><span class="sd">"""Produces a cleaned dict using a custom to_dict method to skip necessary things.</span>
 
 <span class="sd">    The resulting dict matches the parameters in __init__: layers are derived</span>
 <span class="sd">    in ``__init__`` from ``front_material``/``back_material``/``discretisation_elements``</span>
@@ -6356,14 +6356,14 @@ so they are excluded from the serialized representation.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    skip : Optional[list[str]], optional</span>
 <span class="sd">        List of keys to skip. By default, None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">this_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
     <span class="c1"># Determined in __init__</span>
-    <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;layers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">this_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'layers'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="c1"># `thickness` / `roughness` are read-only float views; the serialized</span>
     <span class="c1"># constructor args are the floats themselves.</span>
-    <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
-    <span class="n">this_dict</span><span class="p">[</span><span class="s1">&#39;roughness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="p">)</span>
+    <span class="n">this_dict</span><span class="p">[</span><span class="s1">'thickness'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+    <span class="n">this_dict</span><span class="p">[</span><span class="s1">'roughness'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roughness</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">this_dict</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6393,7 +6393,7 @@ so they are excluded from the serialized representation.</p>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compatibility alias for :meth:`to_dict`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Compatibility alias for :meth:`to_dict`."""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6446,7 +6446,7 @@ so they are excluded from the serialized representation.</p>
     <span class="n">back_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">discretisation_elements</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear gradient.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Linear gradient."""</span>
     <span class="n">discrete_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_value</span> <span class="o">-</span> <span class="n">front_value</span><span class="p">)</span> <span class="o">/</span> <span class="n">discretisation_elements</span>
     <span class="k">if</span> <span class="n">discrete_step</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Both front and back values are included</span>
@@ -6514,7 +6514,7 @@ so they are excluded from the serialized representation.</p>
     <span class="n">discretisation_elements</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">interface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LayerCollection</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare gradient layers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Prepare gradient layers."""</span>
     <span class="n">gradient_sld</span> <span class="o">=</span> <span class="n">_linear_gradient</span><span class="p">(</span>
         <span class="n">front_value</span><span class="o">=</span><span class="n">front_material</span><span class="o">.</span><span class="n">sld</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="n">back_value</span><span class="o">=</span><span class="n">back_material</span><span class="o">.</span><span class="n">sld</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -6534,7 +6534,7 @@ so they are excluded from the serialized representation.</p>
             <span class="n">roughness</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
             <span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="p">,</span>
-            <span class="n">unique_name</span><span class="o">=</span><span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="s1">&#39;GradientLayer&#39;</span><span class="p">),</span>
+            <span class="n">unique_name</span><span class="o">=</span><span class="n">global_object</span><span class="o">.</span><span class="n">generate_unique_name</span><span class="p">(</span><span class="s1">'GradientLayer'</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">gradient_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">LayerCollection</span><span class="p">(</span><span class="n">gradient_layers</span><span class="p">)</span>
@@ -6711,10 +6711,10 @@ so they are excluded from the serialized representation.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../../assets/javascripts/extra.js"></script>
       
@@ -6723,5 +6723,112 @@ so they are excluded from the serialized representation.</p>
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

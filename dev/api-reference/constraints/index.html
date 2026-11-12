@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2603,7 +2603,7 @@ expression.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">unconstrain</span>
 
 <span class="n">constrain_equal</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">roughness</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="n">layer_a</span><span class="o">.</span><span class="n">roughness</span><span class="p">)</span>
-<span class="n">constrain</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="s1">&#39;2 * t&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+<span class="n">constrain</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="s1">'2 * t'</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 <span class="n">unconstrain</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 </code></pre></div>
 <p>Constraints survive <code>Project</code> save/load: the expression and the
@@ -2618,7 +2618,7 @@ constraint.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">constrain_to_sum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">derived_parameter</span>
 
-<span class="n">total</span> <span class="o">=</span> <span class="n">derived_parameter</span><span class="p">(</span><span class="s1">&#39;total&#39;</span><span class="p">,</span> <span class="s1">&#39;a + b&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+<span class="n">total</span> <span class="o">=</span> <span class="n">derived_parameter</span><span class="p">(</span><span class="s1">'total'</span><span class="p">,</span> <span class="s1">'a + b'</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
 <span class="c1"># keep the film thickness fixed at 120 Å while the split is fitted</span>
 <span class="n">constrain_to_sum</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="p">[</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span> <span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">],</span> <span class="n">total</span><span class="o">=</span><span class="mf">120.0</span><span class="p">)</span>
 </code></pre></div>
@@ -2709,7 +2709,7 @@ but fit penalties; see :mod:<code>easyreflectometry.inequality_constraints</code
 
 
 <h2 id="easyreflectometry.constraints.__all__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;clamp_sum_partners&#39;</span><span class="p">,</span> <span class="s1">&#39;constrain&#39;</span><span class="p">,</span> <span class="s1">&#39;constrain_equal&#39;</span><span class="p">,</span> <span class="s1">&#39;constrain_to_sum&#39;</span><span class="p">,</span> <span class="s1">&#39;derived_parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;is_constrained_to_sum&#39;</span><span class="p">,</span> <span class="s1">&#39;restore_sum_partners&#39;</span><span class="p">,</span> <span class="s1">&#39;unconstrain&#39;</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'clamp_sum_partners'</span><span class="p">,</span> <span class="s1">'constrain'</span><span class="p">,</span> <span class="s1">'constrain_equal'</span><span class="p">,</span> <span class="s1">'constrain_to_sum'</span><span class="p">,</span> <span class="s1">'derived_parameter'</span><span class="p">,</span> <span class="s1">'is_constrained_to_sum'</span><span class="p">,</span> <span class="s1">'restore_sum_partners'</span><span class="p">,</span> <span class="s1">'unconstrain'</span><span class="p">]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2729,7 +2729,7 @@ but fit penalties; see :mod:<code>easyreflectometry.inequality_constraints</code
 
 
 <h2 id="easyreflectometry.constraints.USER_CONSTRAINT_FLAG" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">USER_CONSTRAINT_FLAG</span> <span class="o">=</span> <span class="s1">&#39;_easyreflectometry_user_constraint&#39;</span></code>
+            <code class="highlight language-python"><span class="n">USER_CONSTRAINT_FLAG</span> <span class="o">=</span> <span class="s1">'_easyreflectometry_user_constraint'</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2749,7 +2749,7 @@ but fit penalties; see :mod:<code>easyreflectometry.inequality_constraints</code
 
 
 <h2 id="easyreflectometry.constraints._SUM_TOTAL_ALIAS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_SUM_TOTAL_ALIAS</span> <span class="o">=</span> <span class="s1">&#39;total&#39;</span></code>
+            <code class="highlight language-python"><span class="n">_SUM_TOTAL_ALIAS</span> <span class="o">=</span> <span class="s1">'total'</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2769,7 +2769,7 @@ but fit penalties; see :mod:<code>easyreflectometry.inequality_constraints</code
 
 
 <h2 id="easyreflectometry.constraints._SUM_PARTNER_ALIAS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_SUM_PARTNER_ALIAS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;p</span><span class="se">\\</span><span class="s1">d+&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">_SUM_PARTNER_ALIAS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'p</span><span class="se">\\</span><span class="s1">d+'</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2789,7 +2789,7 @@ but fit penalties; see :mod:<code>easyreflectometry.inequality_constraints</code
 
 
 <h2 id="easyreflectometry.constraints.SUM_PARTNER_MAX_BACKUP" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">SUM_PARTNER_MAX_BACKUP</span> <span class="o">=</span> <span class="s1">&#39;_sum_partner_previous_max&#39;</span></code>
+            <code class="highlight language-python"><span class="n">SUM_PARTNER_MAX_BACKUP</span> <span class="o">=</span> <span class="s1">'_sum_partner_previous_max'</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2901,13 +2901,13 @@ parameter's value and bounds cannot be set directly.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain_equal</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="n">DescriptorNumber</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tie `parameter` to always equal `to`.</span>
+<span class="w">    </span><span class="sd">"""Tie `parameter` to always equal `to`.</span>
 
 <span class="sd">    `parameter` becomes dependent: it is removed from the free fit</span>
 <span class="sd">    parameters, immediately takes the value of `to`, and follows it from</span>
 <span class="sd">    then on. Its value, unit, variance, min and max are replaced by</span>
-<span class="sd">    `to`&#39;s, and its `fixed` flag is cleared. While constrained, the</span>
-<span class="sd">    parameter&#39;s value and bounds cannot be set directly.</span>
+<span class="sd">    `to`'s, and its `fixed` flag is cleared. While constrained, the</span>
+<span class="sd">    parameter's value and bounds cannot be set directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2915,8 +2915,8 @@ parameter's value and bounds cannot be set directly.</p>
 <span class="sd">        Parameter to make dependent (the follower).</span>
 <span class="sd">    to : DescriptorNumber</span>
 <span class="sd">        Parameter (or descriptor) to follow.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">constrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">to</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">constrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">to</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2937,7 +2937,7 @@ parameter's value and bounds cannot be set directly.</p>
         <p>Tie <code>parameter</code> to an arbitrary expression of other parameters.</p>
 <p>Placeholders in <code>expression</code> are supplied as keyword arguments:</p>
 <p>.. code-block:: python</p>
-<div class="language-text highlight"><pre><span></span><code>constrain(layer_b.thickness, &#39;2 * t&#39;, t=layer_a.thickness)
+<div class="language-text highlight"><pre><span></span><code>constrain(layer_b.thickness, '2 * t', t=layer_a.thickness)
 </code></pre></div>
 <p><code>parameter</code> becomes dependent; its value, unit, variance, min and max
 are replaced by the evaluated expression and its <code>fixed</code> flag is
@@ -3053,13 +3053,13 @@ names.</p>
 <span class="normal">97</span>
 <span class="normal">98</span>
 <span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">constrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">:</span> <span class="n">DescriptorNumber</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tie `parameter` to an arbitrary expression of other parameters.</span>
+<span class="w">    </span><span class="sd">"""Tie `parameter` to an arbitrary expression of other parameters.</span>
 
 <span class="sd">    Placeholders in `expression` are supplied as keyword arguments:</span>
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        constrain(layer_b.thickness, &#39;2 * t&#39;, t=layer_a.thickness)</span>
+<span class="sd">        constrain(layer_b.thickness, '2 * t', t=layer_a.thickness)</span>
 
 <span class="sd">    `parameter` becomes dependent; its value, unit, variance, min and max</span>
 <span class="sd">    are replaced by the evaluated expression and its `fixed` flag is</span>
@@ -3074,10 +3074,10 @@ names.</p>
 <span class="sd">    parameter : Parameter</span>
 <span class="sd">        Parameter to make dependent (the follower).</span>
 <span class="sd">    expression : str</span>
-<span class="sd">        Mathematical expression to evaluate, e.g. ``&#39;2 * t&#39;``.</span>
+<span class="sd">        Mathematical expression to evaluate, e.g. ``'2 * t'``.</span>
 <span class="sd">    parameters : DescriptorNumber</span>
 <span class="sd">        Placeholder-name to parameter mapping for `expression`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parameter</span><span class="o">.</span><span class="n">make_dependent_on</span><span class="p">(</span><span class="n">dependency_expression</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span> <span class="n">dependency_map</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
     <span class="nb">setattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">USER_CONSTRAINT_FLAG</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3162,7 +3162,7 @@ the bounds before fitting.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">unconstrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove any constraint from `parameter`.</span>
+<span class="w">    </span><span class="sd">"""Remove any constraint from `parameter`.</span>
 
 <span class="sd">    Idempotent: calling it on an already-independent parameter is a</span>
 <span class="sd">    no-op. The parameter keeps its current (last evaluated) value and</span>
@@ -3174,7 +3174,7 @@ the bounds before fitting.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    parameter : Parameter</span>
 <span class="sd">        Parameter to make independent again.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
         <span class="n">parameter</span><span class="o">.</span><span class="n">make_independent</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">USER_CONSTRAINT_FLAG</span><span class="p">):</span>
@@ -3202,8 +3202,8 @@ follows <code>expression</code> whenever any of <code>parameters</code> changes,
 value cannot be set directly — a live calculation to display or reuse
 inside another :func:<code>constrain</code> expression.</p>
 <p>.. code-block:: python</p>
-<div class="language-text highlight"><pre><span></span><code>total = derived_parameter(&#39;total&#39;, &#39;t1 + t2&#39;, t1=layer_1.thickness, t2=layer_2.thickness)
-constrain(layer_3.thickness, &#39;T - t&#39;, T=total, t=layer_4.thickness)
+<div class="language-text highlight"><pre><span></span><code>total = derived_parameter('total', 't1 + t2', t1=layer_1.thickness, t2=layer_2.thickness)
+constrain(layer_3.thickness, 'T - t', T=total, t=layer_4.thickness)
 </code></pre></div>
 <p>.. warning::</p>
 <div class="language-text highlight"><pre><span></span><code>A standalone derived parameter belongs to no model, so it has no
@@ -3399,7 +3399,7 @@ the expression is kept.</p>
     <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">parameters</span><span class="p">:</span> <span class="n">DescriptorNumber</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a standalone read-only parameter computed from other parameters.</span>
+<span class="w">    </span><span class="sd">"""Create a standalone read-only parameter computed from other parameters.</span>
 
 <span class="sd">    The returned parameter is *dependent*: it never enters a fit, it</span>
 <span class="sd">    follows `expression` whenever any of `parameters` changes, and its</span>
@@ -3408,8 +3408,8 @@ the expression is kept.</p>
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        total = derived_parameter(&#39;total&#39;, &#39;t1 + t2&#39;, t1=layer_1.thickness, t2=layer_2.thickness)</span>
-<span class="sd">        constrain(layer_3.thickness, &#39;T - t&#39;, T=total, t=layer_4.thickness)</span>
+<span class="sd">        total = derived_parameter('total', 't1 + t2', t1=layer_1.thickness, t2=layer_2.thickness)</span>
+<span class="sd">        constrain(layer_3.thickness, 'T - t', T=total, t=layer_4.thickness)</span>
 
 <span class="sd">    .. warning::</span>
 
@@ -3438,9 +3438,9 @@ the expression is kept.</p>
 <span class="sd">    -------</span>
 <span class="sd">    Parameter</span>
 <span class="sd">        A new dependent parameter.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parameters</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;derived_parameter needs at least one parameter to depend on.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'derived_parameter needs at least one parameter to depend on.'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">from_dependency</span><span class="p">(</span>
         <span class="n">dependency_expression</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
         <span class="n">dependency_map</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">parameters</span><span class="p">),</span>
@@ -3608,13 +3608,13 @@ a constant.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">total</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DescriptorNumber</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Constrain `parameter` so that the sum of `of_parameters` stays equal to `total`.</span>
+<span class="w">    </span><span class="sd">"""Constrain `parameter` so that the sum of `of_parameters` stays equal to `total`.</span>
 
 <span class="sd">    `parameter` becomes dependent and takes the value</span>
-<span class="sd">    ``total - sum(other parameters)``, where &quot;other&quot; means every entry of</span>
+<span class="sd">    ``total - sum(other parameters)``, where "other" means every entry of</span>
 <span class="sd">    `of_parameters` except `parameter` itself (it may be listed or not).</span>
-<span class="sd">    This is the &quot;keep the total film thickness fixed while fitting how it</span>
-<span class="sd">    is split&quot; idiom:</span>
+<span class="sd">    This is the "keep the total film thickness fixed while fitting how it</span>
+<span class="sd">    is split" idiom:</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -3628,27 +3628,27 @@ a constant.</p>
 <span class="sd">        The parameters whose sum is constrained.</span>
 <span class="sd">    total : Union[DescriptorNumber, numbers.Number, None], optional</span>
 <span class="sd">        The target sum: a parameter/descriptor (e.g. a</span>
-<span class="sd">        :func:`derived_parameter`) or a plain number in `parameter`&#39;s</span>
+<span class="sd">        :func:`derived_parameter`) or a plain number in `parameter`'s</span>
 <span class="sd">        unit. By default the current sum of `of_parameters` is frozen as</span>
 <span class="sd">        a constant.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">of_parameters</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">parameter</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">others</span> <span class="ow">and</span> <span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;constrain_to_sum needs at least one other parameter or an explicit total.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'constrain_to_sum needs at least one other parameter or an explicit total.'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">others</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
-        <span class="n">total</span> <span class="o">=</span> <span class="n">DescriptorNumber</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">),</span> <span class="n">display_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s1">_sum_total&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">unit</span><span class="p">))</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">DescriptorNumber</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">),</span> <span class="n">display_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s1">_sum_total'</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">unit</span><span class="p">))</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">DescriptorNumber</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;total must be a number, a DescriptorNumber/Parameter or None.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'total must be a number, a DescriptorNumber/Parameter or None.'</span><span class="p">)</span>
 
-    <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="n">total</span><span class="p">}</span>
+    <span class="n">dependency_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'total'</span><span class="p">:</span> <span class="n">total</span><span class="p">}</span>
     <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">other</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">others</span><span class="p">):</span>
-        <span class="n">alias</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;p</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">alias</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'p</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">'</span>
         <span class="n">dependency_map</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span>
         <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
-    <span class="n">expression</span> <span class="o">=</span> <span class="s1">&#39;total&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">terms</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;total - (</span><span class="si">{</span><span class="s2">&quot; + &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+    <span class="n">expression</span> <span class="o">=</span> <span class="s1">'total'</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">terms</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'total - (</span><span class="si">{</span><span class="s2">" + "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span><span class="si">}</span><span class="s1">)'</span>
     <span class="n">constrain</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="o">**</span><span class="n">dependency_map</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3771,11 +3771,11 @@ is checked.</p>
     <span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span>
     <span class="n">of_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">DescriptorNumber</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether `parameter` currently carries a :func:`constrain_to_sum` dependency.</span>
+<span class="w">    </span><span class="sd">"""Whether `parameter` currently carries a :func:`constrain_to_sum` dependency.</span>
 
 <span class="sd">    Purely introspective — nothing is changed. Detection reads the public</span>
 <span class="sd">    dependency map and recognizes the alias shape :func:`constrain_to_sum`</span>
-<span class="sd">    builds (``&#39;total&#39;`` plus ``&#39;p0&#39;``, ``&#39;p1&#39;``, ...), so it also holds for a</span>
+<span class="sd">    builds (``'total'`` plus ``'p0'``, ``'p1'``, ...), so it also holds for a</span>
 <span class="sd">    constraint restored from a project file.</span>
 
 <span class="sd">    Parameters</span>
@@ -3786,8 +3786,8 @@ is checked.</p>
 <span class="sd">        When given, every entry (except `parameter` itself) must additionally</span>
 <span class="sd">        be among the partners of the sum. By default only the dependency shape</span>
 <span class="sd">        is checked.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">'independent'</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="n">dependency_map</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">dependency_map</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">_SUM_TOTAL_ALIAS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dependency_map</span><span class="p">:</span>
@@ -3917,9 +3917,9 @@ stashed on the parameters for :func:<code>restore_sum_partners</code>.</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clamp_sum_partners</span><span class="p">(</span><span class="n">partners</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span> <span class="n">remainder</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Narrow the partners&#39; maxima so a :func:`constrain_to_sum` remainder cannot go below zero.</span>
+<span class="w">    </span><span class="sd">"""Narrow the partners' maxima so a :func:`constrain_to_sum` remainder cannot go below zero.</span>
 
-<span class="sd">    Each partner&#39;s ``max`` is capped at ``value * (1 + remainder / occupied)``</span>
+<span class="sd">    Each partner's ``max`` is capped at ``value * (1 + remainder / occupied)``</span>
 <span class="sd">    — its share of the remaining budget, distributed in proportion to the</span>
 <span class="sd">    current values. A partner whose ``max`` is already tighter is left alone,</span>
 <span class="sd">    and so is one whose cap would collapse onto its ``min`` (a degenerate</span>
@@ -3932,7 +3932,7 @@ stashed on the parameters for :func:<code>restore_sum_partners</code>.</p>
 <span class="sd">        The free parameters of the sum (everything except the tied remainder).</span>
 <span class="sd">    remainder : float</span>
 <span class="sd">        Current value of the tied remainder parameter.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">partners</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">partners</span><span class="p">)</span>
     <span class="n">occupied</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">partners</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">occupied</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">remainder</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -3992,13 +3992,13 @@ meantime.</p>
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">restore_sum_partners</span><span class="p">(</span><span class="n">partners</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Parameter</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Give back the maxima :func:`clamp_sum_partners` narrowed.</span>
+<span class="w">    </span><span class="sd">"""Give back the maxima :func:`clamp_sum_partners` narrowed.</span>
 
 <span class="sd">    Idempotent: a partner without a stashed backup (never clamped, or already</span>
 <span class="sd">    restored) is left alone. A backup is only applied when it widens the</span>
 <span class="sd">    current bound — restoring never narrows a maximum that was widened in the</span>
 <span class="sd">    meantime.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">partners</span><span class="p">:</span>
         <span class="n">previous</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">SUM_PARTNER_MAX_BACKUP</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4179,10 +4179,10 @@ meantime.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
@@ -4191,5 +4191,112 @@ meantime.</p>
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

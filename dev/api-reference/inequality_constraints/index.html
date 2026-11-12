@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2489,10 +2489,10 @@ silently dropping the physics.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minimizers</span>
 
 <span class="n">project</span><span class="o">.</span><span class="n">minimizer</span> <span class="o">=</span> <span class="n">Minimizers</span><span class="o">.</span><span class="n">Bumps</span>
-<span class="n">t_a</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># &#39;models/0/sample/1/layers/0/thickness&#39;</span>
+<span class="n">t_a</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_a</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># 'models/0/sample/1/layers/0/thickness'</span>
 <span class="n">t_b</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">parameter_path</span><span class="p">(</span><span class="n">layer_b</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
-<span class="n">project</span><span class="o">.</span><span class="n">add_inequality_constraint</span><span class="p">(</span><span class="n">InequalitySpec</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">t_a</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">t_b</span><span class="p">},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;order&#39;</span><span class="p">))</span>
-<span class="n">project</span><span class="o">.</span><span class="n">add_inequality_constraint</span><span class="p">(</span><span class="n">InequalitySpec</span><span class="p">(</span><span class="s1">&#39;a + b&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;90&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">t_a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">t_b</span><span class="p">},</span> <span class="p">{}))</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_inequality_constraint</span><span class="p">(</span><span class="n">InequalitySpec</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'&lt;'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">t_a</span><span class="p">},</span> <span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="n">t_b</span><span class="p">},</span> <span class="n">name</span><span class="o">=</span><span class="s1">'order'</span><span class="p">))</span>
+<span class="n">project</span><span class="o">.</span><span class="n">add_inequality_constraint</span><span class="p">(</span><span class="n">InequalitySpec</span><span class="p">(</span><span class="s1">'a + b'</span><span class="p">,</span> <span class="s1">'&lt;'</span><span class="p">,</span> <span class="s1">'90'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="n">t_a</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="n">t_b</span><span class="p">},</span> <span class="p">{}))</span>
 
 <span class="n">project</span><span class="o">.</span><span class="n">violated_inequality_constraints</span><span class="p">()</span>  <span class="c1"># check the start point first</span>
 <span class="n">project</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit_single_data_set_1d</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>  <span class="c1"># penalties applied automatically</span>
@@ -2581,7 +2581,7 @@ BUMPS parameters:</p>
 
 
 <h2 id="easyreflectometry.inequality_constraints.__all__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RELATIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;InequalityEvaluation&#39;</span><span class="p">,</span> <span class="s1">&#39;InequalitySpec&#39;</span><span class="p">,</span> <span class="s1">&#39;UnitError&#39;</span><span class="p">,</span> <span class="s1">&#39;build_constraints_factory&#39;</span><span class="p">,</span> <span class="s1">&#39;check_units&#39;</span><span class="p">,</span> <span class="s1">&#39;evaluate_spec&#39;</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'RELATIONS'</span><span class="p">,</span> <span class="s1">'InequalityEvaluation'</span><span class="p">,</span> <span class="s1">'InequalitySpec'</span><span class="p">,</span> <span class="s1">'UnitError'</span><span class="p">,</span> <span class="s1">'build_constraints_factory'</span><span class="p">,</span> <span class="s1">'check_units'</span><span class="p">,</span> <span class="s1">'evaluate_spec'</span><span class="p">]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2601,7 +2601,7 @@ BUMPS parameters:</p>
 
 
 <h2 id="easyreflectometry.inequality_constraints.RELATIONS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">RELATIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">RELATIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'&lt;'</span><span class="p">,</span> <span class="s1">'&lt;='</span><span class="p">,</span> <span class="s1">'&gt;'</span><span class="p">,</span> <span class="s1">'&gt;='</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2621,7 +2621,7 @@ BUMPS parameters:</p>
 
 
 <h2 id="easyreflectometry.inequality_constraints._RELATION_ALIASES" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_RELATION_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;≤&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;≥&#39;</span><span class="p">:</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;=&lt;&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;=&gt;&#39;</span><span class="p">:</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">}</span></code>
+            <code class="highlight language-python"><span class="n">_RELATION_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'≤'</span><span class="p">:</span> <span class="s1">'&lt;='</span><span class="p">,</span> <span class="s1">'≥'</span><span class="p">:</span> <span class="s1">'&gt;='</span><span class="p">,</span> <span class="s1">'=&lt;'</span><span class="p">:</span> <span class="s1">'&lt;='</span><span class="p">,</span> <span class="s1">'=&gt;'</span><span class="p">:</span> <span class="s1">'&gt;='</span><span class="p">}</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2661,7 +2661,7 @@ BUMPS parameters:</p>
 
 
 <h2 id="easyreflectometry.inequality_constraints._SAFE_SYMBOLS" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">_SAFE_SYMBOLS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="s1">&#39;sqrt&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span> <span class="s1">&#39;exp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="s1">&#39;log10&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span> <span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span> <span class="s1">&#39;tan&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span> <span class="s1">&#39;abs&#39;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">}</span></code>
+            <code class="highlight language-python"><span class="n">_SAFE_SYMBOLS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'pi'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="s1">'sqrt'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span> <span class="s1">'exp'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="s1">'log10'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span> <span class="s1">'sin'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="s1">'cos'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span> <span class="s1">'tan'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span> <span class="s1">'abs'</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s1">'min'</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s1">'max'</span><span class="p">:</span> <span class="nb">max</span><span class="p">}</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2741,13 +2741,13 @@ new callers can catch this type instead of matching message substrings.</p>
 <span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnitError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit problem in an inequality constraint.</span>
+<span class="w">    </span><span class="sd">"""A unit problem in an inequality constraint.</span>
 
 <span class="sd">    Raised by :func:`check_units` when a side cannot be evaluated with its</span>
 <span class="sd">    units or the two sides of a spec carry incompatible units. Subclasses</span>
 <span class="sd">    ``ValueError`` so existing ``except ValueError`` callers keep working;</span>
 <span class="sd">    new callers can catch this type instead of matching message substrings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2993,14 +2993,14 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">238</span>
 <span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">InequalitySpec</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Declarative cross-parameter inequality, e.g. ``t_head &lt; t_tail``.</span>
+<span class="w">    </span><span class="sd">"""Declarative cross-parameter inequality, e.g. ``t_head &lt; t_tail``.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lhs_expression : str</span>
-<span class="sd">        Expression over the aliases in `lhs_paths`, e.g. ``&#39;a + b&#39;``.</span>
+<span class="sd">        Expression over the aliases in `lhs_paths`, e.g. ``'a + b'``.</span>
 <span class="sd">    op : str</span>
-<span class="sd">        One of ``&#39;&lt;&#39;``, ``&#39;&lt;=&#39;``, ``&#39;&gt;&#39;``, ``&#39;&gt;=&#39;``.</span>
+<span class="sd">        One of ``'&lt;'``, ``'&lt;='``, ``'&gt;'``, ``'&gt;='``.</span>
 <span class="sd">    rhs_expression : str</span>
 <span class="sd">        Expression over the aliases in `rhs_paths`; may also be a plain</span>
 <span class="sd">        number (dimensionless or understood in the unit of the left side).</span>
@@ -3011,14 +3011,14 @@ are held so the spec is trivially serializable.</p>
 <span class="sd">        Optional user label.</span>
 <span class="sd">    enabled : bool</span>
 <span class="sd">        Disabled specs are kept but not applied to fits.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">lhs_expression</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">op</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">rhs_expression</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">lhs_paths</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">rhs_paths</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3032,24 +3032,24 @@ are held so the spec is trivially serializable.</p>
     <span class="c1"># ----- validation -----</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_syntax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that both sides parse and every identifier has an alias mapping.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check that both sides parse and every identifier has an alias mapping."""</span>
         <span class="k">for</span> <span class="n">side</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'left'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'right'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">expression</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">-hand side of an inequality cannot be empty.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">-hand side of an inequality cannot be empty.'</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">alias</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()</span> <span class="ow">or</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">alias</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Alias &#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&#39; is not a valid identifier.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Alias '</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">' is not a valid identifier."</span><span class="p">)</span>
             <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">_identifiers</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side &#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39; references unmapped names: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side '</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">' references unmapped names: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="n">interpreter</span> <span class="o">=</span> <span class="n">_new_interpreter</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">_evaluate</span><span class="p">(</span><span class="n">interpreter</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="p">{</span><span class="n">alias</span><span class="p">:</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">})</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># asteval raises its own hierarchy</span>
-                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot evaluate the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side &#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+                <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot evaluate the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side '</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
         <span class="c1"># `paths` merges both sides, so one alias cannot mean two different</span>
         <span class="c1"># parameters — the right side would silently win.</span>
         <span class="n">conflicting</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -3057,13 +3057,13 @@ are held so the spec is trivially serializable.</p>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">conflicting</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Alias(es) </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conflicting</span><span class="p">)</span><span class="si">}</span><span class="s1"> map to different parameters on the &#39;</span>
-                <span class="s1">&#39;two sides of the inequality. Use distinct alias names per side.&#39;</span>
+                <span class="sa">f</span><span class="s1">'Alias(es) </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conflicting</span><span class="p">)</span><span class="si">}</span><span class="s1"> map to different parameters on the '</span>
+                <span class="s1">'two sides of the inequality. Use distinct alias names per side.'</span>
             <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">paths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;All alias → path pairs of both sides.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""All alias → path pairs of both sides."""</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">)</span>
         <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">merged</span>
@@ -3072,29 +3072,29 @@ are held so the spec is trivially serializable.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;lhs_expression&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span>
-            <span class="s1">&#39;op&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">,</span>
-            <span class="s1">&#39;rhs_expression&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span>
-            <span class="s1">&#39;lhs_paths&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
-            <span class="s1">&#39;rhs_paths&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
-            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">),</span>
+            <span class="s1">'lhs_expression'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span>
+            <span class="s1">'op'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">,</span>
+            <span class="s1">'rhs_expression'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span>
+            <span class="s1">'lhs_paths'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
+            <span class="s1">'rhs_paths'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">'enabled'</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">),</span>
         <span class="p">}</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;InequalitySpec&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'InequalitySpec'</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">lhs_expression</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;lhs_expression&#39;</span><span class="p">],</span>
-            <span class="n">op</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;op&#39;</span><span class="p">],</span>
-            <span class="n">rhs_expression</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;rhs_expression&#39;</span><span class="p">],</span>
-            <span class="n">lhs_paths</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lhs_paths&#39;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">rhs_paths</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rhs_paths&#39;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-            <span class="n">enabled</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="n">lhs_expression</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'lhs_expression'</span><span class="p">],</span>
+            <span class="n">op</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'op'</span><span class="p">],</span>
+            <span class="n">rhs_expression</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">'rhs_expression'</span><span class="p">],</span>
+            <span class="n">lhs_paths</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'lhs_paths'</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">rhs_paths</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'rhs_paths'</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">),</span>
+            <span class="n">enabled</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'enabled'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="si">}</span><span class="s1">'</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3184,24 +3184,24 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_syntax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that both sides parse and every identifier has an alias mapping.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Check that both sides parse and every identifier has an alias mapping."""</span>
     <span class="k">for</span> <span class="n">side</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="p">(</span>
-        <span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'left'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'right'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">),</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">expression</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">-hand side of an inequality cannot be empty.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">-hand side of an inequality cannot be empty.'</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">alias</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">()</span> <span class="ow">or</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">alias</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Alias &#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&#39; is not a valid identifier.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Alias '</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">' is not a valid identifier."</span><span class="p">)</span>
         <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">_identifiers</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side &#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39; references unmapped names: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side '</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">' references unmapped names: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
         <span class="n">interpreter</span> <span class="o">=</span> <span class="n">_new_interpreter</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_evaluate</span><span class="p">(</span><span class="n">interpreter</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="p">{</span><span class="n">alias</span><span class="p">:</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">})</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># asteval raises its own hierarchy</span>
-            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot evaluate the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side &#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot evaluate the </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">-hand side '</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="c1"># `paths` merges both sides, so one alias cannot mean two different</span>
     <span class="c1"># parameters — the right side would silently win.</span>
     <span class="n">conflicting</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -3209,8 +3209,8 @@ are held so the spec is trivially serializable.</p>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">conflicting</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Alias(es) </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conflicting</span><span class="p">)</span><span class="si">}</span><span class="s1"> map to different parameters on the &#39;</span>
-            <span class="s1">&#39;two sides of the inequality. Use distinct alias names per side.&#39;</span>
+            <span class="sa">f</span><span class="s1">'Alias(es) </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conflicting</span><span class="p">)</span><span class="si">}</span><span class="s1"> map to different parameters on the '</span>
+            <span class="s1">'two sides of the inequality. Use distinct alias names per side.'</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3272,7 +3272,7 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">252</span>
 <span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">InequalityEvaluation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Result of evaluating a spec against the current parameter values.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Result of evaluating a spec against the current parameter values."""</span>
 
     <span class="n">lhs</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">rhs</span><span class="p">:</span> <span class="nb">float</span>
@@ -3338,7 +3338,7 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_Constant</span><span class="p">:</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'value'</span><span class="p">,)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -3408,9 +3408,9 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_BumpsValue</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads a BUMPS parameter — i.e. the optimizer&#39;s current trial value.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Reads a BUMPS parameter — i.e. the optimizer's current trial value."""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;parameter&#39;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'parameter'</span><span class="p">,)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bumps_parameter</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="n">bumps_parameter</span>
@@ -3485,9 +3485,9 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_Expression</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluates an expression whose symbols are value sources.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Evaluates an expression whose symbols are value sources."""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;expression&#39;</span><span class="p">,</span> <span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="s1">&#39;_interpreter&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'expression'</span><span class="p">,</span> <span class="s1">'sources'</span><span class="p">,</span> <span class="s1">'_interpreter'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
@@ -3568,9 +3568,9 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_Violation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The BUMPS constraint object: ``float()`` is ``0`` when satisfied, else the violation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The BUMPS constraint object: ``float()`` is ``0`` when satisfied, else the violation."""</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;lhs&#39;</span><span class="p">,</span> <span class="s1">&#39;op&#39;</span><span class="p">,</span> <span class="s1">&#39;rhs&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'lhs'</span><span class="p">,</span> <span class="s1">'op'</span><span class="p">,</span> <span class="s1">'rhs'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs</span><span class="p">:</span> <span class="n">_Expression</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">_Expression</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">rhs</span><span class="p">,</span> <span class="n">label</span>
@@ -3582,7 +3582,7 @@ are held so the spec is trivially serializable.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># mirror bumps.Constraint: never silently truthy</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Inequality constraints cannot be used as booleans&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'Inequality constraints cannot be used as booleans'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3629,7 +3629,7 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_normalize_relation</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">op</span> <span class="o">=</span> <span class="n">_RELATION_ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">op</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
     <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">RELATIONS</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported relation &#39;</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&#39;. Use one of </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RELATIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported relation '</span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">'. Use one of </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RELATIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">op</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3716,8 +3716,8 @@ are held so the spec is trivially serializable.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_identifiers</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Identifiers used in `expression` that are not builtin math symbols.&quot;&quot;&quot;</span>
-    <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\b[A-Za-z_][A-Za-z0-9_]*\b&#39;</span><span class="p">,</span> <span class="n">expression</span><span class="p">))</span>
+<span class="w">    </span><span class="sd">"""Identifiers used in `expression` that are not builtin math symbols."""</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\b[A-Za-z_][A-Za-z0-9_]*\b'</span><span class="p">,</span> <span class="n">expression</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SAFE_SYMBOLS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3757,12 +3757,12 @@ zero at the boundary is the only continuous choice.</p>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_violation</span><span class="p">(</span><span class="n">lhs</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear violation of ``lhs op rhs`` (``0`` when satisfied).</span>
+<span class="w">    </span><span class="sd">"""Linear violation of ``lhs op rhs`` (``0`` when satisfied).</span>
 
 <span class="sd">    Strict and non-strict relations are treated alike: a penalty of exactly</span>
 <span class="sd">    zero at the boundary is the only continuous choice.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">):</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'&lt;'</span><span class="p">,</span> <span class="s1">'&lt;='</span><span class="p">):</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">lhs</span> <span class="o">-</span> <span class="n">rhs</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">rhs</span> <span class="o">-</span> <span class="n">lhs</span>
@@ -3826,24 +3826,24 @@ zero at the boundary is the only continuous choice.</p>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_source_for</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">DescriptorNumber</span><span class="p">,</span> <span class="n">bumps_pars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">trail</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Translate an EasyScience parameter into a source reading the BUMPS trial vector.</span>
+<span class="w">    </span><span class="sd">"""Translate an EasyScience parameter into a source reading the BUMPS trial vector.</span>
 
 <span class="sd">    * free parameter → the BUMPS parameter of the problem;</span>
 <span class="sd">    * fixed parameter (or plain descriptor) → constant;</span>
 <span class="sd">    * dependent parameter → its dependency expression, expanded recursively.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span> <span class="ow">in</span> <span class="n">trail</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Circular dependency while expanding parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Circular dependency while expanding parameter '</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span><span class="p">:</span>
-        <span class="n">expression</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;_clean_dependency_string&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">dependency_map</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">&#39;_dependency_map&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">expression</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">'_clean_dependency_string'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">dependency_map</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="s1">'_dependency_map'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">expression</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># A dependent parameter always carries its dependency expression in</span>
             <span class="c1"># EasyScience; this is a defensive fallback for a foreign Parameter</span>
             <span class="c1"># subclass. Freezing silently would hide a bug, so say so.</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Dependent parameter &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">&#39; has no dependency expression; &quot;</span>
-                <span class="s1">&#39;its current value is frozen as a constant in the inequality constraint.&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Dependent parameter '</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">display_name</span><span class="si">}</span><span class="s2">' has no dependency expression; "</span>
+                <span class="s1">'its current value is frozen as a constant in the inequality constraint.'</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">_Constant</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -3886,7 +3886,7 @@ zero at the boundary is the only continuous choice.</p>
     <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">parameter</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">DescriptorNumber</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; (alias &#39;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&#39;) does not point to a parameter.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Path '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' (alias '</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">') does not point to a parameter."</span><span class="p">)</span>
         <span class="n">resolved</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameter</span>
     <span class="k">return</span> <span class="n">resolved</span>
 </code></pre></div></td></tr></table></div>
@@ -4046,9 +4046,9 @@ it straight through as <code>constraints_factory=...</code>).</p>
 <span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_constraints_factory</span><span class="p">(</span><span class="n">specs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InequalitySpec</span><span class="p">],</span> <span class="n">resolve</span><span class="p">:</span> <span class="n">PathResolver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the ``constraints_factory`` hook for the given specs.</span>
+<span class="w">    </span><span class="sd">"""Build the ``constraints_factory`` hook for the given specs.</span>
 
-<span class="sd">    The returned callable is what ``easyscience``&#39;s BUMPS engine invokes</span>
+<span class="sd">    The returned callable is what ``easyscience``'s BUMPS engine invokes</span>
 <span class="sd">    with the ``{prefixed unique name: bumps.Parameter}`` mapping of a</span>
 <span class="sd">    freshly built problem; it returns one penalty object per enabled spec.</span>
 <span class="sd">    Paths are resolved and dependent parameters expanded at that moment, so</span>
@@ -4066,7 +4066,7 @@ it straight through as <code>constraints_factory=...</code>).</p>
 <span class="sd">    Callable | None</span>
 <span class="sd">        The factory, or ``None`` when no spec is enabled (so callers can pass</span>
 <span class="sd">        it straight through as ``constraints_factory=...``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">active</span> <span class="o">=</span> <span class="p">[</span><span class="n">spec</span> <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">specs</span> <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">enabled</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -4128,12 +4128,12 @@ their current (already propagated) value.</p>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span> <span class="n">InequalitySpec</span><span class="p">,</span> <span class="n">resolve</span><span class="p">:</span> <span class="n">PathResolver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InequalityEvaluation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate a spec against the *current* parameter values.</span>
+<span class="w">    </span><span class="sd">"""Evaluate a spec against the *current* parameter values.</span>
 
 <span class="sd">    Used for the start-point feasibility check before a fit is launched and</span>
 <span class="sd">    for displaying the constraint state; dependent parameters contribute</span>
 <span class="sd">    their current (already propagated) value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="n">_resolve_all</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">resolve</span><span class="p">)</span>
     <span class="n">interpreter</span> <span class="o">=</span> <span class="n">_new_interpreter</span><span class="p">()</span>
     <span class="n">lhs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_evaluate</span><span class="p">(</span><span class="n">interpreter</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">}))</span>
@@ -4211,7 +4211,7 @@ are read in the unit of the other side.</p>
 <span class="normal">465</span>
 <span class="normal">466</span>
 <span class="normal">467</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_units</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span> <span class="n">InequalitySpec</span><span class="p">,</span> <span class="n">resolve</span><span class="p">:</span> <span class="n">PathResolver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise :class:`UnitError` when the two sides of `spec` have incompatible units.</span>
+<span class="w">    </span><span class="sd">"""Raise :class:`UnitError` when the two sides of `spec` have incompatible units.</span>
 
 <span class="sd">    Each side is evaluated with the unit-carrying ``DescriptorNumber``</span>
 <span class="sd">    objects themselves (the same arithmetic the equality constraints use),</span>
@@ -4220,7 +4220,7 @@ are read in the unit of the other side.</p>
 <span class="sd">    the unit of the other side. The same applies to a side mixing literals</span>
 <span class="sd">    with parameters (``90 - b``): it is checked numerically and its literals</span>
 <span class="sd">    are read in the unit of the other side.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="n">_resolve_all</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">resolve</span><span class="p">)</span>
     <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">expression</span><span class="p">,</span> <span class="n">paths</span> <span class="ow">in</span> <span class="p">((</span><span class="n">spec</span><span class="o">.</span><span class="n">lhs_expression</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">lhs_paths</span><span class="p">),</span> <span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">rhs_expression</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">rhs_paths</span><span class="p">)):</span>
@@ -4235,9 +4235,9 @@ are read in the unit of the other side.</p>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">numeric</span> <span class="o">=</span> <span class="n">_evaluate</span><span class="p">(</span><span class="n">_new_interpreter</span><span class="p">(),</span> <span class="n">expression</span><span class="p">,</span> <span class="p">{</span><span class="n">alias</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">})</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">UnitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot evaluate &#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39; with units: </span><span class="si">{</span><span class="n">unit_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">UnitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot evaluate '</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">' with units: </span><span class="si">{</span><span class="n">unit_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">numeric</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39; does not evaluate to a number.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">' does not evaluate to a number."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
             <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">DescriptorNumber</span><span class="p">):</span>
@@ -4245,10 +4245,10 @@ are read in the unit of the other side.</p>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
             <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">&#39; does not evaluate to a number.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">expression</span><span class="si">}</span><span class="s2">' does not evaluate to a number."</span><span class="p">)</span>
     <span class="n">lhs_unit</span><span class="p">,</span> <span class="n">rhs_unit</span> <span class="o">=</span> <span class="n">units</span>
     <span class="k">if</span> <span class="n">lhs_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rhs_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">lhs_unit</span> <span class="o">!=</span> <span class="n">rhs_unit</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UnitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incompatible units in &#39;</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&#39;: left side is in &#39;</span><span class="si">{</span><span class="n">lhs_unit</span><span class="si">}</span><span class="s2">&#39;, right side in &#39;</span><span class="si">{</span><span class="n">rhs_unit</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">UnitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incompatible units in '</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">': left side is in '</span><span class="si">{</span><span class="n">lhs_unit</span><span class="si">}</span><span class="s2">', right side in '</span><span class="si">{</span><span class="n">rhs_unit</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4422,10 +4422,10 @@ are read in the unit of the other side.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
@@ -4434,5 +4434,112 @@ are read in the unit of the other side.</p>
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

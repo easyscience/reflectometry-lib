@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2744,7 +2744,7 @@
 
 
 <h2 id="easyreflectometry.plot.color_cycle" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">color_cycle</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">color_cycle</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">'axes.prop_cycle'</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">'color'</span><span class="p">]</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2764,7 +2764,7 @@
 
 
 <h2 id="easyreflectometry.plot.VOLUME_FRACTION_STYLES" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">VOLUME_FRACTION_STYLES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;line&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">VOLUME_FRACTION_STYLES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'area'</span><span class="p">,</span> <span class="s1">'line'</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2965,7 +2965,7 @@ group), in order of first appearance from the front of the sample.</p>
 <span class="normal">202</span>
 <span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">VolumeFractionProfile</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Volume fraction of every component of a sample versus depth.</span>
+<span class="w">    </span><span class="sd">"""Volume fraction of every component of a sample versus depth.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -2977,7 +2977,7 @@ group), in order of first appearance from the front of the sample.</p>
 <span class="sd">        group), in order of first appearance from the front of the sample.</span>
 <span class="sd">    labels : dict</span>
 <span class="sd">        Component key -&gt; display label, unique within the profile.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">fractions</span><span class="p">:</span> <span class="nb">dict</span>
@@ -2985,24 +2985,24 @@ group), in order of first appearance from the front of the sample.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The component keys, front to back.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The component keys, front to back."""</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``sum_c phi_c(z)``; ones up to floating point error.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""``sum_c phi_c(z)``; ones up to floating point error."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s1">&#39;VolumeFractionProfile&#39;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge components into named groups for presentation.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s1">'VolumeFractionProfile'</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Merge components into named groups for presentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        groups : Mapping[str, Sequence[str]]</span>
 <span class="sd">            Group label -&gt; members, given as component keys or labels, e.g.</span>
-<span class="sd">            ``{&#39;Heads&#39;: [&#39;C10H18NO8P&#39;], &#39;Water&#39;: [&#39;D2O&#39;, &#39;H2O&#39;]}``. Each</span>
+<span class="sd">            ``{'Heads': ['C10H18NO8P'], 'Water': ['D2O', 'H2O']}``. Each</span>
 <span class="sd">            component may appear at most once over all groups. Components not</span>
 <span class="sd">            listed keep their own trace. The result lists the groups first, in</span>
 <span class="sd">            the given order, then the remaining components in their original</span>
@@ -3018,7 +3018,7 @@ group), in order of first appearance from the front of the sample.</p>
 <span class="sd">        ValueError</span>
 <span class="sd">            A member is unknown, a component is listed twice, a group is</span>
 <span class="sd">            empty, or a group label collides with a retained component.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">label_to_key</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">used</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">fractions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3029,18 +3029,18 @@ group), in order of first appearance from the front of the sample.</p>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">member</span> <span class="k">if</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fractions</span> <span class="k">else</span> <span class="n">label_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;Unknown component </span><span class="si">{</span><span class="n">member</span><span class="si">!r}</span><span class="s1"> in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1">. &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;Available keys: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">)</span><span class="si">}</span><span class="s1">; labels: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s1">.&#39;</span>
+                        <span class="sa">f</span><span class="s1">'Unknown component </span><span class="si">{</span><span class="n">member</span><span class="si">!r}</span><span class="s1"> in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1">. '</span>
+                        <span class="sa">f</span><span class="s1">'Available keys: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">)</span><span class="si">}</span><span class="s1">; labels: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s1">.'</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;Component </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1"> is listed in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;and already in group </span><span class="si">{</span><span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1">; groups must not overlap.&#39;</span>
+                        <span class="sa">f</span><span class="s1">'Component </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1"> is listed in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> '</span>
+                        <span class="sa">f</span><span class="s1">'and already in group </span><span class="si">{</span><span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1">; groups must not overlap.'</span>
                     <span class="p">)</span>
                 <span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_label</span>
                 <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> has no members.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> has no members.'</span><span class="p">)</span>
             <span class="n">fractions</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">labels</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_label</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3049,8 +3049,8 @@ group), in order of first appearance from the front of the sample.</p>
             <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fractions</span> <span class="ow">or</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Group label </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1"> collides with the retained component </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1">; &#39;</span>
-                    <span class="s1">&#39;include that component in the group or rename the group.&#39;</span>
+                    <span class="sa">f</span><span class="s1">'Group label </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1"> collides with the retained component </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1">; '</span>
+                    <span class="s1">'include that component in the group or rename the group.'</span>
                 <span class="p">)</span>
             <span class="n">fractions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
@@ -3296,14 +3296,14 @@ empty, or a group label collides with a retained component.</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s1">&#39;VolumeFractionProfile&#39;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge components into named groups for presentation.</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s1">'VolumeFractionProfile'</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Merge components into named groups for presentation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    groups : Mapping[str, Sequence[str]]</span>
 <span class="sd">        Group label -&gt; members, given as component keys or labels, e.g.</span>
-<span class="sd">        ``{&#39;Heads&#39;: [&#39;C10H18NO8P&#39;], &#39;Water&#39;: [&#39;D2O&#39;, &#39;H2O&#39;]}``. Each</span>
+<span class="sd">        ``{'Heads': ['C10H18NO8P'], 'Water': ['D2O', 'H2O']}``. Each</span>
 <span class="sd">        component may appear at most once over all groups. Components not</span>
 <span class="sd">        listed keep their own trace. The result lists the groups first, in</span>
 <span class="sd">        the given order, then the remaining components in their original</span>
@@ -3319,7 +3319,7 @@ empty, or a group label collides with a retained component.</p>
 <span class="sd">    ValueError</span>
 <span class="sd">        A member is unknown, a component is listed twice, a group is</span>
 <span class="sd">        empty, or a group label collides with a retained component.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">label_to_key</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="n">used</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">fractions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3330,18 +3330,18 @@ empty, or a group label collides with a retained component.</p>
             <span class="n">key</span> <span class="o">=</span> <span class="n">member</span> <span class="k">if</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fractions</span> <span class="k">else</span> <span class="n">label_to_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Unknown component </span><span class="si">{</span><span class="n">member</span><span class="si">!r}</span><span class="s1"> in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1">. &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;Available keys: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">)</span><span class="si">}</span><span class="s1">; labels: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s1">.&#39;</span>
+                    <span class="sa">f</span><span class="s1">'Unknown component </span><span class="si">{</span><span class="n">member</span><span class="si">!r}</span><span class="s1"> in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1">. '</span>
+                    <span class="sa">f</span><span class="s1">'Available keys: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">)</span><span class="si">}</span><span class="s1">; labels: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s1">.'</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Component </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1"> is listed in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;and already in group </span><span class="si">{</span><span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1">; groups must not overlap.&#39;</span>
+                    <span class="sa">f</span><span class="s1">'Component </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1"> is listed in group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> '</span>
+                    <span class="sa">f</span><span class="s1">'and already in group </span><span class="si">{</span><span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s1">; groups must not overlap.'</span>
                 <span class="p">)</span>
             <span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_label</span>
             <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> has no members.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Group </span><span class="si">{</span><span class="n">group_label</span><span class="si">!r}</span><span class="s1"> has no members.'</span><span class="p">)</span>
         <span class="n">fractions</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">labels</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_label</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fractions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3350,8 +3350,8 @@ empty, or a group label collides with a retained component.</p>
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fractions</span> <span class="ow">or</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Group label </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1"> collides with the retained component </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1">; &#39;</span>
-                <span class="s1">&#39;include that component in the group or rename the group.&#39;</span>
+                <span class="sa">f</span><span class="s1">'Group label </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1"> collides with the retained component </span><span class="si">{</span><span class="n">label</span><span class="si">!r}</span><span class="s1">; '</span>
+                <span class="s1">'include that component in the group or rename the group.'</span>
             <span class="p">)</span>
         <span class="n">fractions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">labels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
@@ -3375,7 +3375,7 @@ empty, or a group label collides with a retained component.</p>
 
 
 <h2 id="easyreflectometry.plot.plot_volume_fraction" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_volume_fraction</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_volume_fraction</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'area'</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -3599,10 +3599,10 @@ does, so an inadmissible profile is visible rather than clipped.</p>
     <span class="n">profile</span><span class="p">:</span> <span class="n">VolumeFractionProfile</span><span class="p">,</span>
     <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span>
+    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'area'</span><span class="p">,</span>
     <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw a volume fraction (occupancy) profile, one trace per component.</span>
+<span class="w">    </span><span class="sd">"""Draw a volume fraction (occupancy) profile, one trace per component.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3612,8 +3612,8 @@ does, so an inadmissible profile is visible rather than clipped.</p>
 <span class="sd">    ax : plt.Axes, optional</span>
 <span class="sd">        Axes to draw on. A new figure is created when omitted.</span>
 <span class="sd">    style : str, optional</span>
-<span class="sd">        ``&#39;area&#39;`` (default) draws each component as a line with a translucent</span>
-<span class="sd">        fill down to zero, the traces overlapping rather than stacked; ``&#39;line&#39;``</span>
+<span class="sd">        ``'area'`` (default) draws each component as a line with a translucent</span>
+<span class="sd">        fill down to zero, the traces overlapping rather than stacked; ``'line'``</span>
 <span class="sd">        draws lines only.</span>
 <span class="sd">    colors : Mapping[str, str], optional</span>
 <span class="sd">        Colour per component key or label; the matplotlib colour cycle is used</span>
@@ -3629,22 +3629,22 @@ does, so an inadmissible profile is visible rather than clipped.</p>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        ``style`` is not one of :data:`VOLUME_FRACTION_STYLES`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">style</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VOLUME_FRACTION_STYLES</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown style </span><span class="si">{</span><span class="n">style</span><span class="si">!r}</span><span class="s1">; choose one of </span><span class="si">{</span><span class="n">VOLUME_FRACTION_STYLES</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown style </span><span class="si">{</span><span class="n">style</span><span class="si">!r}</span><span class="s1">; choose one of </span><span class="si">{</span><span class="n">VOLUME_FRACTION_STYLES</span><span class="si">}</span><span class="s1">.'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
     <span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">fractions</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">profile</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_cycle</span><span class="p">)]))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s1">&#39;area&#39;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'-'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s1">'area'</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">lowest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">profile</span><span class="o">.</span><span class="n">fractions</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">lowest</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;z (Å)&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Volume fraction&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'z (Å)'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Volume fraction'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">profile</span><span class="o">.</span><span class="n">fractions</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ax</span>
@@ -3768,14 +3768,14 @@ does, so an inadmissible profile is visible rather than clipped.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataGroup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A general plotting function for easyreflectometry.</span>
+<span class="w">    </span><span class="sd">"""A general plotting function for easyreflectometry.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : sc.DataGroup</span>
 <span class="sd">        The DataGroup to be plotted.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="s1">&#39;SLD&#39;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="s1">'SLD'</span> <span class="ow">in</span> <span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">plot_sld</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
         <span class="n">gs</span> <span class="o">=</span> <span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
@@ -3785,31 +3785,31 @@ does, so an inadmissible profile is visible rather than clipped.</p>
         <span class="n">gs</span> <span class="o">=</span> <span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
         <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-    <span class="n">refl_nums</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;Qz&#39;</span> <span class="o">==</span> <span class="n">k</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]</span>
+    <span class="n">refl_nums</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">'coords'</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="s1">'Qz'</span> <span class="o">==</span> <span class="n">k</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">refl_num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">refl_nums</span><span class="p">):</span>
         <span class="n">plot_data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="sa">f</span><span class="s1">&#39;R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">][</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">'data'</span><span class="p">][</span><span class="sa">f</span><span class="s1">'R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">'coords'</span><span class="p">][</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
         <span class="p">)</span>
         <span class="n">plot_data</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">sc</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="mf">10.0</span><span class="o">**</span><span class="n">i</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">plot_data</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
-        <span class="n">plot_data</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">variances</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plot_data</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">variances</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">'log'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'.'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">plot_model_data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">_model&#39;</span><span class="p">,</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">_model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">][</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">_model'</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">'R_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">_model'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">'coords'</span><span class="p">][</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
             <span class="p">)</span>
             <span class="n">plot_model_data</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">sc</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="mf">10.0</span><span class="o">**</span><span class="n">i</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">plot_model_data</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
-            <span class="n">plot_model_data</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">variances</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">plot_model_data</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="sa">f</span><span class="s1">'Qz_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">variances</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                 <span class="n">plot_model_data</span><span class="p">,</span>
                 <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span>
-                <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span>
-                <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+                <span class="n">norm</span><span class="o">=</span><span class="s1">'log'</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s1">'--'</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -3820,11 +3820,11 @@ does, so an inadmissible profile is visible rather than clipped.</p>
     <span class="k">if</span> <span class="n">plot_sld</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">refl_num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">refl_nums</span><span class="p">):</span>
             <span class="n">plot_sld_data</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;SLD_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;SLD_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">&#39;z_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">][</span><span class="sa">f</span><span class="s1">&#39;z_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'SLD_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">'SLD_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">'z_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">'coords'</span><span class="p">][</span><span class="sa">f</span><span class="s1">'z_</span><span class="si">{</span><span class="n">refl_num</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()},</span>
             <span class="p">)</span>
-            <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_sld_data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_sld_data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax2</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'-'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color_cycle</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
         <span class="n">ax2</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">ax2</span><span class="o">.</span><span class="n">relim</span><span class="p">()</span>
         <span class="n">ax2</span><span class="o">.</span><span class="n">autoscale_view</span><span class="p">()</span>
@@ -4001,10 +4001,10 @@ does, so an inadmissible profile is visible rather than clipped.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
@@ -4013,5 +4013,112 @@ does, so an inadmissible profile is visible rather than clipped.</p>
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>

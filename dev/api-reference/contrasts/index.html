@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2497,8 +2497,8 @@ every parameter tied to the reference's except those of the replacement.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.contrasts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReplaceFormula</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">easyreflectometry.contrasts</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReplaceMaterial</span>
 
-<span class="n">h2o_index</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">add_contrast</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Film in H2O&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">ReplaceMaterial</span><span class="p">(</span><span class="n">d2o</span><span class="p">,</span> <span class="n">h2o</span><span class="p">)])</span>
-<span class="n">h_tails</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">add_contrast</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;h-tails&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">ReplaceFormula</span><span class="p">(</span><span class="n">tail_layer</span><span class="p">,</span> <span class="s1">&#39;C32H64&#39;</span><span class="p">)])</span>
+<span class="n">h2o_index</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">add_contrast</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'Film in H2O'</span><span class="p">,</span> <span class="p">[</span><span class="n">ReplaceMaterial</span><span class="p">(</span><span class="n">d2o</span><span class="p">,</span> <span class="n">h2o</span><span class="p">)])</span>
+<span class="n">h_tails</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">add_contrast</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'h-tails'</span><span class="p">,</span> <span class="p">[</span><span class="n">ReplaceFormula</span><span class="p">(</span><span class="n">tail_layer</span><span class="p">,</span> <span class="s1">'C32H64'</span><span class="p">)])</span>
 <span class="n">project</span><span class="o">.</span><span class="n">parameter_models</span><span class="p">(</span><span class="n">film_layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>  <span class="c1"># [0, 1, 2]: one parameter of three models</span>
 </code></pre></div>
 <p><strong>Linking contrasts</strong> ties two models that exist already. Parameters
@@ -2512,10 +2512,10 @@ reason. Scale and background always stay per contrast. A material's
 chemistry (<code>CHEMISTRY</code>: SLD, density, scattering lengths) is
 <code>'undecided'</code> until <code>materials='tie'</code> or <code>materials='skip'</code> is given,
 since contrasts usually differ in it.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">plan</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">plan_link</span><span class="p">(</span><span class="n">follower_index</span><span class="p">,</span> <span class="n">reference_index</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="s1">&#39;skip&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">plan</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">plan_link</span><span class="p">(</span><span class="n">follower_index</span><span class="p">,</span> <span class="n">reference_index</span><span class="p">,</span> <span class="n">materials</span><span class="o">=</span><span class="s1">'skip'</span><span class="p">)</span>
 <span class="p">[(</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">rows</span><span class="p">]</span>
-<span class="n">record</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">apply_link</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>  <span class="c1"># ties the &#39;tie&#39; rows, all or none</span>
-<span class="n">project</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>  <span class="c1"># restores each follower&#39;s value and bounds from before the link</span>
+<span class="n">record</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">apply_link</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>  <span class="c1"># ties the 'tie' rows, all or none</span>
+<span class="n">project</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>  <span class="c1"># restores each follower's value and bounds from before the link</span>
 </code></pre></div>
 <p><code>apply_link</code> refuses a plan with undecided rows, or one the project has
 outdated since it was made. <code>Project.detach</code> frees a shared parameter in
@@ -2581,7 +2581,7 @@ wraps both (<code>add_contrast</code>, <code>plan_link</code>/<code>apply_link</
 
 
 <h2 id="easyreflectometry.contrasts.CHEMISTRY" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">CHEMISTRY</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">&#39;sld&#39;</span><span class="p">,</span> <span class="s1">&#39;isld&#39;</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">,</span> <span class="s1">&#39;scattering_length_real&#39;</span><span class="p">,</span> <span class="s1">&#39;scattering_length_imag&#39;</span><span class="p">})</span></code>
+            <code class="highlight language-python"><span class="n">CHEMISTRY</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'sld'</span><span class="p">,</span> <span class="s1">'isld'</span><span class="p">,</span> <span class="s1">'density'</span><span class="p">,</span> <span class="s1">'scattering_length_real'</span><span class="p">,</span> <span class="s1">'scattering_length_imag'</span><span class="p">})</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
@@ -2638,7 +2638,7 @@ wraps both (<code>add_contrast</code>, <code>plan_link</code>/<code>apply_link</
 <span class="normal">66</span>
 <span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReplaceMaterial</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use `new` wherever the reference uses `old` (a material, or a mixture&#39;s component).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Use `new` wherever the reference uses `old` (a material, or a mixture's component)."""</span>
 
     <span class="n">old</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="n">MaterialMixture</span><span class="p">]</span>
     <span class="n">new</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Material</span><span class="p">,</span> <span class="n">MaterialMixture</span><span class="p">]</span>
@@ -2706,7 +2706,7 @@ wraps both (<code>add_contrast</code>, <code>plan_link</code>/<code>apply_link</
 <span class="normal">74</span>
 <span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReplaceFormula</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Give the contrast&#39;s copy of `target` another chemical formula (isotopic substitution).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Give the contrast's copy of `target` another chemical formula (isotopic substitution)."""</span>
 
     <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LayerAreaPerMolecule</span><span class="p">,</span> <span class="n">MaterialDensity</span><span class="p">]</span>
     <span class="n">formula</span><span class="p">:</span> <span class="nb">str</span>
@@ -2767,7 +2767,7 @@ wraps both (<code>add_contrast</code>, <code>plan_link</code>/<code>apply_link</
                 <summary>Source code in <code>src/easyreflectometry/contrasts.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
 <span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedSubstitution</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A substitution :func:`derive_contrast` cannot carry out; nothing was built.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A substitution :func:`derive_contrast` cannot carry out; nothing was built."""</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2819,11 +2819,11 @@ wraps both (<code>add_contrast</code>, <code>plan_link</code>/<code>apply_link</
     <span class="n">reference</span><span class="p">:</span> <span class="n">Model</span>
     <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LinkRow</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">outdated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="s1">&#39;LinkPlan&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Paths of the rows to tie that `current` (the same link, planned now) no longer allows:</span>
-<span class="sd">        the parameters changed, or the row is already tied, shared with another model, ...&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">outdated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="s1">'LinkPlan'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Paths of the rows to tie that `current` (the same link, planned now) no longer allows:</span>
+<span class="sd">        the parameters changed, or the row is already tied, shared with another model, ..."""</span>
         <span class="n">rows</span> <span class="o">=</span> <span class="p">{</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">current</span><span class="o">.</span><span class="n">rows</span><span class="p">}</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;tie&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_tieable_now</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'tie'</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_tieable_now</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">))]</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2864,11 +2864,11 @@ the parameters changed, or the row is already tied, shared with another model, .
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">outdated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="s1">&#39;LinkPlan&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Paths of the rows to tie that `current` (the same link, planned now) no longer allows:</span>
-<span class="sd">    the parameters changed, or the row is already tied, shared with another model, ...&quot;&quot;&quot;</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">outdated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">:</span> <span class="s1">'LinkPlan'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Paths of the rows to tie that `current` (the same link, planned now) no longer allows:</span>
+<span class="sd">    the parameters changed, or the row is already tied, shared with another model, ..."""</span>
     <span class="n">rows</span> <span class="o">=</span> <span class="p">{</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">:</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">current</span><span class="o">.</span><span class="n">rows</span><span class="p">}</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;tie&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_tieable_now</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'tie'</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_tieable_now</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">path</span><span class="p">))]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2934,17 +2934,17 @@ the parameters changed, or the row is already tied, shared with another model, .
 <span class="normal">224</span>
 <span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinkRow</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;One pair of corresponding parameters of two models and what linking does with it.</span>
+<span class="w">    </span><span class="sd">"""One pair of corresponding parameters of two models and what linking does with it.</span>
 
-<span class="sd">    `action` is ``&#39;tie&#39;``, ``&#39;skip&#39;``, ``&#39;already_tied&#39;``, ``&#39;conflict&#39;`` or</span>
-<span class="sd">    ``&#39;undecided&#39;`` (a chemistry parameter: set it to ``&#39;tie&#39;`` or ``&#39;skip&#39;``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    `action` is ``'tie'``, ``'skip'``, ``'already_tied'``, ``'conflict'`` or</span>
+<span class="sd">    ``'undecided'`` (a chemistry parameter: set it to ``'tie'`` or ``'skip'``).</span>
+<span class="sd">    """</span>
 
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">follower</span><span class="p">:</span> <span class="n">Parameter</span>
     <span class="n">reference</span><span class="p">:</span> <span class="n">Parameter</span>
     <span class="n">action</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span>
     <span class="c1">#: Indices of the other models the follower parameter belongs to as well.</span>
     <span class="n">shared_with</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3013,7 +3013,7 @@ the parameters changed, or the row is already tied, shared with another model, .
 <span class="normal">256</span>
 <span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinkRecord</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The equalities one :meth:`Project.apply_link` made, so they can be undone together.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The equalities one :meth:`Project.apply_link` made, so they can be undone together."""</span>
 
     <span class="n">follower</span><span class="p">:</span> <span class="n">Model</span>
     <span class="n">reference</span><span class="p">:</span> <span class="n">Model</span>
@@ -3076,7 +3076,7 @@ the parameters changed, or the row is already tied, shared with another model, .
                 <summary>Source code in <code>src/easyreflectometry/contrasts.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
 <span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LayoutMismatch</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Two models whose parameters do not correspond one to one.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Two models whose parameters do not correspond one to one."""</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3219,14 +3219,14 @@ Scale, background and resolution are copied by value and stay independent.</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">substitutions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ReplaceMaterial</span><span class="p">,</span> <span class="n">ReplaceFormula</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A new contrast of `reference`&#39;s structure; `reference` is not changed.</span>
+<span class="w">    </span><span class="sd">"""A new contrast of `reference`'s structure; `reference` is not changed.</span>
 
 <span class="sd">    Assemblies the substitutions do not touch are shared with `reference`.</span>
 <span class="sd">    An assembly they touch is copied: its materials are shared except the</span>
 <span class="sd">    replaced ones, its layers are new, and every independent parameter of the</span>
-<span class="sd">    copy is tied to the reference&#39;s except those of the replacements (and the</span>
+<span class="sd">    copy is tied to the reference's except those of the replacements (and the</span>
 <span class="sd">    scattering lengths of a re-formulated material). So a hydrated layer in</span>
-<span class="sd">    another solvent keeps the reference&#39;s thickness, roughness and solvent</span>
+<span class="sd">    another solvent keeps the reference's thickness, roughness and solvent</span>
 <span class="sd">    fraction, and its effective SLD follows the dry material it still shares.</span>
 <span class="sd">    Scale, background and resolution are copied by value and stay independent.</span>
 
@@ -3235,7 +3235,7 @@ Scale, background and resolution are copied by value and stay independent.</p>
 <span class="sd">    UnsupportedSubstitution</span>
 <span class="sd">        A target is not part of `reference`, or a formula target is neither a</span>
 <span class="sd">        :class:`LayerAreaPerMolecule` nor a :class:`MaterialDensity`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">substitutions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">substitutions</span> <span class="ow">or</span> <span class="p">[])</span>
     <span class="n">swaps</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">old</span><span class="p">):</span> <span class="n">item</span><span class="o">.</span><span class="n">new</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">substitutions</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ReplaceMaterial</span><span class="p">)}</span>
     <span class="n">formulas</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">target</span><span class="p">):</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">substitutions</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ReplaceFormula</span><span class="p">)}</span>
@@ -3250,15 +3250,15 @@ Scale, background and resolution are copied by value and stay independent.</p>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">substitutions</span><span class="p">:</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">old</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ReplaceMaterial</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">target</span>
         <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">in_reference</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UnsupportedSubstitution</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; is not part of &#39;</span><span class="si">{</span><span class="n">reference</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UnsupportedSubstitution</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="s1">'name'</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="si">}</span><span class="s2">' is not part of '</span><span class="si">{</span><span class="n">reference</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ReplaceMaterial</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">replaceable</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">UnsupportedSubstitution</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is built by a layer from its chemical formula; use ReplaceFormula on that layer.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' is built by a layer from its chemical formula; use ReplaceFormula on that layer."</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reformulable</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">UnsupportedSubstitution</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has no chemical formula to replace.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">UnsupportedSubstitution</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' has no chemical formula to replace."</span><span class="p">)</span>
             <span class="n">_check_formula</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">formula</span><span class="p">)</span>
 
     <span class="n">assemblies</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3285,7 +3285,7 @@ Scale, background and resolution are copied by value and stay independent.</p>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
         <span class="n">resolution_function</span><span class="o">=</span><span class="n">ResolutionFunction</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">resolution_function</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()),</span>
     <span class="p">)</span>
-    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="s1">&#39;guide_field_angle&#39;</span><span class="p">,</span> <span class="s1">&#39;applied_field&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'scale'</span><span class="p">,</span> <span class="s1">'background'</span><span class="p">,</span> <span class="s1">'guide_field_angle'</span><span class="p">,</span> <span class="s1">'applied_field'</span><span class="p">):</span>
         <span class="n">restore</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">attribute</span><span class="p">),</span> <span class="n">snapshot</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">model</span>
 </code></pre></div></td></tr></table></div>
@@ -3369,7 +3369,7 @@ and the layers and materials a :class:<code>ReplaceFormula</code> can re-formula
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">substitution_candidates</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;What :func:`derive_contrast` can substitute in `model`, each once, in sample order.</span>
+<span class="w">    </span><span class="sd">"""What :func:`derive_contrast` can substitute in `model`, each once, in sample order.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3377,7 +3377,7 @@ and the layers and materials a :class:<code>ReplaceFormula</code> can re-formula
 <span class="sd">        The materials and mixture components a :class:`ReplaceMaterial` can</span>
 <span class="sd">        replace (not those a :class:`LayerAreaPerMolecule` builds for itself),</span>
 <span class="sd">        and the layers and materials a :class:`ReplaceFormula` can re-formulate.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">materials</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">formulas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -3392,7 +3392,7 @@ and the layers and materials a :class:<code>ReplaceFormula</code> can re-formula
             <span class="n">materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
             <span class="n">internal</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">LayerAreaPerMolecule</span><span class="p">)</span> <span class="ow">and</span> <span class="n">child</span> <span class="ow">is</span> <span class="n">node</span><span class="o">.</span><span class="n">material</span>
-            <span class="n">visit</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">internal</span> <span class="ow">or</span> <span class="p">(</span><span class="n">owned</span> <span class="ow">and</span> <span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;solvent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)))</span>
+            <span class="n">visit</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">internal</span> <span class="ow">or</span> <span class="p">(</span><span class="n">owned</span> <span class="ow">and</span> <span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">'solvent'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)))</span>
 
     <span class="n">visit</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">materials</span><span class="p">,</span> <span class="n">formulas</span>
@@ -3510,45 +3510,45 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
     <span class="n">follower_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">materials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinkPlan</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The equalities that would tie `follower`&#39;s parameters to `reference`&#39;s; nothing is changed.</span>
+<span class="w">    </span><span class="sd">"""The equalities that would tie `follower`'s parameters to `reference`'s; nothing is changed.</span>
 
 <span class="sd">    Parameters correspond by their path within the model, so the two layouts</span>
 <span class="sd">    must match. Scale and background stay per contrast; parameters that are</span>
 <span class="sd">    one object, derived, disabled or followed by something else are skipped</span>
 <span class="sd">    with a reason; a parameter the follower shares with a third model is</span>
 <span class="sd">    skipped as well (tying it would move that model too). Chemistry</span>
-<span class="sd">    parameters (:data:`CHEMISTRY`) are ``&#39;undecided&#39;`` unless `materials` is</span>
-<span class="sd">    ``&#39;tie&#39;`` or ``&#39;skip&#39;``.</span>
+<span class="sd">    parameters (:data:`CHEMISTRY`) are ``'undecided'`` unless `materials` is</span>
+<span class="sd">    ``'tie'`` or ``'skip'``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    LayoutMismatch</span>
-<span class="sd">        The models&#39; parameters do not correspond one to one.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        The models' parameters do not correspond one to one.</span>
+<span class="sd">    """</span>
     <span class="c1"># Every path: a material used by two layers of one model and by two distinct</span>
     <span class="c1"># objects in the other still corresponds layer by layer.</span>
-    <span class="n">follower_parameters</span> <span class="o">=</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">follower</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">],</span> <span class="n">every_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">reference_parameters</span> <span class="o">=</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">],</span> <span class="n">every_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">follower_parameters</span> <span class="o">=</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">follower</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="p">[</span><span class="s1">'sample'</span><span class="p">],</span> <span class="n">every_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">reference_parameters</span> <span class="o">=</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">sample</span><span class="p">,</span> <span class="p">[</span><span class="s1">'sample'</span><span class="p">],</span> <span class="n">every_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">follower_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">!=</span> <span class="n">reference_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">mismatch</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">follower_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">^</span> <span class="n">reference_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="n">LayoutMismatch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">follower</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">reference</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; differ in layout at </span><span class="si">{</span><span class="n">mismatch</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">LayoutMismatch</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">follower</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' and '</span><span class="si">{</span><span class="n">reference</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' differ in layout at </span><span class="si">{</span><span class="n">mismatch</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">LinkRow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">follower</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s1">&#39;skip&#39;</span><span class="p">,</span> <span class="s1">&#39;per contrast&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span> <span class="s1">&#39;background&#39;</span><span class="p">)</span>
+        <span class="n">LinkRow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">follower</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s1">'skip'</span><span class="p">,</span> <span class="s1">'per contrast'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'scale'</span><span class="p">,</span> <span class="s1">'background'</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">planned</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">LinkRow</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">follower_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">row</span> <span class="o">=</span> <span class="n">LinkRow</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">reference_parameters</span><span class="p">[</span><span class="n">path</span><span class="p">],</span> <span class="s1">&#39;tie&#39;</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">LinkRow</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">reference_parameters</span><span class="p">[</span><span class="n">path</span><span class="p">],</span> <span class="s1">'tie'</span><span class="p">)</span>
         <span class="n">first</span> <span class="o">=</span> <span class="n">planned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">parameter</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">first</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">planned</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">parameter</span><span class="p">)]</span> <span class="o">=</span> <span class="n">row</span>
             <span class="n">_classify</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">follower_index</span><span class="p">,</span> <span class="n">owners</span><span class="p">,</span> <span class="n">materials</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">first</span><span class="o">.</span><span class="n">reference</span> <span class="ow">is</span> <span class="n">row</span><span class="o">.</span><span class="n">reference</span> <span class="ow">or</span> <span class="n">first</span><span class="o">.</span><span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;tie&#39;</span><span class="p">,</span> <span class="s1">&#39;undecided&#39;</span><span class="p">):</span>
-            <span class="n">row</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="s1">&#39;skip&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;the same parameter as </span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">elif</span> <span class="n">first</span><span class="o">.</span><span class="n">reference</span> <span class="ow">is</span> <span class="n">row</span><span class="o">.</span><span class="n">reference</span> <span class="ow">or</span> <span class="n">first</span><span class="o">.</span><span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'tie'</span><span class="p">,</span> <span class="s1">'undecided'</span><span class="p">):</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="s1">'skip'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'the same parameter as </span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># The follower uses one parameter where the reference uses two: no silent choice.</span>
-            <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;conflict&#39;</span>
-            <span class="n">row</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;one parameter at </span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">, two different reference parameters&#39;</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">'conflict'</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'one parameter at </span><span class="si">{</span><span class="n">first</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">, two different reference parameters'</span>
         <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">LinkPlan</span><span class="p">(</span><span class="n">follower</span><span class="p">,</span> <span class="n">reference</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3585,7 +3585,7 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">follows</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">leader</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether `parameter` is a plain equality tie to `leader`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Whether `parameter` is a plain equality tie to `leader`."""</span>
     <span class="n">dependency_map</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">dependency_map</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">parameter</span><span class="o">.</span><span class="n">independent</span>
@@ -3635,11 +3635,11 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tie_corresponding</span><span class="p">(</span><span class="n">copy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">excluded</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tie every independent parameter of `copy` to the reference parameter at the same path.</span>
+<span class="w">    </span><span class="sd">"""Tie every independent parameter of `copy` to the reference parameter at the same path.</span>
 
 <span class="sd">    Parameters that are the same object, have no counterpart or are listed in</span>
 <span class="sd">    `excluded` (by id) are left alone. Returns the parameters tied.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">leaders</span> <span class="o">=</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="p">[])</span>
     <span class="n">tied</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">_parameters</span><span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3683,13 +3683,13 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The state :func:`restore` gives back to `parameter` (a tie replaces its value, bounds and uncertainty).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The state :func:`restore` gives back to `parameter` (a tie replaces its value, bounds and uncertainty)."""</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-        <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
-        <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
-        <span class="s1">&#39;fixed&#39;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">fixed</span><span class="p">,</span>
-        <span class="s1">&#39;variance&#39;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">variance</span><span class="p">,</span>
+        <span class="s1">'value'</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="s1">'min'</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
+        <span class="s1">'max'</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
+        <span class="s1">'fixed'</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">fixed</span><span class="p">,</span>
+        <span class="s1">'variance'</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">variance</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3718,12 +3718,12 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">restore</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
-    <span class="n">parameter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-    <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">]</span>
-    <span class="n">parameter</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;fixed&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s1">&#39;variance&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>  <span class="c1"># links saved before the uncertainty was kept have none</span>
-        <span class="n">parameter</span><span class="o">.</span><span class="n">variance</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;variance&#39;</span><span class="p">]</span>
+    <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">)</span>
+    <span class="n">parameter</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span>
+    <span class="n">parameter</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">'min'</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s1">'max'</span><span class="p">]</span>
+    <span class="n">parameter</span><span class="o">.</span><span class="n">fixed</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">'fixed'</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">'variance'</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>  <span class="c1"># links saved before the uncertainty was kept have none</span>
+        <span class="n">parameter</span><span class="o">.</span><span class="n">variance</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">'variance'</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3899,10 +3899,10 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       
@@ -3911,5 +3911,112 @@ parameters (:data:<code>CHEMISTRY</code>) are <code>'undecided'</code> unless <c
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
-  </body>
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
 </html>
