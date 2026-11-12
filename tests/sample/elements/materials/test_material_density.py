@@ -114,7 +114,7 @@ class TestMaterialDensity(unittest.TestCase):
     def test_units_after_round_trip(self):
         p = MaterialDensity()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
         assert str(q.sld.unit) == '1/Å^2'
@@ -123,7 +123,7 @@ class TestMaterialDensity(unittest.TestCase):
     def test_dict_round_trip(self):
         p = MaterialDensity()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
 
@@ -245,7 +245,7 @@ class TestMaterialDensity(unittest.TestCase):
         assert p_dict['sld_coupled'] is False
         assert p_dict['sld'] == 9.4
         assert p_dict['isld'] == 0.2
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
         assert q.sld_coupled is False
@@ -274,7 +274,7 @@ class TestMaterialDensity(unittest.TestCase):
         p = MaterialDensity()
         p.sld_coupled = False
         p.sld.fixed = False
-        free = p.get_fit_parameters()
+        free = p.get_free_parameters()
         assert any(parameter is p.sld for parameter in free)
 
     def test_dict_round_trip_decoupled_preserves_manual_sld(self):
@@ -286,7 +286,7 @@ class TestMaterialDensity(unittest.TestCase):
         assert p_dict['sld_coupled'] is False
         assert p_dict['sld'] == 7.25
         assert p_dict['isld'] == -0.5
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
         assert q.sld_coupled is False
@@ -307,7 +307,7 @@ class TestMaterialDensity(unittest.TestCase):
         """Project files predating the feature restore with current behavior."""
         p = MaterialDensity(chemical_structure='Si', density=2.33)
         p_dict = {k: v for k, v in p.as_dict().items() if k != 'sld_coupled'}
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
         assert q.sld_coupled is True
@@ -324,7 +324,7 @@ class TestMaterialDensity(unittest.TestCase):
         p = MaterialDensity(chemical_structure='Si', density=2.33)
         original_sld = p.sld.value
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialDensity.from_dict(p_dict)
         assert_almost_equal(q.sld.value, original_sld)

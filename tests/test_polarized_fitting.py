@@ -41,9 +41,9 @@ def _isolated_global_object():
     collection); a leftover registration makes the *next* module's first
     `Project()` fail with 'Object name project_models already exists'.
     """
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _magnetic_model(magnetism: LayerMagnetism | None) -> Model:
@@ -288,10 +288,10 @@ class TestLoadPolarizedExperiment:
 
         # Must not raise (PolarizedDataSet has no .x/.y/.ye of its own) and must
         # be plain-JSON-serializable, since that is what `save_as_json` does with it.
-        project_dict = project.as_dict(include_materials_not_in_model=True)
+        project_dict = project.as_dict()
         json.dumps(project_dict)
 
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded_project = Project()
         reloaded_project.from_dict(project_dict)
         reloaded = reloaded_project.experiments[0]
@@ -321,7 +321,7 @@ class TestLoadPolarizedExperiment:
         project.save_as_json()
         assert project.path_json.exists()
 
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded_project = Project()
         reloaded_project.load_from_json(project.path_json)
         reloaded = reloaded_project.experiments[0]
@@ -394,7 +394,7 @@ class TestChannelAwareExperimentAccessors:
             project.experimental_data_for_model_at_index(0, channel='pp')
 
     def test_model_data_per_channel_differs_for_magnetic_model(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = _magnetic_model(LayerMagnetism(rho_m=2.5, theta_m=40.0))
         project = Project()
         project.calculator = 'refl1d'
@@ -412,7 +412,7 @@ class TestChannelAwareExperimentAccessors:
         assert not np.allclose(pp.y, pm.y)
 
     def test_spin_flip_channel_of_non_magnetic_model_raises(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.default_model()
@@ -680,7 +680,7 @@ class TestMagneticSldData:
 
     @staticmethod
     def _magnetic_project(theta_m: float = 270.0) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         model = _magnetic_model(LayerMagnetism(rho_m=2.5, theta_m=theta_m))
         project = Project()
         project.calculator = 'refl1d'
@@ -745,7 +745,7 @@ class TestMagneticSldData:
         assert_allclose(profiles['sld'].y, nuclear.y)
 
     def test_non_magnetic_model_raises_and_reports_no_magnetism(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.default_model()
@@ -769,7 +769,7 @@ class TestSpinAsymmetry:
         return project
 
     def test_asymmetry_and_error_propagation(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         r_pp = np.full_like(Q, 0.6)
         r_mm = np.full_like(Q, 0.2)
         project = self._project_with_channels({'pp': r_pp, 'mm': r_mm})
@@ -787,7 +787,7 @@ class TestSpinAsymmetry:
         assert result['masked_points'] == 0
 
     def test_insignificant_points_are_dropped_and_counted(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         r_pp = np.full_like(Q, 0.6)
         r_mm = np.full_like(Q, 0.2)
         # Make the last five points pure noise: huge uncertainty, tiny signal.
@@ -810,7 +810,7 @@ class TestSpinAsymmetry:
         assert np.all(np.isfinite(result['measured'].y))
 
     def test_channels_on_different_q_grids_are_interpolated(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -831,7 +831,7 @@ class TestSpinAsymmetry:
         assert_allclose(measured.y, 0.5, atol=1e-9)
 
     def test_calculated_asymmetry_only_for_a_magnetic_model(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         magnetic = _magnetic_model(LayerMagnetism(rho_m=2.5, theta_m=270.0))
         magnetic.interface = _refl1d_interface()
         reference = magnetic.interface.polarized_reflectivity_profiles(Q, magnetic.unique_name)
@@ -846,20 +846,20 @@ class TestSpinAsymmetry:
         assert np.abs(calculated.y).max() > 0.01  # a real magnetic signal
 
     def test_no_calculated_asymmetry_without_magnetism(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = self._project_with_channels({'pp': np.full_like(Q, 0.6), 'mm': np.full_like(Q, 0.2)})
 
         assert project.spin_asymmetry_for_experiment_at_index(0)['calculated'] is None
 
     def test_availability_and_errors(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = self._project_with_channels({'pp': np.full_like(Q, 0.6), 'mm': np.full_like(Q, 0.2)})
 
         assert project.experiment_supports_spin_asymmetry_at_index(0) is True
         assert project.experiment_supports_spin_asymmetry_at_index(1) is False
 
         # pp only: no asymmetry to form.
-        global_object.map._clear()
+        global_object.registry.clear()
         nsf_incomplete = self._project_with_channels({'pp': np.full_like(Q, 0.6)})
         assert nsf_incomplete.experiment_supports_spin_asymmetry_at_index(0) is False
         with pytest.raises(ValueError, match='both non-spin-flip channels'):
@@ -898,7 +898,7 @@ class TestMagneticProfileSmoothing:
         return model
 
     def _profiles(self, theta_top: float, theta_bottom: float) -> dict:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(self._two_layer_model(theta_top, theta_bottom))
@@ -952,7 +952,7 @@ class TestSpinAsymmetryGridPairing:
 
     @staticmethod
     def _project_with(pp: DataSet1D, mm: DataSet1D) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -1017,7 +1017,7 @@ class TestSpinAsymmetryDenominatorGuards:
 
     @staticmethod
     def _project_with(pp: DataSet1D, mm: DataSet1D) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -1099,7 +1099,7 @@ class TestSpinAsymmetryChannelValidation:
 
     @staticmethod
     def _project_with(pp: DataSet1D, mm: DataSet1D) -> Project:
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -1153,7 +1153,7 @@ class TestSpinAsymmetryInterpolatedVariance:
     """CR2: variances interpolate with squared weights."""
 
     def test_midpoint_variance_uses_squared_weights(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -1171,7 +1171,7 @@ class TestSpinAsymmetryInterpolatedVariance:
         assert_allclose(result['measured'].ye, [expected], rtol=1e-12)
 
     def test_endpoints_take_the_source_variance_unchanged(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.calculator = 'refl1d'
         project.models = ModelCollection(_magnetic_model(None))
@@ -1201,7 +1201,7 @@ class TestMagneticProfileDisplayContinuity:
     def test_component_smoothing_failure_is_not_papered_over(self):
         # The wrapper must refuse rather than serve refl1d's angle-smoothed
         # profile, which misreports the splitting at such an interface.
-        global_object.map._clear()
+        global_object.registry.clear()
         model = _magnetic_model(LayerMagnetism(rho_m=2.5, theta_m=270.0))
         project = Project()
         project.calculator = 'refl1d'

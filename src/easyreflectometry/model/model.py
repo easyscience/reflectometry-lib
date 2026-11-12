@@ -150,7 +150,7 @@ class Model(BaseCore):
         # Rebuilt by every constructor call — including `from_dict` — and
         # deliberately *not* serialized: it is a function of the layers.
         self._total_thickness = Parameter(
-            name='total_thickness',
+            display_name='total_thickness',
             value=0.0,
             unit='angstrom',
             fixed=True,
@@ -271,14 +271,10 @@ class Model(BaseCore):
         """
         if not assemblies:
             self.sample.add_assembly()
-            if self.interface is not None:
-                self.interface().add_item_to_model(self.sample[-1].unique_name, self.unique_name)
         else:
             for assembly in assemblies:
                 if issubclass(assembly.__class__, BaseAssembly):
                     self.sample.add_assembly(assembly)
-                    if self.interface is not None:
-                        self.interface().add_item_to_model(self.sample[-1].unique_name, self.unique_name)
                 else:
                     raise ValueError(f'Object {assembly} is not a valid type, must be a child of BaseAssembly.')
 
@@ -291,8 +287,6 @@ class Model(BaseCore):
             Index of the item or layer to duplicate.
         """
         self.sample.duplicate_assembly(index)
-        if self.interface is not None:
-            self.interface().add_item_to_model(self.sample[-1].unique_name, self.unique_name)
 
     def remove_assembly(self, index: int) -> None:
         """Remove an assembly from the model.
@@ -302,10 +296,7 @@ class Model(BaseCore):
         index : int
             Index of the item to remove.
         """
-        assembly_unique_name = self.sample[index].unique_name
         self.sample.remove_assembly(index)
-        if self.interface is not None:
-            self.interface().remove_item_from_model(assembly_unique_name, self.unique_name)
 
     @property
     def has_magnetism(self) -> bool:

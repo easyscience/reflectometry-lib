@@ -98,6 +98,34 @@ class TestSurfactantLayer:
         assert p.head_layer.roughness.value == 4
         assert layer.roughness.value == 4
 
+    def test_a_constrained_solvent_roughness_can_follow_another_contrast(self):
+        # One solvent layer shared by two contrasts: the second call rewires it.
+        first, second = SurfactantLayer(), SurfactantLayer()
+        for contrast, roughness in ((first, 2.0), (second, 5.0)):
+            contrast.tail_layer.roughness.value = roughness
+            contrast.conformal_roughness = True
+        solvent = Layer()
+        first.constrain_solvent_roughness(solvent.roughness)
+
+        second.constrain_solvent_roughness(solvent.roughness)
+
+        assert solvent.roughness.value == 5.0
+        second.tail_layer.roughness.value = 6.0
+        assert solvent.roughness.value == 6.0
+
+    def test_constrain_solvent_roughness_is_a_user_constraint(self):
+        # The flag is what Project.save records, so the tie survives a reload.
+        from easyreflectometry.constraints import USER_CONSTRAINT_FLAG
+
+        p = SurfactantLayer()
+        p.conformal_roughness = True
+        solvent = Layer()
+
+        p.constrain_solvent_roughness(solvent.roughness)
+
+        assert getattr(solvent.roughness, USER_CONSTRAINT_FLAG, False)
+        assert not solvent.roughness.independent
+
     def test_dict_repr(self):
         p = SurfactantLayer()
 
@@ -210,7 +238,7 @@ def test_dict_round_trip():
     )
     p = SurfactantLayer(head_layer=head_layer, tail_layer=tail_layer)
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -224,7 +252,7 @@ def test_dict_round_trip_area_per_molecule_constraint_enabled():
     p = SurfactantLayer()
     p.constrain_area_per_molecule = True
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -239,7 +267,7 @@ def test_dict_round_trip_area_per_molecule_constraint_disabled():
     p.constrain_area_per_molecule = True
     p.constrain_area_per_molecule = False
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -253,7 +281,7 @@ def test_dict_round_trip_roughness_constraint_enabled():
     p = SurfactantLayer()
     p.conformal_roughness = True
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)
@@ -268,7 +296,7 @@ def test_dict_round_trip_roughness_constraint_disabled():
     p.conformal_roughness = True
     p.conformal_roughness = False
     p_dict = p.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     q = SurfactantLayer.from_dict(p_dict)

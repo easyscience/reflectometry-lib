@@ -9,11 +9,10 @@ enforce them, and `fit` raises `ValueError` in that case rather than
 silently dropping the physics.
 
 ```python
-from easyscience.fitting import AvailableMinimizers
-
 from easyreflectometry import InequalitySpec
+from easyreflectometry import Minimizers
 
-project.minimizer = AvailableMinimizers.Bumps
+project.minimizer = Minimizers.Bumps
 t_a = project.parameter_path(layer_a.thickness)  # 'models/0/sample/1/layers/0/thickness'
 t_b = project.parameter_path(layer_b.thickness)
 project.add_inequality_constraint(InequalitySpec('a', '<', 'b', {'a': t_a}, {'b': t_b}, name='order'))

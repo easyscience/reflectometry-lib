@@ -90,7 +90,7 @@ class TestMaterial:
     def test_dict_round_trip(self):
         p = Material()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = Material.from_dict(p_dict)
 

@@ -21,13 +21,13 @@ from easyreflectometry.sample import Sample
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _thickness(value, name):
-    return Parameter(name, value, unit='angstrom', min=0.0, max=1000.0)
+    return Parameter(value, display_name=name, unit='angstrom', min=0.0, max=1000.0)
 
 
 class TestDerivedParameter:
@@ -103,7 +103,7 @@ class TestModelTotalThickness:
         total = model.total_thickness
         assert total.value == 100.0
         assert total.independent is False
-        assert total not in model.get_fit_parameters()
+        assert total not in model.get_free_parameters()
         with pytest.raises(AttributeError):
             total.value = 5.0
 
@@ -144,7 +144,7 @@ class TestModelTotalThickness:
         assert total.value == 0.0
         assert total.independent is True
         assert total.fixed is True
-        assert 'total_thickness' not in [parameter.name for parameter in model.get_fit_parameters()]
+        assert 'total_thickness' not in [parameter.name for parameter in model.get_free_parameters()]
 
     def test_not_serialized_but_rebuilt_on_load(self):
         project = Project()
@@ -154,7 +154,7 @@ class TestModelTotalThickness:
         project_dict = json.loads(json.dumps(project.as_dict()))
         assert 'total_thickness' not in json.dumps(project_dict)
 
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded = Project()
         reloaded.from_dict(project_dict)
         assert reloaded.models[0].total_thickness.value == before

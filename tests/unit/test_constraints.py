@@ -32,15 +32,15 @@ from easyreflectometry.sample import Sample
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 class TestConstrainEqual:
     def test_ties_value_and_follows(self):
-        leader = Parameter('leader', 5.0, unit='angstrom', min=0.0, max=10.0)
-        follower = Parameter('follower', 1.0, unit='angstrom', min=0.0, max=2.0)
+        leader = Parameter(5.0, display_name='leader', unit='angstrom', min=0.0, max=10.0)
+        follower = Parameter(1.0, display_name='follower', unit='angstrom', min=0.0, max=2.0)
 
         constrain_equal(follower, to=leader)
 
@@ -50,8 +50,8 @@ class TestConstrainEqual:
         assert follower.value == 7.0
 
     def test_overwrites_bounds_and_clears_fixed(self):
-        leader = Parameter('leader', 5.0, unit='angstrom', min=0.0, max=10.0)
-        follower = Parameter('follower', 1.0, unit='angstrom', min=0.5, max=2.0, fixed=True)
+        leader = Parameter(5.0, display_name='leader', unit='angstrom', min=0.0, max=10.0)
+        follower = Parameter(1.0, display_name='follower', unit='angstrom', min=0.5, max=2.0, fixed=True)
 
         constrain_equal(follower, to=leader)
 
@@ -60,8 +60,8 @@ class TestConstrainEqual:
         assert follower.fixed is False
 
     def test_dependent_setters_are_locked(self):
-        leader = Parameter('leader', 5.0)
-        follower = Parameter('follower', 1.0)
+        leader = Parameter(5.0, display_name='leader')
+        follower = Parameter(1.0, display_name='follower')
         constrain_equal(follower, to=leader)
 
         with pytest.raises(AttributeError):
@@ -74,8 +74,8 @@ class TestConstrainEqual:
         # EasyScience sets min == max == value on the dependent. Pinned
         # here because it is why the docs say "reset bounds after
         # unconstrain".
-        leader = DescriptorNumber('leader', 3.0)
-        follower = Parameter('follower', 1.0, min=0.0, max=2.0)
+        leader = DescriptorNumber(3.0, display_name='leader')
+        follower = Parameter(1.0, display_name='follower', min=0.0, max=2.0)
 
         constrain_equal(follower, to=leader)
         assert follower.min == 3.0
@@ -88,8 +88,8 @@ class TestConstrainEqual:
 
 class TestConstrain:
     def test_scale_expression_follows(self):
-        leader = Parameter('leader', 5.0, unit='angstrom', min=0.0, max=10.0)
-        follower = Parameter('follower', 1.0, unit='angstrom', min=0.0, max=2.0)
+        leader = Parameter(5.0, display_name='leader', unit='angstrom', min=0.0, max=10.0)
+        follower = Parameter(1.0, display_name='follower', unit='angstrom', min=0.0, max=2.0)
 
         constrain(follower, '2 * t', t=leader)
 
@@ -98,10 +98,10 @@ class TestConstrain:
         assert follower.value == 12.0
 
     def test_multi_parameter_expression(self):
-        fraction = Parameter('fraction', 0.25, min=0.0, max=1.0)
-        sld_a = Parameter('sld_a', 2.0)
-        sld_b = Parameter('sld_b', 6.0)
-        mixed = Parameter('mixed', 0.0)
+        fraction = Parameter(0.25, display_name='fraction', min=0.0, max=1.0)
+        sld_a = Parameter(2.0, display_name='sld_a')
+        sld_b = Parameter(6.0, display_name='sld_b')
+        mixed = Parameter(0.0, display_name='mixed')
 
         constrain(mixed, 'frac * a + (1 - frac) * b', frac=fraction, a=sld_a, b=sld_b)
 
@@ -110,9 +110,9 @@ class TestConstrain:
         assert mixed.value == pytest.approx(0.5 * 2.0 + 0.5 * 6.0)
 
     def test_reconstrain_replaces_dependency(self):
-        first = Parameter('first', 1.0)
-        second = Parameter('second', 2.0)
-        follower = Parameter('follower', 0.0)
+        first = Parameter(1.0, display_name='first')
+        second = Parameter(2.0, display_name='second')
+        follower = Parameter(0.0, display_name='follower')
 
         constrain_equal(follower, to=first)
         constrain_equal(follower, to=second)
@@ -125,8 +125,8 @@ class TestConstrain:
         assert follower.value == 3.0
 
     def test_unknown_name_raises_and_reverts(self):
-        leader = Parameter('leader', 5.0)
-        follower = Parameter('follower', 1.0)
+        leader = Parameter(5.0, display_name='leader')
+        follower = Parameter(1.0, display_name='follower')
 
         with pytest.raises(NameError):
             constrain(follower, 'a + b', a=leader)
@@ -137,8 +137,8 @@ class TestConstrain:
 
 class TestUnconstrain:
     def test_removes_constraint_and_keeps_last_value(self):
-        leader = Parameter('leader', 5.0, min=0.0, max=10.0)
-        follower = Parameter('follower', 1.0, min=0.0, max=2.0)
+        leader = Parameter(5.0, display_name='leader', min=0.0, max=10.0)
+        follower = Parameter(1.0, display_name='follower', min=0.0, max=2.0)
         constrain_equal(follower, to=leader)
         leader.value = 7.0
 
@@ -156,7 +156,7 @@ class TestUnconstrain:
         assert leader.value == 7.0
 
     def test_idempotent_on_independent_parameter(self):
-        parameter = Parameter('parameter', 1.0)
+        parameter = Parameter(1.0, display_name='parameter')
         unconstrain(parameter)
         unconstrain(parameter)
         assert parameter.independent is True
@@ -164,8 +164,8 @@ class TestUnconstrain:
 
 class TestIsConstrainedToSum:
     def _sum(self):
-        a = Parameter('a', 30.0, unit='angstrom', min=0.0, max=100.0)
-        b = Parameter('b', 30.0, unit='angstrom', min=0.0, max=100.0)
+        a = Parameter(30.0, display_name='a', unit='angstrom', min=0.0, max=100.0)
+        b = Parameter(30.0, display_name='b', unit='angstrom', min=0.0, max=100.0)
         constrain_to_sum(b, [a, b])
         return a, b
 
@@ -176,18 +176,18 @@ class TestIsConstrainedToSum:
         assert is_constrained_to_sum(b, [a]) is True  # `parameter` itself may be omitted
 
     def test_independent_parameter_is_not(self):
-        parameter = Parameter('p', 1.0)
+        parameter = Parameter(1.0, display_name='p')
         assert is_constrained_to_sum(parameter) is False
 
     def test_other_dependencies_are_not(self):
-        leader = Parameter('leader', 5.0)
-        follower = Parameter('follower', 1.0)
+        leader = Parameter(5.0, display_name='leader')
+        follower = Parameter(1.0, display_name='follower')
         constrain_equal(follower, to=leader)
         assert is_constrained_to_sum(follower) is False
 
     def test_foreign_partner_requirement_fails(self):
         a, b = self._sum()
-        stranger = Parameter('stranger', 1.0)
+        stranger = Parameter(1.0, display_name='stranger')
         assert is_constrained_to_sum(b, [a, stranger]) is False
 
     def test_survives_project_reload(self):
@@ -200,7 +200,7 @@ class TestIsConstrainedToSum:
         assert is_constrained_to_sum(second, [first, second])
 
         project_dict = json.loads(json.dumps(source.as_dict()))
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.from_dict(project_dict)
         sample = project.models[0].sample
@@ -209,8 +209,8 @@ class TestIsConstrainedToSum:
 
 class TestSumPartnerClamp:
     def test_clamp_narrows_and_restore_widens(self):
-        a = Parameter('a', 30.0, unit='angstrom', min=0.0, max=1000.0)
-        b = Parameter('b', 30.0, unit='angstrom', min=0.0, max=1000.0)
+        a = Parameter(30.0, display_name='a', unit='angstrom', min=0.0, max=1000.0)
+        b = Parameter(30.0, display_name='b', unit='angstrom', min=0.0, max=1000.0)
         constrain_to_sum(b, [a, b])
 
         clamp_sum_partners([a], float(b.value))
@@ -225,8 +225,8 @@ class TestSumPartnerClamp:
         assert float(a.max) == pytest.approx(1000.0)
 
     def test_restore_is_idempotent_and_never_narrows(self):
-        a = Parameter('a', 30.0, unit='angstrom', min=0.0, max=1000.0)
-        b = Parameter('b', 30.0, unit='angstrom', min=0.0, max=1000.0)
+        a = Parameter(30.0, display_name='a', unit='angstrom', min=0.0, max=1000.0)
+        b = Parameter(30.0, display_name='b', unit='angstrom', min=0.0, max=1000.0)
         constrain_to_sum(b, [a, b])
         clamp_sum_partners([a], float(b.value))
         unconstrain(b)
@@ -236,8 +236,8 @@ class TestSumPartnerClamp:
         assert float(a.max) == pytest.approx(2000.0)
 
     def test_already_tight_bound_is_left_alone(self):
-        a = Parameter('a', 30.0, unit='angstrom', min=0.0, max=40.0)
-        b = Parameter('b', 30.0, unit='angstrom', min=0.0, max=1000.0)
+        a = Parameter(30.0, display_name='a', unit='angstrom', min=0.0, max=40.0)
+        b = Parameter(30.0, display_name='b', unit='angstrom', min=0.0, max=1000.0)
         constrain_to_sum(b, [a, b])
         clamp_sum_partners([a], float(b.value))
         assert float(a.max) == pytest.approx(40.0)
@@ -258,7 +258,7 @@ class TestSumPartnerClamp:
 
         project_dict = json.loads(json.dumps(source.as_dict()))
         assert 'sum_partner_max_backups' in project_dict
-        global_object.map._clear()
+        global_object.registry.clear()
         project = Project()
         project.from_dict(project_dict)
         sample = project.models[0].sample
@@ -293,7 +293,7 @@ class TestProjectRoundTrip:
         assert follower.value == 2 * leader.value
 
         project_dict = src_project.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)
@@ -316,7 +316,7 @@ class TestProjectRoundTrip:
             total=10.0,
         )
         project_dict = json.loads(json.dumps(source.as_dict()))
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)
@@ -331,7 +331,7 @@ class TestProjectRoundTrip:
         model = source.models[0]
         constrain(model.sample[1].layers[0].roughness, 'total / 100', total=model.total_thickness)
         project_dict = json.loads(json.dumps(source.as_dict()))
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)
@@ -359,7 +359,7 @@ class TestProjectRoundTrip:
 
         project_dict = json.loads(json.dumps(source.as_dict()))
         assert 'parameter_constraints' not in project_dict
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)
@@ -384,7 +384,7 @@ class TestProjectRoundTrip:
 
         project_dict = json.loads(json.dumps(source.as_dict()))
         assert 'parameter_constraints' not in project_dict
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)
@@ -405,7 +405,7 @@ class TestProjectRoundTrip:
         """Embedding a live parameter by value would silently kill the dependency."""
         project = Project()
         project.default_model()
-        detached = Parameter('detached', 5.0, unit='angstrom')
+        detached = Parameter(5.0, display_name='detached', unit='angstrom')
         constrain(project.models[0].sample[1].layers[0].roughness, 'a', a=detached)
 
         with pytest.raises(ValueError, match='not reachable from'):
@@ -414,7 +414,7 @@ class TestProjectRoundTrip:
     def test_unreachable_target_raises_rather_than_being_dropped(self):
         """A constraint *on* an off-model parameter is refused, not silently lost.
 
-        The material is saved through `materials_not_in_model`, so without this
+        The material is saved in the materials palette, so without this
         the file would come back looking complete while the constraint had
         quietly disappeared.
         """
@@ -426,7 +426,7 @@ class TestProjectRoundTrip:
 
         assert project.parameter_path(off_model.sld) is None
         with pytest.raises(ValueError, match='not reachable from'):
-            project.as_dict(include_materials_not_in_model=True)
+            project.as_dict()
 
     def test_standalone_derived_parameter_is_session_only(self):
         """A `derived_parameter` belongs to no model: it has no path, and a
@@ -441,18 +441,6 @@ class TestProjectRoundTrip:
         with pytest.raises(ValueError, match='not reachable from'):
             project.as_dict()
 
-    def test_warns_when_dependencies_are_embedded_in_the_parameters(self):
-        """A file from a core that serializes dependencies in-place cannot be restored."""
-        project = Project()
-        project.default_model()
-        project_dict = project.as_dict()
-        # Mimic the shape such a core writes for a dependent nested parameter.
-        project_dict['models']['data'][0]['scale']['_dependency_string'] = 'a'
-        global_object.map._clear()
-
-        with pytest.warns(UserWarning, match='must be re-applied'):
-            Project().from_dict(project_dict)
-
     def test_chained_constraints_survive_and_still_follow(self):
         """Records are restored in tree order, which need not be dependency order."""
         source = Project()
@@ -466,7 +454,7 @@ class TestProjectRoundTrip:
         constrain(leaf, '10 * m', m=middle)
 
         project_dict = json.loads(json.dumps(source.as_dict()))
-        global_object.map._clear()
+        global_object.registry.clear()
 
         project = Project()
         project.from_dict(project_dict)

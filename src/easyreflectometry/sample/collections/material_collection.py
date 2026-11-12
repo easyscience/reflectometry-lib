@@ -9,7 +9,7 @@ from ..elements.materials.material import Material
 from .base_collection import BaseCollection
 
 
-# Needs to be a function, elements are added to the global_object.map
+# Needs to be a function, elements are added to the global_object.registry
 def DEFAULT_ELEMENTS(interface):
     """Default elements."""
     return (

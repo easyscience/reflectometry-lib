@@ -15,6 +15,8 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_equal
 
 from easyreflectometry.calculators import CalculatorFactory
+from easyreflectometry.calculators.refl1d.wrapper import _kernel_inputs
+from easyreflectometry.calculators.refnx.wrapper import RefnxWrapper
 from easyreflectometry.model import LinearSpline
 from easyreflectometry.model import Model
 from easyreflectometry.model import PercentageFwhm
@@ -25,6 +27,16 @@ from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import RepeatingMultilayer
 from easyreflectometry.sample import Sample
 from easyreflectometry.sample import SurfactantLayer
+
+
+def _refnx_components(model):
+    """What the refnx calculator is given for *model*: built from it at every evaluation."""
+    return [type(component).__name__ for component in RefnxWrapper._build_structure(model).components]
+
+
+def _refl1d_assemblies(model):
+    """(repeats, layer count) per assembly, as the refl1d calculator is given them at every evaluation."""
+    return [(repeats, len(layers)) for repeats, layers in _kernel_inputs(model, magnetism=False)[0]]
 
 
 class TestModel(unittest.TestCase):
@@ -131,11 +143,9 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refnx_components(mod), ['Stack'])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refnx_components(mod), ['Stack', 'Slab', 'Slab'])
 
     def test_add_assemblies_with_interface_refl1d(self):
         interface = CalculatorFactory()
@@ -151,11 +161,9 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
 
     def test_duplicate_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
@@ -190,11 +198,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
+        assert_equal(_refnx_components(mod), ['Stack'])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
+        assert_equal(_refnx_components(mod), ['Stack', 'Slab', 'Slab'])
         mod.duplicate_assembly(1)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 3)
+        assert_equal(_refnx_components(mod), ['Stack', 'Slab', 'Slab', 'Slab', 'Slab'])
 
     def test_duplicate_assembly_with_interface_refl1d(self):
         interface = CalculatorFactory()
@@ -210,11 +218,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
         mod.duplicate_assembly(1)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 3)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2), (1.0, 2)])
 
     def test_remove_assembly(self):
         m1 = Material(6.908, -0.278, 'Boron')
@@ -247,14 +255,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refnx_components(mod), ['Stack'])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refnx_components(mod), ['Stack', 'Slab', 'Slab'])
         mod.remove_assembly(0)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refnx_components(mod), ['Slab', 'Slab'])
 
     def test_remove_assembly_with_interface_refl1d(self):
         interface = CalculatorFactory()
@@ -270,14 +275,11 @@ class TestModel(unittest.TestCase):
         d = Sample(o1, name='myModel')
         resolution_function = PercentageFwhm(2.0)
         mod = Model(d, 2, 1e-5, resolution_function, 'newModel', interface=interface)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2)])
         mod.add_assemblies(o2)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 2)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(2.0, 2), (1.0, 2)])
         mod.remove_assembly(0)
-        assert_equal(len(mod.interface()._wrapper.storage['item']), 1)
-        assert_equal(len(mod.interface()._wrapper.storage['layer']), 2)
+        assert_equal(_refl1d_assemblies(mod), [(1.0, 2)])
 
     def test_remove_all_assemblies(self):
         # when
@@ -358,7 +360,7 @@ def test_dict_round_trip(interface):
     for additional_layer in [SurfactantLayer(), Multilayer(), RepeatingMultilayer()]:
         model.add_assemblies(additional_layer)
     src_dict = model.as_dict()
-    global_object.map._clear()
+    global_object.registry.clear()
 
     # Then
     model_from_dict = Model.from_dict(src_dict)
@@ -447,46 +449,46 @@ class TestModelRoundTrip:
     """Tests verifying serialization round-trip for the Model class."""
 
     def test_basic_round_trip_preserves_name(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(name='MyModel')
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.name == 'MyModel'
 
     def test_round_trip_preserves_scale_and_background(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(scale=2.0, background=1e-7)
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.scale.value == 2.0
         assert restored.background.value == 1e-7
 
     def test_round_trip_preserves_resolution_function(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model(resolution_function=PercentageFwhm(3.0))
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         sigma_to_fwhm = 2.0 * np.sqrt(2.0 * np.log(2.0))
         assert np.allclose(restored._resolution_function.smearing(100), 3.0 / 100.0 * 100.0 / sigma_to_fwhm)
 
     def test_round_trip_preserves_interface(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         interface = CalculatorFactory()
         model = Model(interface=interface)
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         assert restored.interface().name == 'refnx'
 
     def test_round_trip_preserves_is_default(self):
-        global_object.map._clear()
+        global_object.registry.clear()
         model = Model()
         model.is_default = True
         d = model.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Model.from_dict(d)
         # Note: is_default is a runtime flag that may not survive round-trip
         # because from_dict reconstructs via __init__ which resets _is_default.

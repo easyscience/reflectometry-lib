@@ -2,218 +2,124 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
-Tests for Refnx calculator.
+Tests for Refl1d calculator.
 """
 
-import unittest
-
 import numpy as np
+import pytest
+from easyscience import global_object
 from numpy.testing import assert_almost_equal
-from numpy.testing import assert_equal
 
+from easyreflectometry.calculators import CalculatorBase
 from easyreflectometry.calculators.refl1d.calculator import Refl1d
+from easyreflectometry.model import Model
+from easyreflectometry.sample import Layer
+from easyreflectometry.sample import LayerMagnetism
+from easyreflectometry.sample import Material
+from easyreflectometry.sample import Multilayer
+from easyreflectometry.sample import RepeatingMultilayer
+from easyreflectometry.sample import Sample
+
+Q = np.linspace(0.001, 0.3, 10)
+# Within 0.5 % of refnx for the same models (tests/calculators/refnx/test_refnx_calculator.py),
+# which has no background; recorded once refl1d oversampling was applied.
+FILM = [1.0000e00, 2.1701e-03, 1.1431e-04, 1.9336e-05, 4.9502e-06, 1.5447e-06, 5.4663e-07, 2.2701e-07, 1.2687e-07, 1.0188e-07]
+REPEATED = [
+    1.0000e00,
+    1.7980e-05,
+    1.2273e-04,
+    2.4062e-06,
+    6.7234e-06,
+    8.3050e-07,
+    1.1546e-06,
+    4.1352e-07,
+    3.5132e-07,
+    2.5349e-07,
+]
 
 
-class TestRefl1d(unittest.TestCase):
-    def test_init(self):
-        p = Refl1d()
-        assert_equal(list(p._wrapper.storage.keys()), ['material', 'layer', 'item', 'model'])
-        assert_equal(p._material_link['sld'], 'rho')
-        assert_equal(p._material_link['isld'], 'irho')
-        assert_equal(p._layer_link['thickness'], 'thickness')
-        assert_equal(p._layer_link['roughness'], 'interface')
-        assert_equal(p._item_link['repetitions'], 'repeat')
-        assert_equal(p._model_link['scale'], 'scale')
-        assert_equal(p._model_link['background'], 'bkg')
-        assert_equal(p.name, 'refl1d')
+@pytest.fixture(autouse=True)
+def clear():
+    global_object.registry.clear()
+    yield
+    global_object.registry.clear()
 
-    def test_reflectity_profile(self):
-        p = Refl1d()
-        p._wrapper.create_material('Material1')
-        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
-        p._wrapper.create_material('Material2')
-        p._wrapper.update_material('Material2', rho=2.000, irho=0.000)
-        p._wrapper.create_material('Material3')
-        p._wrapper.update_material('Material3', rho=4.000, irho=0.000)
-        p._wrapper.create_model('MyModel')
-        p._wrapper.update_model('MyModel', bkg=1e-7)
-        p._wrapper.create_layer('Layer1')
-        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
-        p._wrapper.create_layer('Layer2')
-        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
-        p._wrapper.update_layer('Layer2', thickness=10, interface=1.0)
-        p._wrapper.create_layer('Layer3')
-        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
-        p._wrapper.update_layer('Layer3', interface=1.0)
-        p._wrapper.create_item('Item')
-        p._wrapper.add_layer_to_item('Layer1', 'Item')
-        p._wrapper.add_layer_to_item('Layer2', 'Item')
-        p._wrapper.add_layer_to_item('Layer3', 'Item')
-        p._wrapper.add_item('Item', 'MyModel')
-        q = np.linspace(0.001, 0.3, 10)
-        expected = [
-            9.9949e-01,
-            1.0842e-02,
-            1.4709e-04,
-            2.1277e-05,
-            5.2902e-06,
-            1.6347e-06,
-            5.7605e-07,
-            2.3775e-07,
-            1.3093e-07,
-            1.0520e-07,
-        ]
-        assert_almost_equal(p.reflectity_profile(q, 'MyModel'), expected, decimal=4)
 
-    def test_calculate2(self):
-        p = Refl1d()
-        p._wrapper.create_material('Material1')
-        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
-        p._wrapper.create_material('Material2')
-        p._wrapper.update_material('Material2', rho=2.000, irho=0.000)
-        p._wrapper.create_material('Material3')
-        p._wrapper.update_material('Material3', rho=4.000, irho=0.000)
-        p._wrapper.create_model('MyModel')
-        p._wrapper.update_model('MyModel', bkg=1e-7)
-        p._wrapper.create_layer('Layer1')
-        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
-        p._wrapper.create_layer('Layer2')
-        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
-        p._wrapper.update_layer('Layer2', thickness=10, interface=1.0)
-        p._wrapper.create_layer('Layer3')
-        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
-        p._wrapper.update_layer('Layer3', interface=1.0)
-        p._wrapper.create_item('Item1')
-        p._wrapper.add_layer_to_item('Layer1', 'Item1')
-        p._wrapper.create_item('Item2')
-        p._wrapper.add_layer_to_item('Layer2', 'Item2')
-        p._wrapper.add_layer_to_item('Layer1', 'Item2')
-        p._wrapper.create_item('Item3')
-        p._wrapper.add_layer_to_item('Layer3', 'Item3')
-        p._wrapper.add_item('Item1', 'MyModel')
-        p._wrapper.add_item('Item2', 'MyModel')
-        p._wrapper.add_item('Item3', 'MyModel')
-        p._wrapper.update_item('Item2', repeat=10)
-        q = np.linspace(0.001, 0.3, 10)
-        actual = p.reflectity_profile(q, 'MyModel')
-        expected = [
-            9.9949e-01,
-            8.7414e-03,
-            1.1850e-04,
-            5.4758e-06,
-            6.3826e-06,
-            1.0777e-06,
-            1.0968e-06,
-            4.5635e-07,
-            3.4120e-07,
-            2.7505e-07,
-        ]
-        assert_almost_equal(actual, expected, decimal=4)
+def _layers():
+    ambient = Layer(Material(0.0, 0.0, 'Material1'), 0.0, 0.0, 'Layer1')
+    film = Layer(Material(2.0, 0.0, 'Material2'), 10.0, 1.0, 'Layer2')
+    substrate = Layer(Material(4.0, 0.0, 'Material3'), 0.0, 1.0, 'Layer3')
+    return ambient, film, substrate
 
-    def test_calculate_magnetic(self):
-        p = Refl1d()
-        p.include_magnetism = True
-        p._wrapper.create_material('Material1')
-        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
-        p._wrapper.create_material('Material2')
-        p._wrapper.update_material('Material2', rho=2.000, irho=0.000)
-        p._wrapper.create_material('Material3')
-        p._wrapper.update_material('Material3', rho=4.000, irho=0.000)
-        p._wrapper.create_model('MyModel')
-        p._wrapper.update_model('MyModel', bkg=1e-7)
-        p._wrapper.create_layer('Layer1')
-        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
-        p._wrapper.create_layer('Layer2')
-        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
-        p._wrapper.update_layer('Layer2', thickness=10, interface=1.0)
-        p._wrapper.create_layer('Layer3')
-        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
-        p._wrapper.update_layer('Layer3', interface=1.0)
-        p._wrapper.create_item('Item1')
-        p._wrapper.add_layer_to_item('Layer1', 'Item1')
-        p._wrapper.create_item('Item2')
-        p._wrapper.add_layer_to_item('Layer2', 'Item2')
-        p._wrapper.add_layer_to_item('Layer1', 'Item2')
-        p._wrapper.create_item('Item3')
-        p._wrapper.add_layer_to_item('Layer3', 'Item3')
-        p._wrapper.add_item('Item1', 'MyModel')
-        p._wrapper.add_item('Item2', 'MyModel')
-        p._wrapper.add_item('Item3', 'MyModel')
-        q = np.linspace(0.001, 0.3, 10)
-        actual = p.reflectity_profile(q, 'MyModel')
-        expected = [
-            9.99491251e-01,
-            1.08413641e-02,
-            1.46824402e-04,
-            2.11783999e-05,
-            5.24616472e-06,
-            1.61422945e-06,
-            5.66961121e-07,
-            2.34269519e-07,
-            1.30026616e-07,
-            1.05139655e-07,
-        ]
-        assert_almost_equal(actual, expected, decimal=4)
 
-    def test_polarized_reflectivity_profiles(self):
-        p = Refl1d()
-        p.include_magnetism = True
-        p._wrapper.create_material('Material1')
-        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
-        p._wrapper.create_material('Material2')
-        p._wrapper.update_material('Material2', rho=4.000, irho=0.000)
-        p._wrapper.create_material('Material3')
-        p._wrapper.update_material('Material3', rho=2.047, irho=0.000)
-        p._wrapper.create_model('MyModel')
-        p._wrapper.create_layer('Layer1')
-        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
-        p._wrapper.create_layer('Layer2')
-        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
-        p._wrapper.update_layer('Layer2', thickness=100, interface=0)
-        p._wrapper.update_layer('Layer2', magnetism_rhoM=2, magnetism_thetaM=45)
-        p._wrapper.create_layer('Layer3')
-        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
-        p._wrapper.create_item('Item')
-        p._wrapper.add_layer_to_item('Layer1', 'Item')
-        p._wrapper.add_layer_to_item('Layer2', 'Item')
-        p._wrapper.add_layer_to_item('Layer3', 'Item')
-        p._wrapper.add_item('Item', 'MyModel')
-        q = np.linspace(0.005, 0.3, 50)
+def _repeated_model() -> Model:
+    ambient, film, substrate = _layers()
+    sample = Sample(
+        Multilayer(ambient, 'Item1'), RepeatingMultilayer([film, ambient], 10, 'Item2'), Multilayer(substrate, 'Item3')
+    )
+    return Model(sample, 1.0, 1e-7)
 
-        channels = p.polarized_reflectivity_profiles(q, 'MyModel')
 
-        assert_equal(list(channels.keys()), ['pp', 'pm', 'mp', 'mm'])
-        for reflectivity in channels.values():
-            assert_equal(len(reflectivity), len(q))
+def _served(calculator: Refl1d, model: Model) -> Model:
+    calculator.register_model(model)
+    return model
 
-        # reflectity_profile follows the selected channel
-        for key in ['pp', 'pm', 'mp', 'mm']:
-            p.polarization_channel = key
-            assert_equal(p.polarization_channel.value, key)
-            assert_almost_equal(p.reflectity_profile(q, 'MyModel'), channels[key])
 
-    def test_sld_profile(self):
-        p = Refl1d()
-        p._wrapper.create_material('Material1')
-        p._wrapper.update_material('Material1', rho=0.000, irho=0.000)
-        p._wrapper.create_material('Material2')
-        p._wrapper.update_material('Material2', rho=2.000, irho=0.000)
-        p._wrapper.create_material('Material3')
-        p._wrapper.update_material('Material3', rho=4.000, irho=0.000)
-        p._wrapper.create_model('MyModel')
-        p._wrapper.update_model('MyModel', bkg=1e-7, dq=5.0)
-        p._wrapper.create_layer('Layer1')
-        p._wrapper.assign_material_to_layer('Material1', 'Layer1')
-        p._wrapper.create_layer('Layer2')
-        p._wrapper.assign_material_to_layer('Material2', 'Layer2')
-        p._wrapper.update_layer('Layer2', thickness=10, interface=1.0)
-        p._wrapper.create_layer('Layer3')
-        p._wrapper.assign_material_to_layer('Material3', 'Layer3')
-        p._wrapper.update_layer('Layer3', interface=1.0)
-        p._wrapper.create_item('Item')
-        p._wrapper.add_layer_to_item('Layer1', 'Item')
-        p._wrapper.add_layer_to_item('Layer2', 'Item')
-        p._wrapper.add_layer_to_item('Layer3', 'Item')
-        p._wrapper.add_item('Item', 'MyModel')
-        assert_almost_equal(p.sld_profile('MyModel')[1][0], 0)
-        assert_almost_equal(p.sld_profile('MyModel')[1][-1], 4)
+def test_init():
+    calculator = Refl1d()
+    assert calculator.name == 'refl1d'
+    assert Refl1d in CalculatorBase._calculators
+    assert calculator.models == {}
+    assert calculator.supports_magnetism
+
+
+def test_reflectity_profile():
+    calculator = Refl1d()
+    model = _served(calculator, Model(Sample(Multilayer(list(_layers()), 'Item')), 1.0, 1e-7))
+    assert_almost_equal(calculator.reflectity_profile(Q, model.unique_name), FILM, decimal=4)
+
+
+def test_reflectity_profile_of_a_repeated_assembly():
+    calculator = Refl1d()
+    model = _served(calculator, _repeated_model())
+    assert_almost_equal(calculator.reflectity_profile(Q, model.unique_name), REPEATED, decimal=4)
+
+
+def test_magnetism_on_without_a_moment_gives_the_plain_reflectivity():
+    calculator = Refl1d()
+    calculator.include_magnetism = True
+    model = _served(calculator, Model(Sample(Multilayer(list(_layers()), 'Item')), 1.0, 1e-7))
+    assert_almost_equal(calculator.reflectity_profile(Q, model.unique_name), FILM, decimal=4)
+    assert calculator.include_magnetism
+
+
+def test_polarized_reflectivity_profiles():
+    calculator = Refl1d()
+    film = Layer(Material(4.0, 0.0, 'Material2'), 100.0, 0.0, 'Layer2', magnetism=LayerMagnetism(rho_m=2.0, theta_m=45.0))
+    sample = Sample(
+        Multilayer(
+            [Layer(Material(0.0, 0.0, 'Material1'), 0.0, 0.0, 'Layer1'), film, Layer(Material(2.047, 0.0, 'Material3'))],
+            'Item',
+        )
+    )
+    model = _served(calculator, Model(sample, 1.0, 0.0))
+    calculator.include_magnetism = True
+    q = np.linspace(0.005, 0.3, 50)
+
+    channels = calculator.polarized_reflectivity_profiles(q, model.unique_name)
+
+    assert list(channels) == ['pp', 'pm', 'mp', 'mm']
+    for reflectivity in channels.values():
+        assert len(reflectivity) == len(q)
+    # reflectity_profile follows the selected channel
+    for key in ['pp', 'pm', 'mp', 'mm']:
+        calculator.polarization_channel = key
+        assert calculator.polarization_channel.value == key
+        assert_almost_equal(calculator.reflectity_profile(q, model.unique_name), channels[key])
+
+
+def test_sld_profile():
+    calculator = Refl1d()
+    model = _served(calculator, Model(Sample(Multilayer(list(_layers()), 'Item')), 1.0, 1e-7))
+    assert_almost_equal(calculator.sld_profile(model.unique_name)[1][0], 0)
+    assert_almost_equal(calculator.sld_profile(model.unique_name)[1][-1], 4)

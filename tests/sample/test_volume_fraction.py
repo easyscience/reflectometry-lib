@@ -28,7 +28,7 @@ from easyreflectometry.sample.volume_fraction import _smear
 
 
 def _clear():
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _sample(*film_layers, front=None, back=None):

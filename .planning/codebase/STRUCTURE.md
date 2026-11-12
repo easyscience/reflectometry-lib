@@ -1,7 +1,8 @@
 # Codebase Structure
 
 **Analysis Date:** 2026-10-15 **Branch analysed:** `develop` @
-`66adaf54`
+`66adaf54` **Revised:** 2026-11-08 for the easyscience 3 port
+(`core-3.0`)
 
 ## Directory Layout
 
@@ -27,8 +28,8 @@ reflectometry-lib/
 │   │                                   #   posterior predictive, save_posterior/load_posterior (1412 lines)
 │   ├── calculators/
 │   │   ├── __init__.py                 # CalculatorBase, CalculatorFactory, PolarizationChannel
-│   │   ├── calculator_base.py          # Abstract calculator: create/claim items, per-model resolution, magnetism toggles
-│   │   ├── wrapper_base.py             # Abstract engine wrapper incl. calculate_channel / calculate_polarized
+│   │   ├── calculator_base.py          # Abstract calculator: model membership, resolution, magnetism flag/channel
+│   │   ├── stateless_wrapper_base.py   # Engine wrapper base: per-model entries, magnetism reconciliation, channel API
 │   │   ├── factory.py                  # CalculatorFactory: fit_func, fit_func_for(channel, resolution_function)
 │   │   ├── polarization.py             # PolarizationChannel enum (pp, pm, mp, mm) + index map
 │   │   ├── refnx/{calculator,wrapper}.py
@@ -78,8 +79,7 @@ reflectometry-lib/
 ├── .github/workflows/                  # 24 workflows (see INTEGRATIONS.md)
 ├── pyproject.toml, pixi.toml, pixi.lock
 ├── CHANGELOG.md                        # "Unreleased" section is the develop delta since 1.8.0
-├── .copier-answers.yml                 # scaffold from gh:easyscience/templates
-└── Makefile, .coveragerc               # stale (reference setup.py / EasyReflectometry/ dir)
+└── .copier-answers.yml                 # scaffold from gh:easyscience/templates
 ```
 
 Untracked in the working copy (not on `develop`): `.planning/`,
@@ -104,14 +104,15 @@ Untracked in the working copy (not on `develop`): `.planning/`,
 
 - Object tree (`Sample` → assemblies → layers → materials). `paths.py`
   gives stable structural paths; `references.py` lets shared objects
-  serialize once (`file_format=3`); `volume_fraction.py` derives
+  serialize once (`file_format=4`); `volume_fraction.py` derives
   occupancy profiles from the tree alone.
 
 **`src/easyreflectometry/calculators/`:**
 
-- Engine abstraction. `CalculatorBase` owns item creation and the
-  per-model resolution registry; `WrapperBase` is the per-engine
-  translation layer; `CalculatorFactory` hands out bound fit functions
+- Engine abstraction. The wrappers build the engine structure from the
+  model at every evaluation (`StatelessWrapperBase`: one entry per
+  served model, held weakly); `CalculatorBase` is a thin layer over
+  them; `CalculatorFactory` hands out bound fit functions
   (`fit_func_for(channel, resolution_function)`).
 
 **`src/easyreflectometry/data/`:**
@@ -143,7 +144,7 @@ Untracked in the working copy (not on `develop`): `.planning/`,
 
 **Configuration:**
 
-- `pyproject.toml` (deps `easyscience>=2.5.1,<3`, pytest `addopts`,
+- `pyproject.toml` (deps `easyscience>=3.0.2,<4`, pytest `addopts`,
   ruff), `pixi.toml` (tasks), `docs/mkdocs.yml`
 
 **Core Logic (fitting pipeline):**
@@ -155,7 +156,8 @@ Untracked in the working copy (not on `develop`): `.planning/`,
   `option_schema`
 - `_bumps_constraints.py`: `install`, `applied`, `_attach_constraints`
 - Installed core (pixi env): `easyscience/fitting/multi_fitter.py`,
-  `sampler.py`, `minimizers/minimizer_bumps.py`
+  `sampler.py`, `samplers/sampler_bumps.py`,
+  `minimizers/minimizer_bumps.py`
 
 **Persistence:**
 

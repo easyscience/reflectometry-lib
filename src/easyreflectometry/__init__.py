@@ -14,6 +14,7 @@ from .constraints import derived_parameter
 from .constraints import is_constrained_to_sum
 from .constraints import restore_sum_partners
 from .constraints import unconstrain
+from .fitting import Minimizers
 from .inequality_constraints import InequalitySpec
 from .inequality_constraints import UnitError
 from .project import Project
@@ -25,6 +26,7 @@ except metadata.PackageNotFoundError:
 
 __all__ = [
     'InequalitySpec',
+    'Minimizers',
     'Project',
     'PosteriorResults',
     'UnitError',

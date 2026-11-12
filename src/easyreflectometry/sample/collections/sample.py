@@ -18,7 +18,7 @@ from ..volume_fraction import volume_fraction_profile
 from .base_collection import BaseCollection
 
 
-# Needs to be a function, elements are added to the global_object.map
+# Needs to be a function, elements are added to the global_object.registry
 def DEFAULT_ELEMENTS(interface):
     """:meta private:."""
     return (

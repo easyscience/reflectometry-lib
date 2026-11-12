@@ -172,10 +172,10 @@ can be installed using `pip`. To do so, use the following command:
 pip install easyreflectometry
 ```
 
-To install a specific version of EasyReflectometry, e.g., 1.9.0:
+To install a specific version of EasyReflectometry, e.g., 2.0.0:
 
 ```txt
-pip install 'easyreflectometry==1.9.0'
+pip install 'easyreflectometry==2.0.0'
 ```
 
 To upgrade to the latest version:
