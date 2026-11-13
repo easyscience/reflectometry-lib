@@ -17,7 +17,7 @@ from easyreflectometry.sample.assemblies.base_assembly import BaseAssembly
 class TestBaseAssembly:
     @pytest.fixture
     def base_assembly(self) -> BaseAssembly:
-        global_object.map._clear()
+        global_object.registry.clear()
 
         self.mock_layer_0 = MagicMock()
         self.mock_layer_1 = MagicMock()
@@ -185,7 +185,7 @@ class TestBaseAssembly:
 
     def test_layers_setter(self) -> None:
         """The layers property setter should replace the layer list."""
-        global_object.map._clear()
+        global_object.registry.clear()
         BaseAssembly.__abstractmethods__ = set()
         assembly = BaseAssembly(
             name='test',

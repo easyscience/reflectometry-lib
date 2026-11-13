@@ -16,7 +16,7 @@ import os
 
 import numpy as np
 import pytest
-from easyscience.fitting import AvailableMinimizers
+from easyscience import Minimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import load
@@ -112,7 +112,7 @@ def fit_model(load_data):
     multi_layer_model.interface = CalculatorFactory()
 
     fitter1 = MultiFitter(multi_layer_model)
-    fitter1.switch_minimizer(AvailableMinimizers.Bumps_simplex)
+    fitter1.switch_minimizer(Minimizers.Bumps_simplex)
     fitter1.easy_science_multi_fitter.max_evaluations = 3000
 
     analysed = fitter1.fit(data)

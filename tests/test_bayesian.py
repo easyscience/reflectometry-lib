@@ -126,7 +126,7 @@ class TestPosteriorPredictiveReflectivity:
         mock_model.unique_name = 'test_model'
         mock_model.interface = MagicMock()
         mock_model.interface.fit_func = MagicMock(return_value=np.ones(50))
-        mock_model.get_parameters = MagicMock(return_value=[])
+        mock_model.get_all_parameters = MagicMock(return_value=[])
 
         q_values = np.linspace(0.01, 0.3, 50)
         median, lower, upper = posterior_predictive_reflectivity(
@@ -153,7 +153,7 @@ class TestPosteriorPredictiveSLDProfile:
         mock_model.unique_name = 'test_model'
         mock_model.interface = MagicMock()
         mock_model.interface.sld_profile = MagicMock(return_value=(np.linspace(0, 500, 100), np.ones(100) * 2.0))
-        mock_model.get_parameters = MagicMock(return_value=[])
+        mock_model.get_all_parameters = MagicMock(return_value=[])
 
         z, median, lower, upper = posterior_predictive_sld_profile(
             draws,
@@ -201,7 +201,7 @@ class TestSaveRestoreParameterState:
         param2 = MockParam('param_b', 3.0, 0.2)
 
         class MockModel:
-            def get_parameters(self):
+            def get_all_parameters(self):
                 return [param1, param2]
 
         model = MockModel()
@@ -243,7 +243,7 @@ class TestSaveRestoreParameterState:
         derived = MockParam('derived', False)
 
         class MockModel:
-            def get_parameters(self):
+            def get_all_parameters(self):
                 return [free, derived]
 
         model = MockModel()
@@ -268,7 +268,7 @@ class TestApplyDraw:
         param_b = MockParam('sld')
 
         class MockModel:
-            def get_parameters(self):
+            def get_all_parameters(self):
                 return [param_a, param_b]
 
         model = MockModel()
@@ -946,7 +946,7 @@ class TestPosteriorPredictiveReflectivityResolution:
         model.interface = _Interface()
         model.interface.fit_func = fit_func if fit_func is not None else MagicMock(return_value=np.ones(50))
         model.interface.fit_func_for = fit_func_for if fit_func_for is not None else MagicMock()
-        model.get_parameters = MagicMock(return_value=[])
+        model.get_all_parameters = MagicMock(return_value=[])
         return model
 
     @staticmethod
@@ -1020,7 +1020,7 @@ class TestPosteriorPredictiveReflectivityResolution:
         from easyreflectometry.sample import Multilayer
         from easyreflectometry.sample import Sample
 
-        global_object.map._clear()
+        global_object.registry.clear()
         interface = CalculatorFactory()
         interface.switch(calculator)
         film = Layer(Material(sld=4.0), 100.0, 3.0, 'film')
@@ -1052,3 +1052,86 @@ class TestPosteriorPredictiveReflectivityResolution:
         restored_band = posterior_predictive_reflectivity(draws, param_names, model, q, n_samples=3)
         for before, after in zip(model_band, restored_band):
             np.testing.assert_allclose(before, after)
+
+
+class TestPosteriorHelpersOnARealModel:
+    """The posterior helpers on a real `Model`, so no mock can keep a removed call path green."""
+
+    Q = np.linspace(0.01, 0.3, 40)
+
+    @staticmethod
+    def _model():
+        from easyreflectometry.calculators import CalculatorFactory
+        from easyreflectometry.model import Model
+        from easyreflectometry.model import PercentageFwhm
+        from easyreflectometry.sample import Layer
+        from easyreflectometry.sample import Material
+        from easyreflectometry.sample import Multilayer
+        from easyreflectometry.sample import Sample
+
+        film = Layer(Material(3.0, 0.0, 'Film'), 100.0, 3.0, 'Film')
+        sample = Sample(
+            Multilayer(Layer(Material(0.0, 0.0, 'Air'), 0.0, 0.0, 'Air')),
+            Multilayer(film),
+            Multilayer(Layer(Material(2.07, 0.0, 'Si'), 0.0, 3.0, 'Si')),
+        )
+        model = Model(sample, 1.0, 1e-7, PercentageFwhm(2.0), 'Real')
+        model.interface = CalculatorFactory()
+        film.thickness.error = 2.0
+        model.scale.error = 0.01
+        return model, film
+
+    @staticmethod
+    def _state(model):
+        return {p.unique_name: (p.value, p.error) for p in model.get_all_parameters() if p.independent}
+
+    def _draws(self, model, film):
+        names = [film.thickness.unique_name, model.scale.unique_name]
+        return np.array([[90.0, 0.9], [110.0, 1.1], [100.0, 1.0]]), names
+
+    def test_reflectivity_band_spans_the_draws_and_restores_the_model(self):
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+
+        model, film = self._model()
+        before = self._state(model)
+        draws, names = self._draws(model, film)
+
+        median, lower, upper = posterior_predictive_reflectivity(draws, names, model, self.Q, n_samples=3)
+
+        assert np.all(lower <= median) and np.all(median <= upper)
+        assert not np.allclose(lower, upper)
+        assert self._state(model) == before
+
+    def test_sld_band_restores_the_model(self):
+        from easyreflectometry.analysis.bayesian import posterior_predictive_sld_profile
+
+        model, film = self._model()
+        before = self._state(model)
+        draws, names = self._draws(model, film)
+
+        z, median, lower, upper = posterior_predictive_sld_profile(draws, names, model, n_samples=3)
+
+        assert z.shape == median.shape == lower.shape == upper.shape
+        assert self._state(model) == before
+
+    def test_values_and_errors_are_restored_when_an_evaluation_raises(self, monkeypatch):
+        from easyreflectometry.analysis.bayesian import posterior_predictive_reflectivity
+        from easyreflectometry.calculators import CalculatorFactory
+
+        model, film = self._model()
+        before = self._state(model)
+        draws, names = self._draws(model, film)
+        calls = []
+
+        def failing(x, model_id):
+            calls.append(film.thickness.value)
+            if len(calls) == 2:
+                raise RuntimeError('calculator failed')
+            return np.ones_like(x)
+
+        monkeypatch.setattr(CalculatorFactory, 'fit_func', property(lambda self: failing))
+        with pytest.raises(RuntimeError, match='calculator failed'):
+            posterior_predictive_reflectivity(draws, names, model, self.Q, n_samples=3)
+
+        assert len(calls) == 2 and calls[1] != before[film.thickness.unique_name][0]  # a draw was applied
+        assert self._state(model) == before

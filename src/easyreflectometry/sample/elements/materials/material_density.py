@@ -148,7 +148,7 @@ class MaterialDensity(Material):
         scattering_length = neutron_scattering_length(chemical_structure)
 
         mw = DescriptorNumber(
-            name='molecular_weight',
+            display_name='molecular_weight',
             value=molecular_weight(chemical_structure),
             unit=DEFAULTS['molecular_weight']['unit'],
             description=DEFAULTS['molecular_weight']['description'],
@@ -156,7 +156,7 @@ class MaterialDensity(Material):
             unique_name=global_object.generate_unique_name(f'{unique_name}_Mw'),
         )
         avogadro = DescriptorNumber(
-            name='avogadro',
+            display_name='avogadro',
             value=DEFAULTS['avogadro']['value'],
             unit=DEFAULTS['avogadro']['unit'],
             description=DEFAULTS['avogadro']['description'],

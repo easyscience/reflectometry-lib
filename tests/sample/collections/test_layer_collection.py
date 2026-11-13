@@ -84,7 +84,7 @@ class TestLayerCollection(unittest.TestCase):
         r.insert(0, p)
         r.append(q)
         r_dict = r.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         s = LayerCollection.from_dict(r_dict)
@@ -100,7 +100,7 @@ class TestLayerCollection(unittest.TestCase):
         material.sld.value = 9.4
         r = LayerCollection(Layer(material, 50.0, 4.0, 'Ni film'))
         r_dict = r.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         s = LayerCollection.from_dict(r_dict)
 
@@ -137,7 +137,7 @@ class TestLayerCollection(unittest.TestCase):
         r = LayerCollection(Layer(Material(sld=2.07), 10, 1, 'film'))
         r_dict = r.as_dict()
         before = copy.deepcopy(r_dict)
-        global_object.map._clear()
+        global_object.registry.clear()
 
         LayerCollection.from_dict(r_dict)
 
@@ -150,7 +150,7 @@ class TestLayerCollection(unittest.TestCase):
         assert r._protected_types == [Layer]
         r_dict = r.as_dict()
         assert r_dict['protected_types'] == [{'@module': Layer.__module__, '@class': 'Layer'}]
-        global_object.map._clear()
+        global_object.registry.clear()
 
         s = LayerCollection.from_dict(r_dict)
 

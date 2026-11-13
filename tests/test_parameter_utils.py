@@ -35,7 +35,7 @@ def test_get_as_parameter():
     test_parameter = get_as_parameter('test_parameter', test_parameter, PARAMETER_DETAILS)
 
     # Expected
-    test_parameter.name == 'test_parameter'
+    assert test_parameter.display_name == 'test_parameter'
     assert_equal(str(test_parameter.unit), 'dimensionless')
     assert_equal(test_parameter.value, 1.0)
     assert_equal(test_parameter.min, 0.0)
@@ -74,7 +74,7 @@ def test_get_as_parameter_from_parameter():
     test_parameter = get_as_parameter('test_parameter', test_parameter_10, PARAMETER_DETAILS)
 
     # Expected
-    test_parameter.name == 'test_parameter'
+    assert test_parameter is test_parameter_10
     assert_equal(str(test_parameter.unit), 'dimensionless')
     assert_equal(test_parameter.value, 10.0)
     assert_equal(test_parameter.min, -10.0)

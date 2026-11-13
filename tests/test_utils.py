@@ -15,7 +15,7 @@ from easyreflectometry.utils import count_parameter_user_constraints
 @pytest.fixture(autouse=True)
 def _clean_map():
     # See tests/test_project.py: a Project still alive from an earlier test would collide.
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def test_count_free_parameters():

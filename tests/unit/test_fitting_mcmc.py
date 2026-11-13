@@ -14,8 +14,8 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import scipp as sc
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting.minimizers.factory import AvailableMinimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import DataSet1D
@@ -29,9 +29,9 @@ from easyreflectometry.model import PercentageFwhm
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _make_fitter() -> MultiFitter:
@@ -68,7 +68,7 @@ def _patch_sampler(capture: dict, results=None):
     """Patch ``easyreflectometry.fitting.Sampler`` recording ctor and sample() args."""
     results = results if results is not None else _fake_sampling_results()
 
-    def _ctor(fitter, *, x, y, weights, **kwargs):
+    def _ctor(fitter, x, y, weights, **kwargs):
         capture['fitter'] = fitter
         capture['x'] = x
         capture['y'] = y
@@ -83,7 +83,9 @@ def _patch_sampler(capture: dict, results=None):
         capture['instance'] = instance
         return instance
 
-    return patch('easyreflectometry.fitting.Sampler', side_effect=_ctor)
+    sampler_cls = MagicMock()
+    sampler_cls.from_fitter.side_effect = _ctor
+    return patch('easyreflectometry.fitting.Sampler', sampler_cls)
 
 
 class TestMCMCSampleGuards:
@@ -104,7 +106,7 @@ class TestMCMCSampleGuards:
     def test_a_switch_through_the_settings_passes_the_engine_check(self):
         fitter = _make_fitter()
         fitter.settings = FitSettings()
-        fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        fitter.switch_minimizer(Minimizers.Bumps)
         capture = {}
         with _patch_sampler(capture):
             fitter.mcmc_sample(_make_data(np.ones(10) * 0.01), samples=10, burn=2, thin=1)
@@ -119,7 +121,7 @@ class TestMCMCSampleGuards:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_allowed_with_mighell_objective(self):
         """objective='mighell' is the explicit opt-in for missing uncertainties."""
@@ -231,7 +233,7 @@ class TestMCMCSampleOnExperiments:
         ]
         fitter = MultiFitter.for_experiments(datasets)
         fitter.settings = FitSettings()
-        fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        fitter.switch_minimizer(Minimizers.Bumps)
         return fitter, datasets
 
     @staticmethod
@@ -301,8 +303,8 @@ class TestMultiFitterHelpers:
     def test_switch_minimizer_delegates_to_core_fitter(self):
         fitter = _make_fitter()
         fitter.easy_science_multi_fitter = MagicMock()
-        fitter.switch_minimizer(AvailableMinimizers.Bumps)
-        fitter.easy_science_multi_fitter.switch_minimizer.assert_called_once_with(AvailableMinimizers.Bumps)
+        fitter.switch_minimizer(Minimizers.Bumps)
+        fitter.easy_science_multi_fitter.switch_minimizer.assert_called_once_with(Minimizers.Bumps)
 
     def test_flatten_list_flattens_nested_lists(self):
         result = _flatten_list([[1, 2], [3], [4, 5]])

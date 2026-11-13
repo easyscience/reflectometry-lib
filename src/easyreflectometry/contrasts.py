@@ -347,7 +347,7 @@ def _classify(row: LinkRow, follower_index: int, owners: Callable[[Parameter], l
         row.shared_with = [index for index in owners(follower) if index != follower_index]
         if row.shared_with:
             row.action, row.reason = 'skip', 'shared with other models'
-        elif follower.name in CHEMISTRY:
+        elif follower.display_name in CHEMISTRY:
             row.action = 'undecided' if materials is None else materials
             row.reason = 'material chemistry'
 

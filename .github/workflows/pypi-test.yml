@@ -47,6 +47,14 @@ jobs:
       - name: Init pixi project
         run: pixi init easyreflectometry
 
+      # A fresh pixi project assumes macOS 13.0 on osx-arm64, which rejects
+      # scipp's macosx_14_0 wheels and forces a failing source build. Match
+      # the macOS minimum set in the repository's pixi.toml.
+      - name: Require macOS 14 (matches scipp wheels)
+        working-directory: easyreflectometry
+        shell: bash
+        run: printf '\n[system-requirements]\nmacos = "14.0"\n' >> pixi.toml
+
       - name: Add Python 3.13 from Conda
         working-directory: easyreflectometry
         run: pixi add "python=3.13"

@@ -9,7 +9,7 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 import scipp as sc
-from easyscience.fitting.minimizers.factory import AvailableMinimizers
+from easyscience import Minimizers
 
 from easyreflectometry.calculators import CalculatorFactory
 from easyreflectometry.data import DataSet1D
@@ -28,7 +28,7 @@ PATH_STATIC = os.path.join(os.path.dirname(__file__), '_static')
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('minimizer', [AvailableMinimizers.Bumps, AvailableMinimizers.LMFit])
+@pytest.mark.parametrize('minimizer', [Minimizers.Bumps, Minimizers.LMFit])
 def test_fitting(minimizer):
     fpath = os.path.join(PATH_STATIC, 'example.ort')
     data = load(fpath)
@@ -838,7 +838,7 @@ def _fake_sampling_results(draws=None, param_names=None, state=None, logp=None):
 
 
 def _patch_sampler(capture, results=None):
-    """Patch ``easyreflectometry.fitting.Sampler`` and capture its call args.
+    """Patch ``easyreflectometry.fitting.Sampler.from_fitter`` and capture its call args.
 
     Records the constructor's ``(x, y, weights)`` and the ``sample()``
     hyperparameters into the ``capture`` dict, and returns ``results`` (a
@@ -846,7 +846,7 @@ def _patch_sampler(capture, results=None):
     """
     results = results if results is not None else _fake_sampling_results()
 
-    def _ctor(fitter, *, x, y, weights, **kwargs):
+    def _ctor(fitter, x, y, weights, **kwargs):
         capture['fitter'] = fitter
         capture['x'] = x
         capture['y'] = y
@@ -862,7 +862,9 @@ def _patch_sampler(capture, results=None):
         capture['instance'] = instance
         return instance
 
-    return patch('easyreflectometry.fitting.Sampler', side_effect=_ctor)
+    sampler_cls = MagicMock()
+    sampler_cls.from_fitter.side_effect = _ctor
+    return patch('easyreflectometry.fitting.Sampler', sampler_cls)
 
 
 class TestMCMCSampleRequiresBumpsEngine:
@@ -901,7 +903,7 @@ class TestMCMCSampleRequiresBumpsEngine:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(RuntimeError, match='Bayesian sampling requires a BUMPS minimizer'):
                 fitter.mcmc_sample(data)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
 
 class TestMCMCSampleBasic:
@@ -1159,7 +1161,7 @@ class TestMCMCSampleMighellWarningsAndZeroVarianceGuard:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data, samples=100, burn=20, thin=2)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_legacy_mask_raises(self):
         fitter = self._make_fitter(objective='legacy_mask')
@@ -1169,7 +1171,7 @@ class TestMCMCSampleMighellWarningsAndZeroVarianceGuard:
         with _patch_sampler(capture) as sampler_cls:
             with pytest.raises(ValueError, match='all points have zero variance'):
                 fitter.mcmc_sample(data, samples=100, burn=20, thin=2)
-        sampler_cls.assert_not_called()
+        sampler_cls.from_fitter.assert_not_called()
 
     def test_all_zero_variance_allowed_with_explicit_mighell(self):
         """Explicitly opting in to objective='mighell' keeps working on
@@ -1204,7 +1206,7 @@ def _analytic_wls(design, y, point_weights):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize('minimizer', [AvailableMinimizers.LMFit, AvailableMinimizers.Bumps])
+@pytest.mark.parametrize('minimizer', [Minimizers.LMFit, Minimizers.Bumps])
 def test_fit_weight_convention_matches_analytic_wls(minimizer):
     """Pin the weights = 1/sigma convention end-to-end against analytic WLS.
 
@@ -1279,7 +1281,7 @@ def test_fit_weight_convention_matches_analytic_wls(minimizer):
     assert model.scale.value == pytest.approx(beta[0], abs=scale_tolerance)
     assert model.background.value == pytest.approx(beta[1], abs=background_tolerance)
 
-    if minimizer == AvailableMinimizers.LMFit:
+    if minimizer == Minimizers.LMFit:
         # lmfit scales the covariance by reduced chi-square (scale_covar=True)
         residual = y - design @ beta
         chi2 = float(np.sum((residual / sigma) ** 2))

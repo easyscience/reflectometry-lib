@@ -168,10 +168,10 @@ def derived_parameter(
     if not parameters:
         raise ValueError('derived_parameter needs at least one parameter to depend on.')
     return Parameter.from_dependency(
-        name=name,
         dependency_expression=expression,
         dependency_map=dict(parameters),
         desired_unit=unit,
+        display_name=name,
     )
 
 
@@ -211,7 +211,7 @@ def constrain_to_sum(
     if total is None:
         total = float(parameter.value) + sum(float(p.value) for p in others)
     if isinstance(total, numbers.Number):
-        total = DescriptorNumber(name=f'{parameter.name}_sum_total', value=float(total), unit=str(parameter.unit))
+        total = DescriptorNumber(float(total), display_name=f'{parameter.display_name}_sum_total', unit=str(parameter.unit))
     elif not isinstance(total, DescriptorNumber):
         raise TypeError('total must be a number, a DescriptorNumber/Parameter or None.')
 

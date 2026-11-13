@@ -174,7 +174,6 @@ tox
 ```
 src/easyreflectometry/     # Main package source code
 ├── calculators/           # Calculator implementations (refnx, refl1d)
-│   └── bornagain/         # BornAgain calculator (not yet functional)
 ├── model/                 # Reflectometry models
 ├── sample/                # Sample structures and materials
 ├── special/               # Special calculations and parsing

@@ -22,8 +22,8 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting.minimizers.factory import AvailableMinimizers
 from numpy.testing import assert_allclose
 
 from easyreflectometry.calculators import CalculatorFactory
@@ -55,9 +55,9 @@ Q = np.linspace(0.01, 0.3, 40)
 
 @pytest.fixture(autouse=True)
 def _isolated_global_object():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _film_model(name: str = 'Film', magnetism: LayerMagnetism | None = None, interface=None) -> Model:
@@ -598,7 +598,7 @@ class TestSamplingUsesDatasetResolution:
         project.models = ModelCollection(_film_model())
         project.load_new_experiment(paths[0])
         project.load_new_experiment(paths[1])
-        project.minimizer = AvailableMinimizers.Bumps_simplex
+        project.minimizer = Minimizers.Bumps_simplex
         return project
 
     @staticmethod
@@ -614,9 +614,10 @@ class TestSamplingUsesDatasetResolution:
         monkeypatch.setattr(MultiFitter, 'prepare', prepare)
         sampler = MagicMock()
         sampler.sample.return_value = MagicMock(draws=np.ones((4, 1)), param_names=['p'], state=None, logp=np.zeros(4))
-        with patch('easyreflectometry.fitting.Sampler', return_value=sampler) as sampler_class:
+        with patch('easyreflectometry.fitting.Sampler') as sampler_class:
+            sampler_class.from_fitter.return_value = sampler
             fitter.mcmc_sample(samples=4, burn=1, thin=1)
-        seen['sampler_kwargs'] = sampler_class.call_args.kwargs
+        seen['sampler_kwargs'] = dict(zip(('fitter', 'x', 'y', 'weights'), sampler_class.from_fitter.call_args.args))
         return seen
 
     def test_each_dataset_is_sampled_against_the_curve_the_fit_sees(self, tmp_path, monkeypatch):
@@ -664,12 +665,12 @@ class TestSamplingUsesDatasetResolution:
         prepared = project.prepare_fit()
         fitter = project.prepare_sample()
         assert fitter.settings is not project.fit_settings
-        assert fitter.settings.minimizer == AvailableMinimizers.Bumps_simplex
+        assert fitter.settings.minimizer == Minimizers.Bumps_simplex
 
-        project.minimizer = AvailableMinimizers.LMFit_leastsq
+        project.minimizer = Minimizers.LMFit_leastsq
 
-        assert prepared.settings.minimizer == AvailableMinimizers.Bumps_simplex
-        assert fitter.settings.minimizer == AvailableMinimizers.Bumps_simplex
+        assert prepared.settings.minimizer == Minimizers.Bumps_simplex
+        assert fitter.settings.minimizer == Minimizers.Bumps_simplex
 
 
 # ----------------------------------------------------------------------------
@@ -690,25 +691,26 @@ class TestSamplerBoundary:
 
     @staticmethod
     def _sampled_chi2(fitter, data=None, **kwargs) -> tuple[float, int]:
-        from easyscience.fitting.minimizers.minimizer_bumps import Bumps
+        from easyscience.fitting.samplers.sampler_bumps import DreamSampler
+        from easyscience.fitting.samplers.sampler_bumps import build_curve_problem
 
         seen = {}
 
-        def mcmc_sample(self, x, y, weights, **_):
-            curve = self._make_model()(np.asarray(x), np.asarray(y), np.asarray(weights))
-            residuals = np.asarray(curve.residuals())
+        def run(self, x, y, weights, **_):
+            problem, _, _ = build_curve_problem(self, np.asarray(x), np.asarray(y), np.asarray(weights))
+            residuals = np.asarray(problem.residuals())
             seen['chi2'] = float(np.sum(residuals**2))
             seen['points'] = residuals.size
             return {'draws': np.zeros((1, 1)), 'param_names': ['p'], 'logp': np.zeros(1), 'internal_bumps_object': None}
 
-        with patch.object(Bumps, 'mcmc_sample', mcmc_sample):
+        with patch.object(DreamSampler, 'run', run):
             fitter.mcmc_sample(data, samples=4, burn=1, thin=1, **kwargs)
         return seen['chi2'], seen['points']
 
     @staticmethod
     def _bumps(fitter: MultiFitter) -> MultiFitter:
         fitter.settings = FitSettings()
-        fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        fitter.switch_minimizer(Minimizers.Bumps)
         return fitter
 
     @staticmethod
@@ -1043,7 +1045,7 @@ class TestProjectResolution:
         assert project_dict['experiments'][0][4]['smearing'] == 'Pointwise'
         assert project_dict['experiments'][1]['channels']['mm'][5]['smearing'] == 'Pointwise'
 
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Project()
         restored.from_dict(project_dict)
 
@@ -1064,7 +1066,7 @@ class TestProjectResolution:
         for arrays in project_dict['experiments'][1]['channels'].values():
             del arrays[5]
 
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Project()
         restored.from_dict(project_dict)
 
@@ -1084,7 +1086,7 @@ class TestProjectResolution:
 
         assert len(project_dict['experiments'][0]) == 3
 
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Project()
         restored.from_dict(project_dict)
         assert restored.experiments[0].resolution_function is None
@@ -1092,7 +1094,7 @@ class TestProjectResolution:
     @staticmethod
     def _round_trip(project):
         project_dict = project.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
         restored = Project()
         restored.from_dict(project_dict)
         return project_dict, restored

@@ -130,7 +130,7 @@ class MaterialMagnetic(MaterialDensity):
             unique_name_prefix=f'{unique_name}_RhoM',
         )
         self._magnetic_scattering_length = DescriptorNumber(
-            name='magnetic_scattering_length',
+            display_name='magnetic_scattering_length',
             value=MAGNETIC_SCATTERING_LENGTH,
             unit='angstrom',
             unique_name=global_object.generate_unique_name(f'{unique_name}_MagneticScatteringLength'),

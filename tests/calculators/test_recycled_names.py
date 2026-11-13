@@ -1,14 +1,13 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""A backend entry belongs to the object it was created for, not to its name.
+"""A calculator entry belongs to the model it was created for, not to its name.
 
-easyscience gives the ``unique_name`` of a dead object out again, while the
-calculator keeps every entry it ever created under that name. A new object
-bound to a recycled name must get a blank entry, not the dead object's state
+easyscience gives the ``unique_name`` of a dead object out again. The
+calculator keeps state only per model (see ``StatelessWrapperBase``); a new
+model registered under a recycled name must not inherit the dead one's
 (GitHub issue #426: a non-magnetic layer landing on a dead magnetic layer's
-name became magnetic). Re-binding the *same* object must keep its entry, as
-the item stacks hold references to it.
+name became magnetic, back when the calculator kept an entry per layer).
 """
 
 import gc
@@ -19,6 +18,7 @@ from easyscience import global_object
 from numpy.testing import assert_allclose
 
 from easyreflectometry.calculators import CalculatorFactory
+from easyreflectometry.calculators.refl1d.wrapper import _kernel_inputs
 from easyreflectometry.model import Model
 from easyreflectometry.sample import Layer
 from easyreflectometry.sample import LayerMagnetism
@@ -31,9 +31,9 @@ Q = np.linspace(0.01, 0.3, 40)
 
 @pytest.fixture(autouse=True)
 def _isolated_global_object():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _film_model(name: str, interface, magnetism: LayerMagnetism | None = None) -> Model:
@@ -81,51 +81,13 @@ class TestIssue426:
 
         model = _film_model('plain', interface)
 
-        wrapper = interface()._wrapper
         assert not interface().include_magnetism
-        for multilayer in model.sample:
-            assert multilayer.layers[0].unique_name not in wrapper._layer_magnetism
-            assert wrapper.storage['layer'][multilayer.layers[0].unique_name].magnetism is None
+        assemblies = _kernel_inputs(model, magnetism=True)[0]
+        assert all(layer[-1] is None for _, layers in assemblies for layer in layers)
 
 
 class TestRecycledNameGetsABlankEntry:
     """The rule itself, on names recycled deterministically rather than by collection timing."""
-
-    def test_layer_on_a_dead_magnetic_layers_name_is_blank(self):
-        interface = CalculatorFactory()
-        interface.switch('refl1d')
-        material = Material(4.0, 0, name='film material')
-        dead = Layer(material=material, thickness=100, roughness=3, magnetism=_magnetism(), name='dead', interface=interface)
-        name = dead.unique_name
-        wrapper = interface()._wrapper
-        assert name in wrapper._layer_magnetism
-        del dead
-        gc.collect()
-
-        reborn = Layer(material=material, thickness=50, roughness=1, name='reborn', unique_name=name, interface=interface)
-
-        assert reborn.unique_name == name
-        assert name not in wrapper._layer_magnetism
-        assert wrapper.storage['layer'][name].magnetism is None
-        assert wrapper.get_layer_value(name, 'thickness') == 50
-        assert not interface().include_magnetism
-
-    @pytest.mark.parametrize('engine', ['refnx', 'refl1d'])
-    def test_material_on_a_dead_materials_name_is_blank(self, engine):
-        interface = CalculatorFactory()
-        interface.switch(engine)
-        dead = Material(4.0, 0.5, name='dead', interface=interface)
-        name = dead.unique_name
-        wrapper = interface()._wrapper
-        stale = wrapper.storage['material'][name]
-        del dead
-        gc.collect()
-
-        reborn = Material(1.0, 0, name='reborn', unique_name=name, interface=interface)
-
-        assert reborn.unique_name == name
-        assert wrapper.storage['material'][name] is not stale
-        assert wrapper.get_material_value(name, 'rho' if engine == 'refl1d' else 'real') == 1.0
 
     def test_model_on_a_dead_models_name_drops_its_resolution(self):
         from easyreflectometry.model import PercentageFwhm
@@ -145,36 +107,3 @@ class TestRecycledNameGetsABlankEntry:
         # The reborn model registered its own (default) resolution, not the dead one's.
         assert wrapper.resolution_function_for(name) is reborn.resolution_function
         assert isinstance(wrapper.resolution_function_for(name), PercentageFwhm)
-
-
-class TestSameObjectKeepsItsEntry:
-    def test_rebinding_a_magnetic_layer_keeps_its_slab_and_magnetism(self):
-        interface = CalculatorFactory()
-        interface.switch('refl1d')
-        layer = Layer(material=Material(4.0, 0, name='m'), thickness=100, roughness=3, magnetism=_magnetism(), name='layer')
-        multilayer = Multilayer(layer, name='stack', interface=interface)
-        wrapper = interface()._wrapper
-        slab = wrapper.storage['layer'][layer.unique_name]
-
-        layer.interface = interface
-        multilayer.interface = interface
-
-        assert wrapper.storage['layer'][layer.unique_name] is slab
-        assert slab.magnetism is not None
-        assert slab.magnetism.rhoM.value == 1.5
-        assert list(wrapper.storage['item'][multilayer.unique_name].stack) == [slab]
-
-    def test_calculator_switch_starts_from_blank_ownership(self):
-        interface = CalculatorFactory()
-        model = _film_model('model', interface)
-        interface.switch('refl1d')
-        model.interface = interface
-        interface.switch('refnx')
-        model.interface = interface
-        interface.switch('refl1d')
-        model.interface = interface
-
-        # Every object is bound exactly once per fresh calculator; no stale entries.
-        wrapper = interface()._wrapper
-        assert set(wrapper.storage['layer']) == {ml.layers[0].unique_name for ml in model.sample}
-        assert set(wrapper.storage['model']) == {model.unique_name}

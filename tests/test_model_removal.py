@@ -19,9 +19,9 @@ from easyreflectometry.sample import Sample
 
 @pytest.fixture(autouse=True)
 def _clean_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 def _project(models: int = 3) -> Project:
@@ -49,7 +49,7 @@ def _dataset(model, name='d') -> DataSet1D:
 
 def _round_trip(project: Project) -> Project:
     data = json.loads(json.dumps(project.as_dict()))
-    global_object.map._clear()
+    global_object.registry.clear()
     loaded = Project()
     loaded.from_dict(data)
     return loaded
@@ -160,7 +160,7 @@ def test_restoring_links_from_a_bad_file_is_reported():
     data = json.loads(json.dumps(project.as_dict()))
     data['contrasts'] = [[0, 9]]
     data['links'] = [{'follower': 9, 'reference': 0, 'pairs': []}]
-    global_object.map._clear()
+    global_object.registry.clear()
     loaded = Project()
     loaded.from_dict(data)
     assert len(loaded.load_report) == 2

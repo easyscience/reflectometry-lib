@@ -119,7 +119,7 @@ class TestMaterialMixture:
         # When
         p = MaterialMixture()
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         # Then
         q = MaterialMixture.from_dict(p_dict)
@@ -144,24 +144,21 @@ class TestMaterialMixture:
         assert material_mixture.name == 'name_a/name_b'
 
     def test_calculator_binding_uses_mixed_sld(self) -> None:
-        """Regression: the calculator wrapper must bind to the mixture's own
-        ``_sld``/``_isld`` (the weighted average), not to either child material's
-        sld/isld parameter. Without an explicit ``_get_linkable_attributes``
-        override the inherited dir-walk picks up the first matching child
-        parameter and the wrapper silently gets the wrong SLD.
+        """Regression: the calculator must get the mixture's own sld/isld (the
+        weighted average), not either child material's.
         """
-        from easyreflectometry.calculators import CalculatorFactory
+        from easyreflectometry.calculators.refnx.wrapper import _slab
+        from easyreflectometry.sample import Layer
 
-        interface = CalculatorFactory()
         material_a = Material(sld=2.0, isld=0.0)
         material_b = Material(sld=6.0, isld=0.0)
-        mixture = MaterialMixture(material_a, material_b, fraction=0.25, interface=interface)
+        mixture = MaterialMixture(material_a, material_b, fraction=0.25)
 
         # 2 * 0.75 + 6 * 0.25 = 1.5 + 1.5 = 3.0
         assert_almost_equal(mixture.sld, 3.0)
-        wrapper_material = interface()._wrapper.storage['material'][mixture.unique_name]
-        assert_almost_equal(wrapper_material.real.value, 3.0)
-        assert_almost_equal(wrapper_material.imag.value, 0.0)
+        sld = _slab(Layer(material=mixture)).sld
+        assert_almost_equal(sld.real.value, 3.0)
+        assert_almost_equal(sld.imag.value, 0.0)
 
     def test_mutation_propagates_after_round_trip(self) -> None:
         """Regression: after ``from_dict`` swaps in the saved ``_fraction``
@@ -170,7 +167,7 @@ class TestMaterialMixture:
         float kwarg in ``__init__``)."""
         p = MaterialMixture(Material(sld=2.0), Material(sld=6.0), fraction=0.25)
         p_dict = p.as_dict()
-        global_object.map._clear()
+        global_object.registry.clear()
 
         q = MaterialMixture.from_dict(p_dict)
         assert_almost_equal(q.sld, 3.0)

@@ -7,8 +7,8 @@ import json
 
 import numpy as np
 import pytest
+from easyscience import Minimizers
 from easyscience import global_object
-from easyscience.fitting import AvailableMinimizers
 from easyscience.variable import Parameter
 
 from easyreflectometry import Project
@@ -28,9 +28,9 @@ from easyreflectometry.sample import Multilayer
 
 @pytest.fixture(autouse=True)
 def clear_global_map():
-    global_object.map._clear()
+    global_object.registry.clear()
     yield
-    global_object.map._clear()
+    global_object.registry.clear()
 
 
 class _FakeBumpsParameter:
@@ -88,9 +88,9 @@ class TestInequalitySpec:
 
 class TestTranslation:
     def _params(self):
-        a = Parameter('a', 10.0, unit='angstrom', min=0, max=100)
-        b = Parameter('b', 20.0, unit='angstrom', min=0, max=100)
-        c = Parameter('c', 5.0, unit='angstrom', min=0, max=100, fixed=True)
+        a = Parameter(10.0, display_name='a', unit='angstrom', min=0, max=100)
+        b = Parameter(20.0, display_name='b', unit='angstrom', min=0, max=100)
+        c = Parameter(5.0, display_name='c', unit='angstrom', min=0, max=100, fixed=True)
         return a, b, c
 
     def test_operands_read_bumps_values_not_easyscience_values(self):
@@ -116,7 +116,7 @@ class TestTranslation:
     def test_dependent_parameters_are_expanded_to_free_leaves(self):
         a, b, c = self._params()
         total = derived_parameter('total', 'x + y + z', x=a, y=b, z=c)
-        half = Parameter('half', 0.0, unit='angstrom', min=-1e6, max=1e6)
+        half = Parameter(0.0, display_name='half', unit='angstrom', min=-1e6, max=1e6)
         constrain(half, 't / 2', t=total)  # dependent on a dependent
         spec = InequalitySpec('a', '<', 'h', {'a': 'pa'}, {'h': 'ph'})
         factory = build_constraints_factory([spec], _resolver({'pa': a, 'ph': half}))
@@ -139,8 +139,8 @@ class TestTranslation:
         [('<', 3.0, 5.0, 0.0), ('<', 5.0, 5.0, 0.0), ('<', 7.0, 5.0, 2.0), ('>', 3.0, 5.0, 2.0), ('>=', 6.0, 5.0, 0.0)],
     )
     def test_evaluate_spec_violation(self, op, lhs, rhs, violation):
-        a = Parameter('a', lhs, min=-100, max=100)
-        b = Parameter('b', rhs, min=-100, max=100)
+        a = Parameter(lhs, display_name='a', min=-100, max=100)
+        b = Parameter(rhs, display_name='b', min=-100, max=100)
         spec = InequalitySpec('a', op, 'b', {'a': 'pa'}, {'b': 'pb'})
         result = evaluate_spec(spec, _resolver({'pa': a, 'pb': b}))
         assert result.lhs == lhs and result.rhs == rhs
@@ -149,7 +149,7 @@ class TestTranslation:
 
     def test_check_units(self):
         a, b, c = self._params()
-        sld = Parameter('sld', 2.0, unit='1/angstrom**2', min=-10, max=10)
+        sld = Parameter(2.0, display_name='sld', unit='1/angstrom**2', min=-10, max=10)
         check_units(
             InequalitySpec('a + b', '<', 'c', {'a': 'pa', 'b': 'pb'}, {'c': 'pc'}),
             _resolver({'pa': a, 'pb': b, 'pc': c}),
@@ -162,7 +162,7 @@ class TestTranslation:
         # A typed exception so callers do not have to match message substrings;
         # it subclasses ValueError, so the assertions above stay valid too.
         a, _, _ = self._params()
-        sld = Parameter('sld_t', 2.0, unit='1/angstrom**2', min=-10, max=10)
+        sld = Parameter(2.0, display_name='sld_t', unit='1/angstrom**2', min=-10, max=10)
         with pytest.raises(UnitError):
             check_units(InequalitySpec('a', '<', 's', {'a': 'pa'}, {'s': 'ps'}), _resolver({'pa': a, 'ps': sld}))
 
@@ -207,7 +207,7 @@ class TestProjectPaths:
 
     def test_unreachable_parameter_and_bad_paths(self):
         project, model = _two_layer_project()
-        assert project.parameter_path(Parameter('loose', 1.0)) is None
+        assert project.parameter_path(Parameter(1.0, display_name='loose')) is None
         with pytest.raises(KeyError):
             project.resolve_parameter_path('models/0/sample/99/layers/0/thickness')
         with pytest.raises(KeyError):
@@ -234,7 +234,7 @@ class TestProjectInequalities:
 
         project_dict = json.loads(json.dumps(project.as_dict()))
         assert len(project_dict['inequality_constraints']) == 2
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded = Project()
         reloaded.from_dict(project_dict)
         assert [str(s) for s in reloaded.inequality_constraints] == ['a < b', 'a + b < 90']
@@ -251,7 +251,7 @@ class TestProjectInequalities:
         project, _ = _two_layer_project()
         project_dict = project.as_dict()
         project_dict.pop('inequality_constraints', None)
-        global_object.map._clear()
+        global_object.registry.clear()
         reloaded = Project()
         reloaded.from_dict(project_dict)
         assert reloaded.inequality_constraints == []
@@ -261,7 +261,7 @@ class TestProjectInequalities:
 class TestInequalityFit:
     def test_bumps_fit_respects_inequality_and_lmfit_is_rejected(self):
         project, model = _two_layer_project()
-        project.minimizer = AvailableMinimizers.Bumps
+        project.minimizer = Minimizers.Bumps
         layers = [layer for assembly in model.sample for layer in assembly.layers]
         t_a, t_b = layers[1].thickness, layers[2].thickness
         q = np.linspace(0.01, 0.3, 150)
@@ -287,7 +287,7 @@ class TestInequalityFit:
         assert t_a.value + t_b.value == pytest.approx(90.0, abs=0.05)  # lands on the boundary
         assert t_a.value <= t_b.value + 1e-3
 
-        project.minimizer = AvailableMinimizers.LMFit
+        project.minimizer = Minimizers.LMFit
         with pytest.raises(ValueError, match='require the BUMPS engine'):
             project.fitter.fit_single_data_set_1d(dataset)
 
@@ -315,13 +315,13 @@ class TestInequalityFit:
         dataset = DataSet1D(name='sim', x=q, y=r_true, ye=(0.05 * r_true) ** 2, model=model, auto_background=False)
 
         fitter = MultiFitter.for_experiments([dataset], constraints_factory_provider=project.build_constraints_factory)
-        fitter.easy_science_multi_fitter.switch_minimizer(AvailableMinimizers.Bumps)
+        fitter.easy_science_multi_fitter.switch_minimizer(Minimizers.Bumps)
         weights = 1.0 / np.sqrt(np.asarray(dataset.ye))
         results = fitter.easy_science_multi_fitter.fit([np.asarray(dataset.x)], [np.asarray(dataset.y)], weights=[weights])
 
         assert results[0].success
         assert t_a.value + t_b.value <= 90.0 + 1e-3  # unconstrained optimum (100) is refused
 
-        fitter.easy_science_multi_fitter.switch_minimizer(AvailableMinimizers.LMFit)
+        fitter.easy_science_multi_fitter.switch_minimizer(Minimizers.LMFit)
         with pytest.raises(ValueError, match='require the BUMPS engine'):
             fitter.easy_science_multi_fitter.fit([np.asarray(dataset.x)], [np.asarray(dataset.y)], weights=[weights])
