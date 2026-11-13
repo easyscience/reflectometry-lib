@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="monolayer.svg"
+   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="2.461081"
+     inkscape:cx="611.31673"
+     inkscape:cy="671.85923"
+     inkscape:window-width="2048"
+     inkscape:window-height="1235"
+     inkscape:window-x="0"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid879" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 58.208333,187.85416 -5.291667,-10.58333 7.9375,-5.29167 -5.291667,-10.58333 h 7.9375 L 58.208333,150.8125 h -5.291667 l 5.291667,-10.58334 7.937499,-5.29166"
+       id="path1435"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 63.499999,187.85416 2.645833,-7.9375 -5.291666,-5.29166 7.9375,-7.9375 -5.291667,-2.64584 5.291667,-10.58333 -7.9375,-5.29167 2.645833,-7.9375 -5.291666,-7.9375"
+       id="path1437"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse1519"
+       cx="60"
+       cy="200.63362"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="path1026"
+       cx="60"
+       cy="200.63362"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 78.208333,190.50001 -5.291667,-10.58333 7.9375,-5.29167 -5.291667,-10.58333 h 7.9375 l -5.291666,-10.58333 h -5.291667 l 5.291667,-10.58334 7.937499,-5.29166"
+       id="path2045"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 83.499999,190.50001 2.645833,-7.9375 -5.291666,-5.29166 7.9375,-7.9375 -5.291667,-2.64584 5.291667,-10.58333 -7.9375,-5.29167 2.645833,-7.9375 -5.291666,-7.9375"
+       id="path2047"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2049"
+       cx="80"
+       cy="203.27942"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2051"
+       cx="80"
+       cy="203.27942"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 98.20833,193.14586 -5.29166,-10.58333 7.9375,-5.29167 -5.29167,-10.58333 H 103.5 L 98.20833,156.1042 h -5.29166 l 5.29166,-10.58334 7.9375,-5.29166"
+       id="path2053"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 103.5,193.14586 2.64583,-7.9375 -5.29166,-5.29166 7.9375,-7.9375 -5.29167,-2.64584 5.29167,-10.58333 -7.9375,-5.29167 2.64583,-7.9375 -5.29167,-7.9375"
+       id="path2055"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2057"
+       cx="100"
+       cy="205.92522"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2059"
+       cx="100"
+       cy="205.92522"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 118.20833,187.85416 -5.29166,-10.58333 7.9375,-5.29167 -5.29167,-10.58333 H 123.5 l -5.29167,-10.58333 h -5.29166 l 5.29166,-10.58334 7.9375,-5.29166"
+       id="path2061"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 123.5,187.85416 2.64583,-7.9375 -5.29166,-5.29166 7.9375,-7.9375 -5.29167,-2.64584 5.29167,-10.58333 -7.9375,-5.29167 2.64583,-7.9375 -5.29167,-7.9375"
+       id="path2063"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2065"
+       cx="120"
+       cy="200.63362"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2067"
+       cx="120"
+       cy="200.63362"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 138.20833,189.97084 -5.29166,-10.58333 7.9375,-5.29167 -5.29167,-10.58333 H 143.5 l -5.29167,-10.58333 h -5.29166 l 5.29166,-10.58334 7.9375,-5.29166"
+       id="path2069"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 143.5,189.97084 2.64583,-7.9375 -5.29166,-5.29166 7.9375,-7.9375 -5.29167,-2.64584 5.29167,-10.58333 -7.9375,-5.29167 2.64583,-7.9375 -5.29167,-7.9375"
+       id="path2071"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2073"
+       cx="140"
+       cy="202.75026"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2075"
+       cx="140"
+       cy="202.75026"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 158.20833,193.14586 -5.29166,-10.58333 7.9375,-5.29167 -5.29167,-10.58333 H 163.5 l -5.29167,-10.58333 h -5.29166 l 5.29166,-10.58334 7.9375,-5.29166"
+       id="path2077"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 163.5,193.14586 2.64583,-7.9375 -5.29166,-5.29166 7.9375,-7.9375 -5.29167,-2.64584 5.29167,-10.58333 -7.9375,-5.29167 2.64583,-7.9375 -5.29167,-7.9375"
+       id="path2079"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2081"
+       cx="160"
+       cy="205.92522"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <ellipse
+       style="fill:#0173b2;fill-opacity:0.8;stroke-width:1.09105;stroke-linecap:round;stroke-linejoin:round"
+       id="ellipse2083"
+       cx="160"
+       cy="205.92522"
+       rx="10"
+       ry="15"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <g
+       id="g2972"
+       transform="matrix(1.0027554,0,0,1.0027554,-0.46767622,-0.59159785)"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.98461;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 51.057711,219.07467 c 0,0 7.358924,-7.96177 14.717847,0 7.358924,7.96176 14.717846,0 14.717846,0"
+         id="path2019"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 80.242888,219.40466 c 0,0 7.457428,-7.95027 14.914854,0 7.457408,7.95029 14.914838,0 14.914838,0"
+         id="path2142"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 139.43726,219.93307 c 0,0 7.45743,-7.95028 14.91486,0 7.4574,7.95029 14.91484,0 14.91484,0"
+         id="path2425"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 109.92742,219.6037 c 0,0 7.45743,-7.95029 14.91485,0 7.45743,7.95027 14.91485,0 14.91485,0"
+         id="path2427"
+         sodipodi:nodetypes="ccc" />
+    </g>
+    <g
+       id="g2982"
+       transform="matrix(1.0027554,0,0,1.0027554,-0.46767622,-32.341599)"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.98461;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 51.057711,219.07467 c 0,0 7.358924,-7.96177 14.717847,0 7.358924,7.96176 14.717846,0 14.717846,0"
+         id="path2974"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 80.242888,219.40466 c 0,0 7.457428,-7.95027 14.914854,0 7.457408,7.95029 14.914838,0 14.914838,0"
+         id="path2976"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 139.43726,219.93307 c 0,0 7.45743,-7.95028 14.91486,0 7.4574,7.95029 14.91484,0 14.91484,0"
+         id="path2978"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 109.92742,219.6037 c 0,0 7.45743,-7.95029 14.91485,0 7.45743,7.95027 14.91485,0 14.91485,0"
+         id="path2980"
+         sodipodi:nodetypes="ccc" />
+    </g>
+    <g
+       id="g2992"
+       transform="matrix(1.0027554,0,0,1.0027554,-0.46767622,-86.316603)"
+       inkscape:export-filename="/Users/andrewmccluskey/software/easyScience/easyreflectometryLib/docs/_static/monolayer.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.98461;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 51.057711,219.07467 c 0,0 7.358924,-7.96177 14.717847,0 7.358924,7.96176 14.717846,0 14.717846,0"
+         id="path2984"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 80.242888,219.40466 c 0,0 7.457428,-7.95027 14.914854,0 7.457408,7.95029 14.914838,0 14.914838,0"
+         id="path2986"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 139.43726,219.93307 c 0,0 7.45743,-7.95028 14.91486,0 7.4574,7.95029 14.91484,0 14.91484,0"
+         id="path2988"
+         sodipodi:nodetypes="ccc" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.99641;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 109.92742,219.6037 c 0,0 7.45743,-7.95029 14.91485,0 7.45743,7.95027 14.91485,0 14.91485,0"
+         id="path2990"
+         sodipodi:nodetypes="ccc" />
+    </g>
+  </g>
+</svg>
