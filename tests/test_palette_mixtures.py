@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+
 """The materials palette holds the materials a user picks, never the mixtures derived from them.
 
 A mixture's SLD is computed from its constituents, so it is not a material that can be edited
