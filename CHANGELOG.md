@@ -1,3 +1,16 @@
+# Unreleased
+
+## Multiple contrasts
+
+- Fix: `derive_contrast` (and `Project.add_contrast`) used a
+  `ReplaceMaterial` whose replacement is of another class than the material
+  it replaces, e.g. a `MaterialDensity` for a plain `Material`. Before, the
+  replacement was dropped without an error: the contrast got a default
+  `Material` whose SLD was tied to the replaced one, so it stayed the
+  reference contrast. `references.rebuild` now raises `ValueError` when a
+  kept child cannot be placed in the copy, instead of building a default
+  object in its place.
+
 # Version 2.0.0 (12 Nov 2026)
 
 Built on easyscience 3. Code written for 1.x needs the renames below,
