@@ -146,7 +146,8 @@ def test_an_object_in_two_sibling_slots_stays_one_object():
 class TestPalette:
     def test_no_duplicates_after_reload(self):
         loaded = _reload(_contrasts())
-        assert [material.name for material in loaded._materials] == ['Si', 'Hydrated', 'Inner', 'D2O', 'H2O']
+        # The solvated materials are not palette entries; the film they are made of is.
+        assert [material.name for material in loaded._materials] == ['Si', 'Film', 'D2O', 'H2O']
 
     def test_order_and_unused_materials_round_trip(self):
         project = Project()

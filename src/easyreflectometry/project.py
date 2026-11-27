@@ -77,8 +77,10 @@ from easyreflectometry.model import ResolutionFunction
 from easyreflectometry.orso_utils import is_orso_file
 from easyreflectometry.orso_utils import save_orso_experiment
 from easyreflectometry.sample import Layer
+from easyreflectometry.sample import LayerAreaPerMolecule
 from easyreflectometry.sample import Material
 from easyreflectometry.sample import MaterialCollection
+from easyreflectometry.sample import MaterialMixture
 from easyreflectometry.sample import Multilayer
 from easyreflectometry.sample import Sample
 from easyreflectometry.sample import paths
@@ -141,6 +143,25 @@ def _weak_constraints_provider(project: 'Project'):
         return None if target is None else target.build_constraints_factory()
 
     return provider
+
+
+def _palette_materials(layer: Layer) -> list[Material]:
+    """The materials of `layer` that belong in the project's materials palette.
+
+    The palette holds the materials a user picks for a layer. A mixture is derived from
+    other materials (its SLD is computed from theirs), so it is never a palette entry
+    itself: its constituents are. An area-per-molecule layer builds its material from
+    its own chemical formula; only its solvent is picked from the palette.
+    """
+    if isinstance(layer, LayerAreaPerMolecule):
+        return [layer.solvent]
+    return _constituents(layer.material)
+
+
+def _constituents(material) -> list[Material]:
+    if isinstance(material, MaterialMixture):
+        return _constituents(material.material_a) + _constituents(material.material_b)
+    return [material]
 
 
 class Project:
@@ -1407,12 +1428,13 @@ class Project:
             )
 
     def _get_materials_from_model(self, model: Model) -> 'MaterialCollection':
-        """Get all materials from a single model's sample."""
+        """Get the palette materials of a single model's sample (see :func:`_palette_materials`)."""
         materials_in_model = MaterialCollection(populate_if_none=False)
         for assembly in model.sample:
             for layer in assembly.layers:
-                if layer.material not in materials_in_model:
-                    materials_in_model.append(layer.material)
+                for material in _palette_materials(layer):
+                    if material not in materials_in_model:
+                        materials_in_model.append(material)
         return materials_in_model
 
     def _apply_experiment_metadata(
@@ -2935,7 +2957,12 @@ class Project:
             if 'models' in keys:
                 self.models = ModelCollection.from_dict(project_dict['models'])
             palette = [references.deserialize(entry) for entry in project_dict.get('materials', [])]
-        self._replace_collection(palette, self._materials)
+        # Files written before mixtures were kept out of the palette hold them; their
+        # constituents take their place (appended below, after the file's own entries).
+        mixtures = [material for material in palette if isinstance(material, MaterialMixture)]
+        self._replace_collection([material for material in palette if material not in mixtures], self._materials)
+        if mixtures:
+            self._extend_palette_from_models()
         # Settings are replaced wholesale, never merged with the previous project's.
         self._fit_settings, settings_report = FitSettings.from_dict(project_dict.get('fit_settings', {}))
         report.extend(settings_report)
@@ -3010,15 +3037,16 @@ class Project:
         return PolarizedDataSet(name=name, channels=channels, model=model)
 
     def _get_materials_in_models(self) -> MaterialCollection:
-        """Get materials in models."""
+        """Get the palette materials the models use (see :func:`_palette_materials`)."""
         materials_in_model = MaterialCollection(populate_if_none=False)
         seen: set[int] = set()
         for model in self._models:
             for assembly in model.sample:
                 for layer in assembly.layers:
-                    if id(layer.material) not in seen:  # one material in two layers, once
-                        seen.add(id(layer.material))
-                        materials_in_model.append(layer.material)
+                    for material in _palette_materials(layer):
+                        if id(material) not in seen:  # one material in two layers, once
+                            seen.add(id(material))
+                            materials_in_model.append(material)
         return materials_in_model
 
     def _replace_collection(self, src_collection: BaseCollection, dst_collection: BaseCollection) -> None:

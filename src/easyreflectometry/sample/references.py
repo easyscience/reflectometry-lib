@@ -207,7 +207,14 @@ def rebuild(obj: Any, keep: dict[int, Any]) -> Any:
 
     `keep` maps ``id(child)`` to the object the copy should hold in its place:
     the child itself to share it with `obj`, or another object to swap it in.
+    A swapped-in object may be of another class than the child it replaces
+    (a :class:`MaterialDensity` for a plain :class:`Material`).
     Everything else under `obj` is copied.
+
+    Raises
+    ------
+    ValueError
+        A kept child could not be placed in the copy.
     """
     writer = _Writer()
     for child_id in keep:
@@ -218,7 +225,29 @@ def rebuild(obj: Any, keep: dict[int, Any]) -> Any:
         data = obj.as_dict(skip=['unique_name'])
     finally:
         _writer.reset(token)
-    with reading() as reader:
+    # A reference node names the class of the child it was written for; one that stands for a
+    # swapped-in object must name that object's class, or `resolve` refuses it.
+    classes = {writer.ids[child_id][0]: type(replacement) for child_id, replacement in keep.items()}
+    _retarget_references(data, classes)
+    report: list[str] = []
+    with reading(report) as reader:
         for child_id, replacement in keep.items():
             reader.objects[writer.ids[child_id][0]] = replacement
-        return type(obj).from_dict(prune(data))
+        copy = type(obj).from_dict(prune(data))
+    if report:
+        raise ValueError('; '.join(report))
+    return copy
+
+
+def _retarget_references(node: Any, classes: dict[str, type]) -> None:
+    """Make every reference node in `node` whose id is in `classes` name that class, in place."""
+    if isinstance(node, dict):
+        cls = classes.get(node.get(REF)) if REF in node else None
+        if cls is not None:
+            node['@module'] = cls.__module__
+            node['@class'] = cls.__name__
+        for value in node.values():
+            _retarget_references(value, classes)
+    elif isinstance(node, list):
+        for value in node:
+            _retarget_references(value, classes)
