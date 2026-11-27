@@ -108,6 +108,28 @@ class TestDeriveSolventContrast:
         assert outer._sld.value == pytest.approx(0.7 * 4.0 + 0.3 * -0.56)
         assert reference_outer._sld.value == pytest.approx(0.7 * 4.0 + 0.3 * 6.36)
 
+    @pytest.mark.parametrize('coupled', [False, True])
+    def test_a_replacement_of_another_material_class_is_used(self, coupled):
+        # A material added in the app is a MaterialDensity. Swapped in for a plain Material it
+        # was once dropped: the copy got a default Material whose SLD was tied to the replaced
+        # one, so the "H2O" contrast silently stayed a D2O contrast.
+        project, d2o, _ = _hydrated_project()
+        h2o = MaterialDensity(chemical_structure='H2O', density=1.0, name='H2O')
+        h2o.sld_coupled = coupled
+        if not coupled:
+            h2o.sld.value = -0.56
+        contrast = derive_contrast(project.models[0], name='H2O', substitutions=[ReplaceMaterial(d2o, h2o)])
+
+        assert contrast.sample[3].layers[0].material is h2o
+        assert all(layer.material.solvent is h2o for layer in contrast.sample[2].layers)
+        assert h2o.sld.value == pytest.approx(-0.56, abs=0.01)
+        d2o.sld.value = 6.0  # the replacement does not follow the material it replaced
+        assert h2o.sld.value == pytest.approx(-0.56, abs=0.01)
+        project.models.add_model(contrast)
+        reloaded = _reload(project).models[1]
+        assert reloaded.sample[3].layers[0].material is reloaded.sample[2].layers[0].material.solvent
+        assert type(reloaded.sample[3].layers[0].material) is MaterialDensity
+
     def test_nuisance_parameters_are_copied_not_tied(self):
         project, d2o, h2o = _hydrated_project()
         reference = project.models[0]
